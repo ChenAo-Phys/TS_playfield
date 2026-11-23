@@ -82,7 +82,9 @@ More: [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) (how the code is organised)
 - Full notices: [`THIRD_PARTY_LICENSES.md`](THIRD_PARTY_LICENSES.md), published on the site as
   `THIRD_PARTY_LICENSES.txt` and linked from its credits.
 
-No licence has been chosen yet for this project's own code.
+This project's own code is released under the [MIT licence](LICENSE). The licence does not cover the Twilight
+Struggle card images, card texts, rules and map artwork (© GMT Games, see below), nor the third-party parts
+listed above, which keep their own licences.
 
 ## Twilight Struggle and GMT Games
 
@@ -113,4 +115,5 @@ at https://www.gmtgames.com/living_rules/TS_Rules_Deluxe.pdf. If you enjoy the g
 GMT Games, LLC 的注册商标；游戏、规则以及卡牌与地图美术归 GMT Games 及其各自所有者所有。规则引擎与 AI 来自
 [DeepStruggle](https://github.com/mihaild/DeepStruggle)（作者 mihaild，MIT 许可证），模型托管于
 [Hugging Face mihaild/deepstruggle](https://huggingface.co/mihaild/deepstruggle)。其余第三方许可见
-[`THIRD_PARTY_LICENSES.md`](THIRD_PARTY_LICENSES.md)。
+[`THIRD_PARTY_LICENSES.md`](THIRD_PARTY_LICENSES.md)。本项目自身的代码以 [MIT 许可证](LICENSE) 发布，不包括 GMT Games 的卡牌、规则与地图美术，
+也不包括上述第三方部分（它们各自沿用原有许可）。
