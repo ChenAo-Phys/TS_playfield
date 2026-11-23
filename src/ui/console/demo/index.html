@@ -1,0 +1,17 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <title>Console + rail demo · Twilight Struggle Playfield</title>
+  </head>
+  <body>
+    <!-- Dev-only demo of src/ui/console and src/ui/rail (not part of the production build). Run
+         TSP_VITE_CACHE=node_modules/.vite-5186 npx vite --port 5186 --strictPort and open
+         /TS_playfield/src/ui/console/demo/index.html?scene=prompt-midgame&lang=en
+         (?page=variants for every console variant; ?flyout=adversary|effects|log|status on tablets;
+         ?sheet=adversary|log|status on phones; ?toolbar=off for screenshots). -->
+    <div id="root"></div>
+    <script type="module" src="./main.tsx"></script>
+  </body>
+</html>

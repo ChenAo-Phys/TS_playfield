@@ -1,0 +1,63 @@
+/*
+ * Popover (ui-spec §3.5 z popover; final.css `.map-tip`, `.zoom`). Paper or room tone, 7 px arrow.
+ */
+.pop {
+  position: fixed;
+  z-index: var(--ts-z-popover);
+  max-width: calc(100vw - 16px);
+  max-height: calc(100dvh - 16px);
+  border-radius: var(--ts-radius-s);
+  font-family: var(--ts-font-body);
+  font-size: var(--ts-fs-m);
+  line-height: var(--ts-lh-body);
+  opacity: 0;
+}
+.shown { animation: pop-in var(--ts-dur-xs) var(--ts-ease-out) both; }
+@keyframes pop-in {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: none; }
+}
+.pop[data-placement="bottom"].shown { animation-name: pop-in-down; }
+@keyframes pop-in-down {
+  from { opacity: 0; transform: translateY(-4px); }
+  to { opacity: 1; transform: none; }
+}
+:global([data-motion="reduce"]) .shown { animation-name: pop-fade; }
+@media (prefers-reduced-motion: reduce) {
+  :global(:root:not([data-motion="full"])) .shown { animation-name: pop-fade; }
+}
+@keyframes pop-fade { from { opacity: 0; } to { opacity: 1; } }
+
+.paper {
+  background: var(--ts-paper-50);
+  color: var(--ts-ink-900);
+  box-shadow: var(--ts-shadow-pop);
+  --pop-bg: var(--ts-paper-50);
+  --pop-edge: var(--ts-line-ink);
+}
+.room {
+  background: var(--ts-room-800);
+  color: var(--ts-text-1);
+  box-shadow: 0 0 0 1px var(--ts-line-hard), 0 0 0 2px var(--ts-line-brass), 0 12px 28px var(--ts-scrim);
+  --pop-bg: var(--ts-room-800);
+  --pop-edge: var(--ts-line-brass);
+}
+.passThrough { pointer-events: none; }
+
+/* Arrow: a 7 px triangle on the edge facing the anchor, at --arrow along that edge. */
+.arrow {
+  position: absolute;
+  width: 0;
+  height: 0;
+  border: 7px solid transparent;
+  pointer-events: none;
+  filter: drop-shadow(0 0 0 var(--pop-edge));
+}
+.pop[data-placement="right"] .arrow { left: -7px; top: calc(var(--arrow) - 7px); border-left: 0; border-right-color: var(--pop-bg); }
+.pop[data-placement="left"] .arrow { right: -7px; top: calc(var(--arrow) - 7px); border-right: 0; border-left-color: var(--pop-bg); }
+.pop[data-placement="bottom"] .arrow { top: -7px; left: calc(var(--arrow) - 7px); border-top: 0; border-bottom-color: var(--pop-bg); }
+.pop[data-placement="top"] .arrow { bottom: -7px; left: calc(var(--arrow) - 7px); border-bottom: 0; border-top-color: var(--pop-bg); }
+
+@media (forced-colors: active) {
+  .pop { border: 1px solid CanvasText; }
+}

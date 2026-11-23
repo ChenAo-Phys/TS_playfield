@@ -1,0 +1,345 @@
+/* Scoring sheet (ui-spec §10.2, final.css .scoring). Tokens only. */
+.sheet {
+  position: absolute;
+  top: clamp(16px, calc(100vh - 780px), 120px);
+  width: 520px;
+  max-width: calc(100% - 56px);
+  max-height: calc(100% - clamp(16px, calc(100vh - 780px), 120px) - var(--stage-bottom, 0px) - 8px);
+  /* The body scrolls; the Continue footer stays on screen. */
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border-radius: var(--ts-radius-s);
+  background: var(--ts-paper-50);
+  color: var(--ts-ink-900);
+  box-shadow: var(--ts-shadow-stage), 0 0 0 1px var(--ts-line-hard);
+  pointer-events: auto;
+  animation: sheetIn var(--in, 360ms) var(--ts-ease-out) both;
+}
+
+.sheet[data-dock="left"] {
+  left: 28px;
+  --from: -40px;
+}
+
+.sheet[data-dock="right"] {
+  right: 28px;
+  --from: 40px;
+}
+
+.sheet[data-dock="bottom"] {
+  left: 8px;
+  right: 8px;
+  top: auto;
+  bottom: var(--stage-bottom, 0px);
+  width: auto;
+  max-width: none;
+  max-height: 78%;
+  border-radius: var(--ts-radius-l) var(--ts-radius-l) 0 0;
+  --from: 0px;
+  animation-name: sheetUp;
+}
+
+.scroll {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: auto;
+  overscroll-behavior: contain;
+}
+
+.sheet[data-phase="out"] {
+  opacity: 0;
+  transition: opacity var(--ts-dur-s) linear;
+}
+
+@keyframes sheetIn {
+  from { opacity: 0; translate: var(--from, -40px) 0; }
+  to { opacity: 1; translate: 0 0; }
+}
+
+@keyframes sheetUp {
+  from { opacity: 0; translate: 0 40px; }
+  to { opacity: 1; translate: 0 0; }
+}
+
+.head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: var(--ts-space-3);
+  padding: 14px 18px 12px;
+  background: var(--reg);
+  color: var(--reg-text);
+}
+
+.head b {
+  font-family: var(--ts-font-stencil);
+  font-weight: 800;
+  font-size: var(--ts-fs-3xl);
+  line-height: 1;
+  letter-spacing: .06em;
+  text-transform: var(--ts-caps);
+}
+
+:root:lang(zh) .head b {
+  font-family: var(--ts-font-body);
+  letter-spacing: .04em;
+}
+
+.head span {
+  flex: none;
+  font-family: var(--ts-font-ui);
+  font-weight: 600;
+  font-size: var(--ts-fs-s);
+  line-height: 1;
+  letter-spacing: .14em;
+  text-transform: var(--ts-caps);
+}
+
+.kicker {
+  margin: 0;
+  padding: 10px 18px 2px;
+  font-family: var(--ts-font-ui);
+  font-weight: 700;
+  font-size: var(--ts-fs-s);
+  line-height: 1.2;
+  letter-spacing: var(--ts-track-caps);
+  text-transform: var(--ts-caps);
+  color: var(--ts-ink-500);
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: var(--ts-font-ui);
+  font-weight: 600;
+  font-size: var(--ts-fs-body);
+  line-height: 1.1;
+  color: var(--ts-ink-900);
+}
+
+.table th,
+.table td {
+  padding: 9px 18px;
+  text-align: center;
+  border-bottom: 1px solid var(--ts-line-ink-soft);
+}
+
+.table thead th {
+  font-size: var(--ts-fs-xs);
+  letter-spacing: .16em;
+  text-transform: var(--ts-caps);
+  color: var(--ts-ink-500);
+  white-space: nowrap;
+}
+
+.table th:first-child {
+  text-align: left;
+}
+
+.table tbody th {
+  font-weight: 600;
+  text-transform: none;
+  letter-spacing: .02em;
+}
+
+.each {
+  display: block;
+  margin-top: 2px;
+  font-size: var(--ts-fs-xs);
+  font-weight: 600;
+  color: var(--ts-ink-500);
+}
+
+.us {
+  color: var(--ts-side-us);
+}
+
+.ussr {
+  color: var(--ts-side-ussr);
+}
+
+.table td.us,
+.table td.ussr {
+  font-size: var(--ts-fs-l);
+  font-weight: 700;
+}
+
+.num {
+  display: inline-block;
+  min-width: 1.2em;
+}
+
+.dash {
+  color: var(--ts-ink-500);
+}
+
+.table tr[data-filled] th {
+  animation: rowIn var(--ts-dur-xs) linear both;
+}
+
+@keyframes rowIn {
+  from { opacity: .5; }
+  to { opacity: 1; }
+}
+
+.table tr.total th,
+.table tr.total td {
+  border-bottom: 0;
+  background: var(--ts-paper-100);
+  font-family: var(--ts-font-stencil);
+  font-weight: 800;
+  font-size: var(--ts-fs-2xl);
+}
+
+:root:lang(zh) .table tr.total th {
+  font-family: var(--ts-font-body);
+  font-size: var(--ts-fs-l);
+}
+
+.chip {
+  display: inline-block;
+  padding: 4px 6px 3px;
+  border-radius: var(--ts-radius-xs);
+  font-family: var(--ts-font-ui);
+  font-weight: 700;
+  font-size: var(--ts-fs-xs);
+  line-height: 1;
+  letter-spacing: .1em;
+  text-transform: var(--ts-caps);
+  background: var(--ts-paper-200);
+  color: var(--ts-ink-700);
+}
+
+.chip[data-side="US"] {
+  background: var(--ts-side-us);
+  color: var(--ts-side-us-solid-text);
+}
+
+.chip[data-side="USSR"] {
+  background: var(--ts-side-ussr);
+  color: var(--ts-side-ussr-solid-text);
+  clip-path: polygon(4px 0, calc(100% - 4px) 0, 100% 4px, 100% 100%, 0 100%, 0 4px);
+}
+
+.chip:not([data-filled]) {
+  opacity: 0;
+}
+
+.result {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--ts-space-3);
+  padding: 14px 18px;
+  background: var(--ts-ink-900);
+  color: var(--ts-paper-50);
+  font-family: var(--ts-font-ui);
+  font-weight: 700;
+  font-size: var(--ts-fs-l);
+  line-height: 1;
+  letter-spacing: .08em;
+  text-transform: var(--ts-caps);
+  animation: netIn var(--net, 300ms) var(--ts-ease-back) both;
+}
+
+.result b {
+  font-family: var(--ts-font-stencil);
+  font-weight: 800;
+  font-size: var(--ts-fs-3xl);
+  letter-spacing: .04em;
+  color: var(--ts-paper-100);
+}
+
+.result[data-side="US"] b {
+  color: var(--ts-side-us-on-room);
+}
+
+.result[data-side="USSR"] b {
+  color: var(--ts-side-ussr-on-room);
+}
+
+@keyframes netIn {
+  from { opacity: 0; scale: .96; }
+  to { opacity: 1; scale: 1; }
+}
+
+/* Under the table: Shuttle Diplomacy's missing battleground (also in the map's plate popover). */
+.table td.note {
+  padding-top: 7px;
+  padding-bottom: 7px;
+  border-bottom: 0;
+  text-align: left;
+  font-size: var(--ts-fs-xs);
+  font-weight: 600;
+  line-height: 1.3;
+  color: var(--ts-ink-700);
+}
+
+/* Under the result bar: the VP track stopped the change at ±20. */
+.capped {
+  margin: 0;
+  padding: 0 18px 12px;
+  background: var(--ts-ink-900);
+  color: var(--ts-paper-100);
+  font-family: var(--ts-font-ui);
+  font-weight: 600;
+  font-size: var(--ts-fs-s);
+  line-height: 1.3;
+  animation: netIn var(--net, 300ms) var(--ts-ease-back) both;
+}
+
+.control {
+  margin: 0;
+  padding: 9px 18px 13px;
+  background: var(--ts-hazard-bright) left bottom / 100% 5px no-repeat var(--ts-ink-900);
+  color: var(--ts-alert-500);
+  font-family: var(--ts-font-stencil);
+  font-weight: 800;
+  font-size: var(--ts-fs-l);
+  letter-spacing: .08em;
+  text-transform: var(--ts-caps);
+}
+
+.actions {
+  flex: none;
+  display: flex;
+  justify-content: flex-end;
+  padding: 10px 18px 12px;
+  background: var(--ts-paper-100);
+  box-shadow: 0 -1px 0 var(--ts-line-ink-soft);
+}
+
+/* Phones: a tighter sheet (the map stays visible above it). */
+.sheet[data-dock="bottom"] .head { padding: 10px 14px 8px; }
+.sheet[data-dock="bottom"] .head b { font-size: var(--ts-fs-2xl); }
+.sheet[data-dock="bottom"] .kicker { padding: 8px 14px 0; }
+.sheet[data-dock="bottom"] .table th,
+.sheet[data-dock="bottom"] .table td { padding: 6px 14px; }
+.sheet[data-dock="bottom"] .result { padding: 10px 14px; }
+.sheet[data-dock="bottom"] .result b { font-size: var(--ts-fs-2xl); }
+.sheet[data-dock="bottom"] .control { padding: 7px 14px 11px; }
+.sheet[data-dock="bottom"] .capped { padding: 0 14px 10px; }
+.sheet[data-dock="bottom"] .actions { padding: 8px 14px 10px; }
+
+@media (max-height: 800px) {
+  .table th,
+  .table td {
+    padding-top: 6px;
+    padding-bottom: 6px;
+  }
+}
+
+.sheet[data-reduced],
+.sheet[data-reduced] .result,
+.sheet[data-reduced] .capped {
+  animation-name: fade;
+}
+
+@keyframes fade {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* Touch screens: a 44 px Continue (ui-spec §3.3, §12; Q-048). */
+@media (pointer: coarse) { .actions :global(button) { min-height: 44px; min-width: 44px; } }

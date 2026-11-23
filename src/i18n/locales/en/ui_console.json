@@ -1,0 +1,106 @@
+{
+  "label": "Game status",
+  "listSep": ", ",
+  "wordmark": {
+    "title": "Twilight Struggle",
+    "sub": "Playfield · vs DeepStruggle",
+    "label": "Twilight Struggle Playfield: open the menu"
+  },
+  "turn": {
+    "aria": "Turn {{turn}} of 10, {{era}}",
+    "readout": "{{turn}}/{{max}} · {{era}}",
+    "compact": "Turn {{turn}} · {{era}}",
+    "eraShort": {
+      "early": "Early",
+      "mid": "Mid",
+      "late": "Late"
+    },
+    "tip": {
+      "shuffled": "{{era}} cards were shuffled in at turn {{turn}}",
+      "upcoming": "{{era}} cards are shuffled in at turn {{turn}}",
+      "handSize": "Hands are dealt up to {{n}} cards"
+    }
+  },
+  "ar": {
+    "aria": "Action round {{ar}}, the {{side}} to move",
+    "readout": "AR {{ar}} · {{side}}",
+    "readoutYou": "AR {{ar}} · {{side}} {{you}}",
+    "tip": {
+      "title": "Action round {{ar}} of {{max}}",
+      "count": "{{max}} action rounds this turn",
+      "ar8": "AR 8 available to the {{side}} ({{reason}})"
+    }
+  },
+  "defcon": {
+    "aria": "DEFCON {{level}}: {{rule}}"
+  },
+  "vp": {
+    "title": "Victory points",
+    "aria": "Victory points: {{lead}}",
+    "end": "{{side}} 20",
+    "tip": {
+      "turn": "T{{turn}}: {{lead}}",
+      "none": "No turn has ended yet",
+      "now": "Now: {{lead}}"
+    }
+  },
+  "milops": {
+    "aria": "Military operations: need {{need}}, US {{us}}, USSR {{ussr}}",
+    "tip": {
+      "status": "{{side}}: {{n}} of {{need}}"
+    }
+  },
+  "space": {
+    "aria": "Space race: US box {{us}}, USSR box {{ussr}}",
+    "perk": "The {{side}} reaches a privilege: {{perk}}",
+    "tip": {
+      "side": "{{side}}: box {{box}} · {{name}}",
+      "next": "Box {{box}} next: {{ops}}+ Ops, roll 1–{{roll}}, VP {{first}} / {{second}}",
+      "perks": "Privilege boxes reached: {{list}}"
+    }
+  },
+  "lang": {
+    "en": "EN",
+    "zh": "中文",
+    "zhSingle": "中",
+    "switchTo": "Switch to {{lang}}"
+  },
+  "status": {
+    "title": "Status"
+  },
+  "rail": {
+    "label": "Adversary, effects in play and dispatches",
+    "hide": "Hide the rail",
+    "show": "Show the rail"
+  },
+  "adversary": {
+    "headlineCommitted": "Headline · committed",
+    "phase": {
+      "setup": "Setup",
+      "headline": "Headline"
+    },
+    "knownCard": "{{card}}, known to you"
+  },
+  "effects": {
+    "empty": "No ongoing effects",
+    "chip": "{{name}}: {{duration}}"
+  },
+  "log": {
+    "filters": "Show",
+    "showEarlier": "Show earlier dispatches",
+    "empty": "No dispatches yet",
+    "unread": "New dispatches",
+    "code": {
+      "setup": "Setup",
+      "headline": "T{{turn}} HL",
+      "turn": "T{{turn}}",
+      "ar": "AR{{ar}}"
+    },
+    "keysHint": "Arrow keys: the cards and countries named in the log. Enter opens one, Esc goes back.",
+    "announcer": "Adversary's moves",
+    "announceStop": ". "
+  },
+  "flyout": {
+    "label": "{{panel}} panel"
+  }
+}

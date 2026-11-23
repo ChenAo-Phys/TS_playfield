@@ -1,0 +1,86 @@
+/*
+ * Piles (ui-spec §7.4; final.css `.piles`, `.pile`): three rows of 38 px, 104 px wide.
+ */
+.piles {
+  flex: none;
+  width: var(--ts-piles-w);
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  padding-bottom: 12px;
+  pointer-events: auto;
+}
+.pile {
+  display: grid;
+  grid-template-columns: 22px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 5px;
+  min-height: 38px;
+  padding: 4px 7px 4px 4px;
+  border: 0;
+  border-radius: var(--ts-radius-s);
+  background: color-mix(in srgb, var(--ts-room-850) 92%, transparent);
+  box-shadow: 0 0 0 1px var(--ts-line-hard), inset 0 1px 0 var(--ts-line-highlight);
+  color: inherit;
+  font: inherit;
+  text-align: left;
+}
+.button { cursor: pointer; transition: background var(--ts-dur-xs) var(--ts-ease-out); }
+.button:hover { background: var(--ts-room-700); }
+.button:focus-visible { outline: none; box-shadow: var(--ts-focus-ring); }
+.thumb { position: relative; display: block; line-height: 0; }
+.thumb svg { box-shadow: none; }
+.thumbCard { box-shadow: 0 1px 2px color-mix(in srgb, var(--ts-room-950) 60%, transparent); }
+.removed .thumbCard { filter: grayscale(1) brightness(.7); }
+.emptyThumb {
+  display: block;
+  border-radius: var(--ts-radius-xs);
+  border: 1px dashed var(--ts-room-500);
+}
+.label {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font: 700 var(--ts-fs-xs) / 1 var(--ts-font-ui);
+  letter-spacing: .07em;
+  color: var(--ts-steel-300);
+  text-transform: var(--ts-caps);
+}
+:global(:root:lang(zh)) .label { font-family: var(--ts-font-body); letter-spacing: 0; }
+.count {
+  display: inline-block;
+  font: 700 var(--ts-fs-body) / 1 var(--ts-font-num);
+  font-variant-numeric: tabular-nums;
+  color: var(--ts-paper-100);
+  transform-origin: 70% 50%;
+}
+
+/* Tablet: 76 px, icon + count */
+.tablet { width: 76px; }
+.tablet .pile { grid-template-columns: 18px 1fr; gap: 6px; padding: 4px 6px 4px 4px; min-height: 34px; }
+.tablet .label { display: none; }
+.tablet .count { justify-self: end; }
+
+/* Panel (compact Status sheet): three tiles in a row */
+.panel { width: auto; flex-direction: row; gap: 8px; padding-bottom: 0; }
+.panel .pile { flex: 1; min-height: var(--ts-touch-min); }
+
+:global([data-motion="reduce"]) .button { transition: none; }
+@media (prefers-reduced-motion: reduce) {
+  :global(:root:not([data-motion="full"])) .button { transition: none; }
+}
+
+/*
+ * Touch screens (QA R-010): the two pile buttons keep their look and answer 44 px tall hit areas (`::after`): the
+ * 5 px gap between them splits, Discard reaches up over the deck row (not a control), Removed down into the padding.
+ */
+@media (pointer: coarse) {
+  .button { position: relative; }
+  .button::after { content: ""; position: absolute; left: 0; right: 0; top: -2.5px; bottom: -2.5px; }
+  .button[data-pile="discard"]::after { top: -4px; }
+  .button[data-pile="removed"]::after { bottom: -4px; }
+  .tablet .button[data-pile="discard"]::after { top: -8px; }
+  .tablet .button[data-pile="removed"]::after { bottom: -8px; }
+  .panel .button::after { inset: 0; }
+}

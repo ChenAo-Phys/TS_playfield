@@ -1,0 +1,521 @@
+/*
+ * The console and its instruments (ui-spec §5; docs/design/mockup-final-assets/final.css §3.1, §7.2, §7.10,
+ * §7.12). Tokens only: no hex, font sizes from --ts-fs-*, z-index from --ts-z-*. Alpha colours are
+ * color-mix() on tokens.
+ */
+
+/* ── The bar ──────────────────────────────────────────────────────────────────────────── */
+.console {
+  position: relative;
+  z-index: var(--ts-z-console);
+  display: flex;
+  align-items: stretch;
+  height: var(--ts-console-h);
+  min-width: 0;
+  padding: 0 10px 0 14px;
+  background: var(--ts-surface-console);
+  border-bottom: 1px solid var(--ts-line-hard);
+  box-shadow: var(--ts-shadow-console);
+  color: var(--ts-text-1);
+  font-family: var(--ts-font-ui);
+}
+.v_tablet { height: calc(var(--ts-console-h) - 4px); padding: 0 8px 0 12px; }
+.v_compact { height: var(--ts-c-console-h); padding: 0 6px 0 10px; }
+
+/* DEFCON degraded: the border flashes alert (keyed overlay, replays per beat). */
+.flash {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  box-shadow: inset 0 0 0 2px var(--ts-alert-500), inset 0 -10px 18px -10px color-mix(in srgb, var(--ts-alert-500) 70%, transparent);
+  animation: console-flash 900ms linear both;
+}
+@keyframes console-flash {
+  0%, 30% { opacity: 1; }
+  15%, 45% { opacity: .25; }
+  60% { opacity: 1; }
+  100% { opacity: 0; }
+}
+
+/* ── Wordmark ─────────────────────────────────────────────────────────────────────────── */
+.wordmark {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  flex: none;
+  padding: 0 12px 0 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  text-align: left;
+}
+.wordmark b {
+  font: 800 var(--ts-fs-xl) / .9 var(--ts-font-stencil);
+  letter-spacing: .07em;
+  color: var(--ts-paper-100);
+  text-transform: uppercase; /* the logo, in every language */
+  white-space: nowrap;
+}
+.wordmark span {
+  margin-top: 4px;
+  font: 600 var(--ts-fs-micro) / 1 var(--ts-font-ui);
+  letter-spacing: var(--ts-track-wide);
+  color: var(--ts-brass-400);
+  text-transform: var(--ts-caps);
+  white-space: nowrap;
+}
+.wordmark:focus-visible { box-shadow: inset 0 0 0 2px var(--ts-focus); border-radius: var(--ts-radius-s); }
+.v_condensed .wordmark b, .v_tablet .wordmark b { font-size: var(--ts-fs-l); }
+
+/* ── Instruments ──────────────────────────────────────────────────────────────────────── */
+.inst {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  flex: none;
+  min-width: 0;
+  padding: 0 11px;
+  border-left: 1px solid var(--ts-line-room);
+  box-shadow: -1px 0 0 color-mix(in srgb, var(--ts-line-hard) 60%, transparent);
+}
+.inst:focus-visible { box-shadow: inset 0 0 0 2px var(--ts-focus); border-radius: var(--ts-radius-s); }
+.v_compact .inst { padding: 0 9px; }
+.v_compact .compactTurn { padding-left: 0; border-left: 0; box-shadow: none; flex: 0 1 auto; min-width: 0; }
+/* The turn readout lines give way last (after the squeeze steps below); their text is in the instrument's name. */
+.v_compact .compactTurn > [data-fit] { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+.instLabel {
+  margin-bottom: 5px;
+  font: 600 var(--ts-fs-micro) / 1 var(--ts-font-ui);
+  letter-spacing: var(--ts-track-caps);
+  text-transform: var(--ts-caps);
+  color: var(--ts-text-3);
+  white-space: nowrap;
+}
+.v_compact .instLabel { margin-bottom: 4px; }
+
+.sideUs { color: var(--ts-side-us-on-room); }
+.sideUssr { color: var(--ts-side-ussr-on-room); }
+.you { color: var(--ts-brass-300); }
+
+/* Turn */
+.turnBox { display: flex; flex-direction: column; width: max-content; }
+.turnTrack { position: relative; display: flex; gap: 2px; align-items: flex-end; }
+.turnTrack i, .turnLit {
+  display: block;
+  width: 15px;
+  height: 18px;
+  border-radius: var(--ts-radius-xs);
+  font: 600 var(--ts-fs-xs) / 18px var(--ts-font-num);
+  font-style: normal;
+  text-align: center;
+}
+.turnTrack i {
+  background: var(--ts-room-900);
+  box-shadow: inset 0 1px 2px var(--ts-line-hard), 0 1px 0 var(--ts-line-highlight);
+  color: var(--ts-text-3);
+}
+.turnTrack i.done { color: color-mix(in srgb, var(--ts-steel-400) 55%, var(--ts-room-900)); }
+.turnTrack i.nowCell { color: transparent; }
+.turnTrack i.gap { margin-left: 5px; }
+.turnLit {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  background: var(--ts-brass-400);
+  color: var(--ts-ink-900);
+  box-shadow: 0 0 10px color-mix(in srgb, var(--ts-brass-400) 55%, transparent), inset 0 -2px 0 color-mix(in srgb, var(--ts-ink-900) 25%, transparent);
+  transition: transform var(--ts-dur-m) var(--ts-ease-out);
+}
+.eraRow {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 4px;
+  font: 600 var(--ts-fs-micro) / 1 var(--ts-font-ui);
+  letter-spacing: var(--ts-track-caps);
+  text-transform: var(--ts-caps);
+  color: var(--ts-text-3);
+}
+.eraRow .cur { color: var(--ts-brass-300); }
+.turnRead {
+  font: 700 var(--ts-fs-body) / 1 var(--ts-font-ui);
+  letter-spacing: var(--ts-track-tight);
+  text-transform: var(--ts-caps);
+  color: var(--ts-paper-100);
+  white-space: nowrap;
+}
+.turnRead b { font-size: var(--ts-fs-l); }
+
+/* Action round */
+.arTrack { display: flex; gap: 3px; align-items: center; }
+.arPip {
+  position: relative;
+  display: flex;
+  width: 20px;
+  height: 18px;
+  overflow: hidden;
+  border-radius: var(--ts-radius-xs);
+  background: var(--ts-room-900);
+  box-shadow: inset 0 1px 2px var(--ts-line-hard);
+}
+.arPip::after {
+  content: attr(data-n);
+  position: absolute;
+  inset: 0;
+  font: 700 var(--ts-fs-xs) / 18px var(--ts-font-num);
+  text-align: center;
+  color: color-mix(in srgb, var(--ts-paper-50) 55%, transparent);
+  pointer-events: none;
+}
+.arPip b { flex: 1; }
+.halfUs.half_done { background: color-mix(in srgb, var(--ts-us-600) 55%, var(--ts-room-900)); }
+.halfUssr.half_done { background: color-mix(in srgb, var(--ts-ussr-600) 45%, var(--ts-room-900)); }
+.half_now { background: var(--ts-brass-400); box-shadow: 0 0 8px color-mix(in srgb, var(--ts-brass-400) 70%, transparent); }
+.half_na { background: repeating-linear-gradient(135deg, transparent 0 3px, color-mix(in srgb, var(--ts-steel-400) 18%, transparent) 3px 4px); }
+.arPip.opt { outline: 1px dashed var(--ts-room-500); outline-offset: -1px; background: transparent; }
+.flood { animation: ar-flood var(--ts-dur-s) var(--ts-ease-out) both; transform-origin: 50% 50%; }
+@keyframes ar-flood {
+  from { transform: scale(.6); opacity: .35; }
+  to { transform: none; opacity: 1; }
+}
+.arRead {
+  margin-top: 5px;
+  font: 700 var(--ts-fs-m) / 1 var(--ts-font-ui);
+  letter-spacing: var(--ts-track-tight);
+  text-transform: var(--ts-caps);
+  color: var(--ts-paper-100);
+  white-space: nowrap;
+}
+.v_compact .arRead { margin-top: 0; }
+
+/* DEFCON */
+.defcon { flex-direction: row; align-items: center; gap: 10px; }
+.defconCompact { gap: 6px; }
+.l5, .lamp5 { --lamp: var(--ts-defcon-5); }
+.l4, .lamp4 { --lamp: var(--ts-defcon-4); }
+.l3, .lamp3 { --lamp: var(--ts-defcon-3); }
+.l2, .lamp2 { --lamp: var(--ts-defcon-2); }
+.l1, .lamp1 { --lamp: var(--ts-defcon-1); }
+.defconNum {
+  width: 24px;
+  flex: none;
+  font: 800 var(--ts-fs-4xl) / .8 var(--ts-font-stencil);
+  text-align: center;
+  color: var(--lamp);
+  text-shadow: 0 0 14px color-mix(in srgb, var(--lamp) 55%, transparent);
+}
+.defconCompact .defconNum { width: 20px; font-size: var(--ts-fs-3xl); }
+.numIn { animation: fade-in var(--ts-dur-m) var(--ts-ease-out) both; }
+.defconSide { display: flex; flex-direction: column; min-width: 0; }
+.lamps { display: flex; gap: 4px; }
+.lamp {
+  display: grid;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  font: 700 var(--ts-fs-xs) / 1 var(--ts-font-num);
+  color: color-mix(in srgb, var(--ts-steel-400) 60%, var(--ts-room-900));
+  background: radial-gradient(circle at 35% 30%, var(--ts-room-600), var(--ts-room-900) 70%);
+  box-shadow: inset 0 1px 1px var(--ts-line-highlight), 0 0 0 1px var(--ts-line-hard);
+}
+.lamp.on {
+  color: var(--ts-ink-900);
+  background: radial-gradient(circle at 35% 30%, color-mix(in srgb, var(--lamp) 30%, var(--ts-paper-50)), var(--lamp) 50%, color-mix(in srgb, var(--lamp) 55%, var(--ts-room-950)));
+  box-shadow: 0 0 0 1px var(--ts-line-hard), 0 0 13px 3px color-mix(in srgb, var(--lamp) 50%, transparent);
+}
+.lampFlicker { animation: lamp-flicker var(--ts-dur-l) linear both; }
+@keyframes lamp-flicker {
+  0%, 14% { filter: brightness(.3) saturate(.2); }
+  7%, 28% { filter: brightness(1.25); }
+  21%, 36% { filter: brightness(.35) saturate(.3); }
+  100% { filter: none; }
+}
+.lampFade { animation: fade-in var(--ts-dur-m) var(--ts-ease-out) both; }
+@keyframes fade-in { from { opacity: .25; } to { opacity: 1; } }
+.defconCaption {
+  max-width: 132px;
+  margin-top: 4px;
+  font: 600 var(--ts-fs-micro) / 1.15 var(--ts-font-ui);
+  letter-spacing: var(--ts-track-tight);
+  text-transform: var(--ts-caps);
+  color: var(--ts-text-2);
+}
+.v_condensed .defconCaption { max-width: 112px; }
+.defconSub {
+  font: 600 var(--ts-fs-micro) / 1 var(--ts-font-ui);
+  letter-spacing: var(--ts-track-caps);
+  text-transform: var(--ts-caps);
+  color: var(--ts-text-2);
+}
+
+/* Victory points */
+.vpHead { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; margin-bottom: 4px; }
+.vpHead .instLabel { margin: 0; }
+.vpRead {
+  font: 700 var(--ts-fs-m) / 1 var(--ts-font-ui);
+  letter-spacing: var(--ts-track-caps);
+  text-transform: var(--ts-caps);
+  color: var(--ts-paper-50);
+  white-space: nowrap;
+}
+.vpRead.even { color: var(--ts-steel-200); }
+.readFlash { animation: read-flash 150ms linear both; }
+@keyframes read-flash { from { color: var(--ts-brass-300); } }
+.vpScale { position: relative; height: 22px; }
+.vpBar {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 7px;
+  height: 8px;
+  border-radius: 4px;
+  background: linear-gradient(90deg,
+    var(--ts-us-600) 0%,
+    color-mix(in srgb, var(--ts-us-600) 40%, var(--ts-room-700)) 47%,
+    var(--ts-room-600) 50%,
+    color-mix(in srgb, var(--ts-ussr-600) 40%, var(--ts-room-700)) 53%,
+    var(--ts-ussr-600) 100%);
+  box-shadow: inset 0 1px 2px var(--ts-line-hard), 0 0 0 1px var(--ts-line-hard);
+}
+.vpTick { position: absolute; top: 3px; width: 1px; height: 16px; background: color-mix(in srgb, var(--ts-paper-50) 14%, transparent); }
+.vpTick.mid { top: 1px; height: 20px; background: color-mix(in srgb, var(--ts-paper-50) 50%, transparent); }
+.vpNeedle { position: absolute; top: -1px; width: 14px; height: 24px; margin-left: -7px; }
+.vpNeedle::before {
+  content: "";
+  position: absolute;
+  left: 6px;
+  top: 0;
+  width: 2px;
+  height: 24px;
+  background: var(--ts-paper-50);
+  box-shadow: 0 0 6px color-mix(in srgb, var(--ts-paper-50) 60%, transparent);
+}
+.vpNeedle::after {
+  content: "";
+  position: absolute;
+  left: 1px;
+  top: -3px;
+  border: 6px solid transparent;
+  border-top: 7px solid var(--ts-paper-50);
+}
+.vpEnds {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 3px;
+  font: 700 var(--ts-fs-micro) / 1 var(--ts-font-ui);
+  letter-spacing: var(--ts-track-caps);
+  text-transform: var(--ts-caps);
+  white-space: nowrap;
+}
+.vpEnds .zero { color: var(--ts-text-3); }
+.vpMini { justify-content: center; }
+/* The mini gauge never shrinks below its readout: the number is the game's key figure (Q-041). */
+.vpFlex { flex: 1 0 auto; min-width: 56px; }
+.vpMini .vpHead { margin-bottom: 0; gap: 6px; }
+.vpMini .vpRead { flex: none; }
+.vpGlyph { display: none; width: .95em; height: .95em; margin-right: .1em; vertical-align: -.1em; }
+.vpMini .vpScale { height: 16px; margin-top: 5px; }
+.vpMini .vpBar { top: 5px; height: 6px; }
+.vpMini .vpTick { top: 2px; height: 12px; }
+.vpMini .vpTick.mid { top: 0; height: 16px; }
+.vpMini .vpNeedle { height: 18px; }
+.vpMini .vpNeedle::before { height: 18px; }
+.vpMini .vpNeedle::after { display: none; }
+
+/* Mil ops and space */
+.trackGrid {
+  display: grid;
+  grid-template-columns: auto auto;
+  gap: 3px 6px;
+  align-items: center;
+  font: 700 var(--ts-fs-xs) / 1 var(--ts-font-ui);
+}
+.sideTag { display: inline-flex; align-items: center; gap: 3px; letter-spacing: .04em; }
+.moRow { display: flex; gap: 2px; }
+.moRow i { display: block; width: 9px; height: 9px; border-radius: 1px; background: var(--ts-room-900); box-shadow: inset 0 0 0 1px var(--ts-room-600); }
+.moRow.us i.f { background: var(--ts-us-500); box-shadow: none; }
+.moRow.ussr i.f { background: var(--ts-ussr-500); box-shadow: none; }
+.moRow i.req { box-shadow: inset 0 0 0 1px var(--ts-brass-500); }
+.moRow i.f.req { box-shadow: inset 0 0 0 1px var(--ts-brass-300); }
+.moRow.ussr i, .spRow.ussr i { clip-path: polygon(25% 0, 100% 0, 100% 75%, 75% 100%, 0 100%, 0 25%); }
+.spRow { display: flex; gap: 1px; }
+.spRow i { display: block; width: 8px; height: 9px; background: var(--ts-room-900); box-shadow: inset 0 0 0 1px var(--ts-room-600); }
+.spRow.us i.f { background: var(--ts-us-500); box-shadow: none; }
+.spRow.ussr i.f { background: var(--ts-ussr-500); box-shadow: none; }
+.hop { animation: space-hop var(--ts-dur-l) var(--ts-ease-in-out) both; }
+@keyframes space-hop {
+  0% { transform: translate(-9px, 0); }
+  50% { transform: translate(-4px, -6px); }
+  100% { transform: none; }
+}
+.perkNote {
+  position: absolute;
+  z-index: 1;
+  top: calc(100% + 6px);
+  left: 6px;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 8px 4px;
+  border-radius: var(--ts-radius-s);
+  background: var(--ts-room-800);
+  box-shadow: 0 0 0 1px var(--ts-line-hard), 0 0 0 2px var(--ts-line-brass), 0 8px 18px var(--ts-scrim);
+  font: 700 var(--ts-fs-xs) / 1 var(--ts-font-ui);
+  letter-spacing: var(--ts-track-caps);
+  text-transform: var(--ts-caps);
+  color: var(--ts-brass-300);
+  white-space: nowrap;
+  animation: fade-in var(--ts-dur-s) var(--ts-ease-out) both;
+}
+
+/* ── Right-hand controls ──────────────────────────────────────────────────────────────── */
+.spacer { flex: 1 1 0; min-width: 0; }
+.actions { display: flex; align-items: center; gap: 6px; flex: none; padding-left: 10px; }
+.v_compact .actions { padding-left: 4px; }
+.iconBtn {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border: 0;
+  border-radius: 4px;
+  background: var(--ts-room-750);
+  box-shadow: var(--ts-shadow-button);
+  color: var(--ts-steel-200);
+}
+.iconBtn:hover { background: var(--ts-room-700); color: var(--ts-paper-50); }
+.iconBtn:focus-visible { box-shadow: var(--ts-focus-ring); }
+.iconBtnTouch { width: 40px; height: 40px; }
+.alertDot {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--ts-alert-500);
+  box-shadow: 0 0 0 2px var(--ts-room-750);
+}
+.langToggle { display: flex; overflow: hidden; border-radius: 4px; box-shadow: var(--ts-shadow-button); }
+.langToggle button {
+  border: 0;
+  padding: 6px 8px;
+  background: var(--ts-room-750);
+  font: 700 var(--ts-fs-s) / 1 var(--ts-font-ui);
+  letter-spacing: .06em;
+  color: var(--ts-steel-300);
+  white-space: nowrap;
+}
+.langToggle button:hover { color: var(--ts-paper-50); }
+.langToggle button[aria-pressed="true"] { background: var(--ts-brass-500); color: var(--ts-ink-900); }
+.langToggle button:focus-visible { box-shadow: inset 0 0 0 2px var(--ts-focus); }
+.langSingle { font: 700 var(--ts-fs-m) / 1 var(--ts-font-ui); letter-spacing: .04em; }
+/* Touch screens: 44 px hit areas (ui-spec §12, Q-048; R-010). The buttons keep their look; the gap between them
+   grows to 12 px, so the neighbouring areas meet but never overlap. The segmented switch's halves reach 44 px. */
+@media (pointer: coarse) {
+  .actions { gap: 12px; }
+  .iconBtn::after { content: ""; position: absolute; inset: -6px; }
+  .iconBtnTouch::after { inset: -2px; }
+  .langToggle { overflow: visible; }
+  .langToggle button { position: relative; min-width: 44px; }
+  .langToggle button:first-child { border-radius: 4px 0 0 4px; }
+  .langToggle button:last-child { border-radius: 0 4px 4px 0; }
+  .langToggle button::after { content: ""; position: absolute; left: 0; right: 0; top: 50%; height: 44px; transform: translateY(-50%); }
+}
+
+/* ── Tooltips (inside a room popover) ─────────────────────────────────────────────────── */
+.tip {
+  min-width: 180px;
+  max-width: 270px;
+  padding: 9px 11px 10px;
+  font: 500 var(--ts-fs-m) / 1.35 var(--ts-font-body);
+  color: var(--ts-text-1);
+}
+.tipHead {
+  margin-bottom: 6px;
+  font: 700 var(--ts-fs-xs) / 1.2 var(--ts-font-ui);
+  letter-spacing: var(--ts-track-caps);
+  text-transform: var(--ts-caps);
+  color: var(--ts-brass-300);
+}
+.tipRow { padding: 1px 0; }
+.tipRow b { color: var(--ts-paper-50); }
+.tipBlock + .tipBlock { margin-top: 6px; padding-top: 6px; border-top: 1px solid var(--ts-line-room); }
+.tipTurns { display: flex; flex-wrap: wrap; gap: 2px 10px; margin: 4px 0; font-size: var(--ts-fs-s); color: var(--ts-text-2); }
+.spark { display: block; margin: 2px 0 4px; }
+.sparkAxis { stroke: var(--ts-room-500); stroke-width: 1; }
+.sparkLine { fill: none; stroke: var(--ts-steel-200); stroke-width: 1.5; stroke-linejoin: round; }
+.sparkUs { fill: var(--ts-us-300); }
+.sparkUssr { fill: var(--ts-ussr-300); }
+.sparkEven { fill: var(--ts-steel-300); }
+
+/* ── Status panel (tablet flyout, compact sheet) ──────────────────────────────────────── */
+.status {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 12px;
+  background: var(--ts-surface-rail);
+  color: var(--ts-text-1);
+  font-family: var(--ts-font-ui);
+}
+.statusHead {
+  margin: 0;
+  font: 700 var(--ts-fs-xs) / 1 var(--ts-font-ui);
+  letter-spacing: var(--ts-track-wide);
+  text-transform: var(--ts-caps);
+  color: var(--ts-text-2);
+}
+.statusGrid { display: flex; flex-direction: column; gap: 8px; }
+.statusGrid .inst {
+  align-items: flex-start;
+  justify-content: flex-start;
+  padding: 9px 11px;
+  border-left: 0;
+  border-radius: var(--ts-radius-s);
+  background: var(--ts-room-850);
+  box-shadow: inset 0 0 0 1px var(--ts-line-room);
+}
+.statusGrid .inst:focus-visible { box-shadow: inset 0 0 0 2px var(--ts-focus); }
+.statusGrid .defcon { flex-direction: row; align-items: center; }
+
+/* ── The VP chip (appended to <body> while it flies) ──────────────────────────────────── */
+.vpChip {
+  position: fixed;
+  left: 0;
+  top: 0;
+  z-index: var(--ts-z-flight);
+  pointer-events: none;
+  padding: 4px 8px 3px;
+  border-radius: var(--ts-radius-pill);
+  font: 700 var(--ts-fs-m) / 1 var(--ts-font-ui);
+  letter-spacing: .04em;
+  text-transform: var(--ts-caps);
+  white-space: nowrap;
+  box-shadow: 0 0 0 1.5px var(--ts-paper-50), 0 6px 14px var(--ts-scrim);
+}
+.chipUs { background: var(--ts-us-600); color: var(--ts-side-us-solid-text); }
+.chipUssr { background: var(--ts-ussr-600); color: var(--ts-side-ussr-solid-text); }
+
+/* Compact landscape (shell integration): the console lives in the 300 px side column, so the DEFCON
+   numeral goes without its caption (ui-spec §3.4). */
+@media (max-height: 499px) and (orientation: landscape) {
+  .v_compact .defconCompact .defconSub { display: none; }
+  .v_compact .inst { padding: 0 7px; }
+}
+
+/* Squeeze steps of the compact bar (./squeeze.ts, cumulative): 1 the VP side word → its glyph; 2 no
+   "DEFCON" caption; 3 the AR readout's side word → its glyph; 4 no "VP" label. Then the turn readout
+   ellipsizes. */
+.arGlyph { display: none; width: .95em; height: .95em; vertical-align: -.1em; }
+.sq1 .vpMini .vpWord { display: none; }
+.sq1 .vpMini .vpGlyph { display: inline-block; }
+.sq2 .defconCompact .defconSub { display: none; }
+.sq3 .arWord { display: none; }
+.sq3 .arGlyph { display: inline-block; }
+.sq4 .vpMini .vpHead .instLabel { display: none; }
+.sq4 .vpMini .vpHead { justify-content: center; }

@@ -1,0 +1,327 @@
+{
+  "title": {
+    "setupPlace": "Place your starting influence in {{region}}",
+    "bidPlace": "US bid: place {{remaining}} extra influence",
+    "headline": "Choose your headline card",
+    "actionCard": "Action round {{ar}}: choose a card to play",
+    "actionCardAr8": "Bonus action round 8: play a card or pass",
+    "actionCardEnvy": "Missile Envy: you must play it for Operations now",
+    "actionCardQuagmire": "Quagmire: discard a card worth 2+ Ops to try to escape",
+    "actionCardBearTrap": "Bear Trap: discard a card worth 2+ Ops to try to escape",
+    "playMode": "Play {{card}}: choose how",
+    "eventTarget": "{{card}}: choose a country",
+    "eventCard": "{{card}}: choose a card",
+    "branch": "{{card}}: choose an option",
+    "defconLevel": "{{card}}: set the DEFCON level",
+    "region": "{{card}}: choose a region",
+    "influence_one": "Place influence: {{count}} Op left",
+    "influence_other": "Place influence: {{count}} Ops left",
+    "coup_one": "Choose a country to coup ({{count}} Op)",
+    "coup_other": "Choose a country to coup ({{count}} Ops)",
+    "realign_one": "Choose a country to realign ({{count}} roll left)",
+    "realign_other": "Choose a country to realign ({{count}} rolls left)",
+    "opMode_one": "Use the Operations of {{card}} ({{count}} Op)",
+    "opMode_other": "Use the Operations of {{card}} ({{count}} Ops)"
+  },
+  "detail": {
+    "setupPlace": "{{remaining}} influence left to place, one per click.",
+    "bidPlace": "Only in countries that already have US influence; both may go to the same country.",
+    "headlineSeen": "Space Race privilege: the {{side}} headline is {{card}}.",
+    "headlineFirst": "The {{side}} holds the Space Race privilege and sees your headline first.",
+    "actionCard": "{{plays}} card plays left this turn, including this one. Scoring cards in hand: {{scoring}}.",
+    "playModeOpponent": "A {{side}} card: if you use it for Operations, its Event happens for the {{side}} (Event first, or after your Ops).",
+    "playModeScoring": "A scoring card is played as its Event.",
+    "remaining": "{{remaining}} left.",
+    "remainingCap": "{{remaining}} left, at most {{cap}} per country.",
+    "influence": "Each click adds 1 influence; a country your opponent controls costs 2 Ops.",
+    "realign": "Each click rolls once in the chosen country; press Done to stop early.",
+    "optional": "Optional: you may skip it.",
+    "eventCardDone": "Press Done when you have finished.",
+    "coup_one": "Roll + {{count}} Op must beat 2 × stability. A coup in a battleground degrades DEFCON by 1.",
+    "coup_other": "Roll + {{count}} Ops must beat 2 × stability. A coup in a battleground degrades DEFCON by 1.",
+    "playModeOwn_one": "Event, Space Race, or Operations worth {{count}} Op.",
+    "playModeOwn_other": "Event, Space Race, or Operations worth {{count}} Ops.",
+    "playModeNeutral_one": "A neutral card: the Event happens for you, or use its {{count}} Op.",
+    "playModeNeutral_other": "A neutral card: the Event happens for you, or use its {{count}} Ops."
+  },
+  "card": {
+    "7": {
+      "target": "Socialist Governments: remove US influence in Western Europe"
+    },
+    "10": {
+      "card": "Blockade: discard a card worth 3 or more Ops",
+      "detail": "Or decline and lose all US influence in West Germany."
+    },
+    "14": {
+      "target": "COMECON: add 1 USSR influence to a non-US-controlled country in Eastern Europe"
+    },
+    "16": {
+      "branch": "Warsaw Pact Formed: remove US influence or add USSR influence",
+      "targetRemove": "Warsaw Pact Formed: remove all US influence from a country in Eastern Europe",
+      "targetAdd": "Warsaw Pact Formed: add USSR influence in Eastern Europe"
+    },
+    "19": {
+      "target": "Truman Doctrine: remove all USSR influence from an uncontrolled country in Europe"
+    },
+    "20": {
+      "branch": "Olympic Games: the {{side}} sponsors the Olympics",
+      "detail": "Participate: both roll a die, the sponsor adds 2, the higher roll gains 2 VP. Boycott: DEFCON degrades by 1 and the sponsor conducts 4 Ops.",
+      "opMode_one": "Olympic boycott: conduct Operations with {{count}} Op",
+      "opMode_other": "Olympic boycott: conduct Operations with {{count}} Ops"
+    },
+    "22": {
+      "target": "Independent Reds: choose a country where US influence will equal USSR influence"
+    },
+    "23": {
+      "target": "Marshall Plan: add 1 US influence to a non-USSR-controlled country in Western Europe"
+    },
+    "24": {
+      "target": "Indo-Pakistani War: choose the country to invade",
+      "detail": "Roll 4–6 (−1 for each adjacent enemy-controlled country) to gain 2 VP and replace the opponent's influence there."
+    },
+    "26": {
+      "opMode_one": "CIA Created: conduct Operations with {{count}} Op",
+      "opMode_other": "CIA Created: conduct Operations with {{count}} Ops"
+    },
+    "28": {
+      "target": "Suez Crisis: remove US influence from France, the UK or Israel"
+    },
+    "29": {
+      "target": "East European Unrest: remove USSR influence from a country in Eastern Europe"
+    },
+    "30": {
+      "target": "Decolonization: add 1 USSR influence to a country in Africa or Southeast Asia"
+    },
+    "32": {
+      "card": "UN Intervention: choose an opponent's card to play for Operations",
+      "detail": "Its Event is cancelled; you use its Operations."
+    },
+    "33": {
+      "targetRemove": "De-Stalinization: remove USSR influence to move it elsewhere",
+      "detailRemove": "Up to {{remaining}} more. Press Done to start placing what you removed.",
+      "targetAdd": "De-Stalinization: place the influence in non-US-controlled countries"
+    },
+    "36": {
+      "target": "Brush War: choose a country with stability 1 or 2 to attack",
+      "detail": "Roll 3–6 (−1 for each adjacent enemy-controlled country) to gain 1 VP and replace the opponent's influence there."
+    },
+    "40": {
+      "target": "Cuban Missile Crisis: remove 2 influence to end the crisis?",
+      "detailUS": "Remove 2 US influence from West Germany or Turkey to cancel the crisis, or decline and keep it (any coup you make loses the game).",
+      "detailUSSR": "Remove 2 USSR influence from Cuba to cancel the crisis, or decline and keep it (any coup you make loses the game)."
+    },
+    "43": {
+      "card": "SALT Negotiations: you may take a non-scoring card from the discard pile",
+      "detail": "Or skip and take nothing."
+    },
+    "45": {
+      "defcon": "Summit: you won — you may move DEFCON by one level",
+      "detail": "Or leave it where it is."
+    },
+    "46": {
+      "defcon": "How I Learned to Stop Worrying: set the DEFCON level",
+      "detail": "DEFCON 1 ends the game, and you would lose.",
+      "detailWin": "DEFCON 1 ends the game, and you would win: the phasing player loses."
+    },
+    "47": {
+      "target": "Junta: add 2 influence to a country in Central or South America",
+      "opMode_one": "Junta: free coup or realignment in Central or South America ({{count}} Op)",
+      "opMode_other": "Junta: free coup or realignment in Central or South America ({{count}} Ops)",
+      "detailOpMode": "Optional: you may decline."
+    },
+    "49": {
+      "card": "Missile Envy: give the {{side}} your highest-Ops card",
+      "detail": "If it is a {{side}} or neutral Event, it happens for them; otherwise they use its Operations."
+    },
+    "53": {
+      "target": "South African Unrest: add USSR influence to South Africa or a country next to it"
+    },
+    "56": {
+      "target": "Muslim Revolution: remove all US influence from one of the listed countries"
+    },
+    "57": {
+      "opMode_one": "ABM Treaty: conduct Operations with {{count}} Op",
+      "opMode_other": "ABM Treaty: conduct Operations with {{count}} Ops"
+    },
+    "62": {
+      "opMode_one": "“Lone Gunman”: conduct Operations with {{count}} Op",
+      "opMode_other": "“Lone Gunman”: conduct Operations with {{count}} Ops"
+    },
+    "63": {
+      "target": "Colonial Rear Guards: add 1 US influence to a country in Africa or Southeast Asia"
+    },
+    "66": {
+      "target": "Puppet Governments: add 1 US influence to a country with no influence"
+    },
+    "67": {
+      "playMode": "Grain Sales to Soviets drew {{card}} from the USSR hand",
+      "detail": "Play it now, or return it to the USSR and use Grain Sales' 2 Ops.",
+      "detailUn": "Play it now, return it and use Grain Sales' 2 Ops, or play UN Intervention on it.",
+      "opMode_one": "Grain Sales to Soviets: conduct Operations with {{count}} Op",
+      "opMode_other": "Grain Sales to Soviets: conduct Operations with {{count}} Ops"
+    },
+    "70": {
+      "target": "OAS Founded: add US influence in Central or South America"
+    },
+    "74": {
+      "target": "The Voice of America: remove USSR influence from countries outside Europe"
+    },
+    "75": {
+      "target": "Liberation Theology: add USSR influence in Central America"
+    },
+    "76": {
+      "target": "Ussuri River Skirmish: add US influence in Asia"
+    },
+    "77": {
+      "card": "“Ask Not What Your Country Can Do For You…”: discard cards to replace",
+      "detail": "Discard one card per click; press Done to draw as many new cards."
+    },
+    "85": {
+      "card": "Star Wars: choose a non-scoring card from the discard pile",
+      "detail": "Its Event happens immediately."
+    },
+    "87": {
+      "target": "The Reformer: add USSR influence in Europe"
+    },
+    "88": {
+      "target": "Marine Barracks Bombing: remove US influence in the Middle East"
+    },
+    "89": {
+      "opMode_one": "Soviets Shoot Down KAL-007: place influence or realign with {{count}} Op",
+      "opMode_other": "Soviets Shoot Down KAL-007: place influence or realign with {{count}} Ops"
+    },
+    "90": {
+      "opMode_one": "Glasnost: place influence or realign with {{count}} Op",
+      "opMode_other": "Glasnost: place influence or realign with {{count}} Ops"
+    },
+    "91": {
+      "target": "Ortega Elected in Nicaragua: free coup in a country next to Nicaragua",
+      "detail": "Optional: you may skip it."
+    },
+    "94": {
+      "region": "Chernobyl: choose a region",
+      "detail": "For the rest of the turn the USSR may not place influence there with Operations."
+    },
+    "95": {
+      "card": "Latin American Debt Crisis: discard a card worth 3 or more Ops",
+      "detail": "Or decline and let the USSR double its influence in 2 South American countries.",
+      "target": "Latin American Debt Crisis: double USSR influence in a South American country",
+      "detailTarget_one": "Pick {{count}} more South American country: your influence there doubles.",
+      "detailTarget_other": "Pick up to {{count}} South American countries, one per click: your influence in each doubles."
+    },
+    "96": {
+      "opMode_one": "Tear Down This Wall: free coup or realignment in Europe ({{count}} Op)",
+      "opMode_other": "Tear Down This Wall: free coup or realignment in Europe ({{count}} Ops)",
+      "detailOpMode": "Optional: you may decline."
+    },
+    "98": {
+      "card": "Aldrich Ames Remix: choose a card to discard from the US hand"
+    },
+    "99": {
+      "target": "Pershing II Deployed: remove 1 US influence from a country in Western Europe"
+    },
+    "100": {
+      "branch": "Wargames: end the game now?",
+      "detail": "Your opponent gains 6 VP and the game ends at once: whoever is ahead on VP wins (no final scoring)."
+    },
+    "102": {
+      "target": "Iran-Iraq War: choose the country to invade",
+      "detail": "Roll 4–6 (−1 for each adjacent enemy-controlled country) to gain 2 VP and replace the opponent's influence there."
+    },
+    "104": {
+      "target": "The Cambridge Five: add 1 USSR influence in a region named on a revealed scoring card"
+    },
+    "105": {
+      "target": "Special Relationship: add US influence"
+    },
+    "106": {
+      "target": "NORAD: add 1 US influence to a country that already has US influence"
+    },
+    "107": {
+      "target": "Che: free coup in a non-battleground country in Central America, South America or Africa",
+      "detail": "Optional: you may skip it."
+    },
+    "108": {
+      "card": "Our Man in Tehran: discard any of the drawn cards",
+      "detail": "One card per click; press Done to return the rest to the draw pile."
+    },
+    "250": {
+      "cardUS": "The Eagle Has Landed: you may discard a card",
+      "cardUSSR": "The Bear Has Landed: you may discard a card",
+      "detail": "Space Race privilege at the end of the turn: discard one non-scoring card, or pass."
+    }
+  },
+  "done": {
+    "pass": "Pass",
+    "stop": "Done",
+    "decline": "Decline",
+    "return": "Return it",
+    "skip": "Skip"
+  },
+  "doneFor": {
+    "ar8": "Skip action round 8",
+    "keepChina": "Pass (keep the China Card)",
+    "stopRealign": "Stop realigning",
+    "keepCrisis": "Keep the crisis — play on",
+    "blockade": "Discard nothing — lose {{country}} influence",
+    "ladc": "Discard nothing",
+    "freeOps": "Skip the free operation",
+    "grainSales": "Return it — take 2 Ops",
+    "tehran": "Done — return the rest",
+    "takeNoCard": "Take no card",
+    "keepHand": "Keep my hand"
+  },
+  "warning": {
+    "scoring-stranded": "You would hold {{scoring}} scoring card(s) with only {{plays}} card plays left this turn: holding a scoring card at the end of the turn loses the game.",
+    "defcon-suicide": "This drops DEFCON to 1 on your action: you lose the game.",
+    "defcon-suicide-some": "On {{faces}} of 6 die rolls this drops DEFCON to 1: you lose the game.",
+    "cmc-suicide": "Cuban Missile Crisis is in effect: this coup loses the game.",
+    "game-ending": "This ends the game: the {{winner}} wins.",
+    "game-ending-draw": "This ends the game in a draw.",
+    "game-ending-some": "On {{faces}} of 6 die rolls this ends the game: the {{winner}} wins.",
+    "opponent-event": "{{card}} is a {{side}} card: its Event will happen for the {{side}}."
+  },
+  "ending": {
+    "vp20": "20 VP reached",
+    "europe-control": "Control of Europe",
+    "defcon": "Nuclear war (DEFCON 1)",
+    "cmc-suicide": "Coup during the Cuban Missile Crisis",
+    "held-scoring": "A scoring card was held at the end of the turn",
+    "held-scoring-both": "Both sides held a scoring card at the end of the turn",
+    "milops-vp20": "Military Operations penalty reached 20 VP",
+    "final-scoring": "Final scoring",
+    "wargames": "Wargames",
+    "resign": "Resignation"
+  },
+  "log": {
+    "started": "New game: you play the {{side}}.",
+    "resumed": "Game resumed.",
+    "pass": "{{side}} passes",
+    "drawsHidden_one": "{{side}} draws {{count}} card",
+    "drawsHidden_other": "{{side}} draws {{count}} cards",
+    "takenFrom": "{{card}} (#{{id}}) taken from the {{from}} hand into the {{side}} hand",
+    "cardUnseen": "{{card}} (#{{id}}) leaves sight (draw pile or the {{side}} hand)",
+    "resign": "{{side}} resigns.",
+    "gameOver": "Game over: the {{winner}} wins — {{reason}}. VP {{vp}}, turn {{turn}}.",
+    "gameOverDraw": "Game over: a draw — {{reason}}. VP {{vp}}, turn {{turn}}.",
+    "draw": "Draw",
+    "aiError": "The AI failed: {{error}}",
+    "heldCard": "{{side}} held {{card}} (#{{id}}) at the end of the turn",
+    "finalScoring": "Final scoring: Victory Points {{from}} -> {{to}} ({{delta}} VP)",
+    "headlineCancelled": "{{side}} headline {{card}} (#{{id}}) is cancelled by {{by}}: discarded without its Event",
+    "done": "{{side}} is done",
+    "decline": "{{side}} declines",
+    "mode": {
+      "EVENT": "{{side}} plays {{card}} for its Event",
+      "SPACE": "{{side}} sends {{card}} to the Space Race",
+      "OPS_INFLUENCE": "{{side}} plays {{card}} for Operations: influence",
+      "OPS_COUP": "{{side}} plays {{card}} for Operations: coup",
+      "OPS_REALIGN": "{{side}} plays {{card}} for Operations: realignment"
+    },
+    "opMode": {
+      "INFLUENCE": "{{side}} uses the Operations of {{card}} to place influence",
+      "COUP": "{{side}} uses the Operations of {{card}} for a coup",
+      "REALIGN": "{{side}} uses the Operations of {{card}} for realignment"
+    }
+  }
+}

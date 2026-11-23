@@ -1,0 +1,60 @@
+{
+  "table": {
+    "label": "The war table: the map"
+  },
+  "sheet": {
+    "label": "Orders",
+    "expand": "Expand the orders",
+    "collapse": "Collapse the orders"
+  },
+  "theatre": {
+    "label": "Theatres",
+    "count_one": "{{region}}: {{count}} target",
+    "count_other": "{{region}}: {{count}} targets"
+  },
+  "dock": {
+    "label": "Hand, adversary, log and status",
+    "hand": "Hand · {{count}}",
+    "handAria_one": "Your hand: {{count}} card",
+    "handAria_other": "Your hand: {{count}} cards",
+    "adversaryAria_one": "Adversary: {{count}} card in hand",
+    "adversaryAria_other": "Adversary: {{count}} cards in hand",
+    "log": "Log",
+    "logAria_one": "Log: {{count}} new dispatch",
+    "logAria_other": "Log: {{count}} new dispatches"
+  },
+  "ticker": {
+    "ar": "{{side}} · Action round {{ar}}",
+    "headline": "{{side}} · Headline",
+    "open": "Open the log"
+  },
+  "menu": {
+    "about": "About & credits"
+  },
+  "over": {
+    "result": "Result"
+  },
+  "about": {
+    "title": "About & credits",
+    "rules": "Rules",
+    "credits": "Credits",
+    "save": "Your game is saved in this browser only. The save is not tamper-proof: with developer tools anyone can read it, including the AI's hidden cards.",
+    "legal": "Legal",
+    "fonts": "Fonts: Big Shoulders Stencil Display, Barlow Condensed and Courier Prime, under the SIL Open Font License 1.1.",
+    "map": "Map coastlines: Natural Earth (public domain), redrawn for this board.",
+    "leaderboard": "DeepStruggle leaderboard",
+    "modelLink": "The model on Hugging Face",
+    "oflLink": "Font license (OFL)",
+    "naturalEarth": "Natural Earth"
+  },
+  "error": {
+    "gameChunk": "The game screen could not be loaded. Check your connection and try again.",
+    "language": "{{lang}} could not be loaded. Check your connection and try again.",
+    "saveUnreadable": "Your saved game could not be read (it was changed or damaged) and was discarded."
+  },
+  "superseded": {
+    "title": "This game continued in another tab",
+    "body": "A saved game can be played in one tab at a time. Reload to continue it here.",
+    "reload": "Reload"
+  }
+}

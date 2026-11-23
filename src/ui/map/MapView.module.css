@@ -1,0 +1,359 @@
+/*
+ * The map (ui-spec §4). SVG sizes are map units ("u"); colours come from tokens.css only.
+ * Paint order is the DOM order in MapView.tsx.
+ */
+
+/* ── Container ─────────────────────────────────────────────────────────────────────────── */
+.root {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+}
+.svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  touch-action: none;
+  outline: none;
+}
+.svg:focus-visible { box-shadow: none; }
+.busy .svg { cursor: progress; }
+.lamp {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: var(--ts-map-lamp);
+  mix-blend-mode: multiply;
+}
+
+/* ── Zoom buttons (30 × 30, top right; compact 40 × 40 bottom right) ─────────────────── */
+.controls {
+  position: absolute;
+  right: var(--ts-space-2);
+  top: var(--ts-space-2);
+  display: flex;
+  flex-direction: column;
+  gap: var(--ts-space-1);
+  z-index: var(--ts-z-map-hud);
+}
+.compact .controls { top: auto; bottom: var(--ts-space-6); }
+.controls button {
+  width: 30px;
+  height: 30px;
+  display: grid;
+  place-items: center;
+  padding: 0;
+  border: 0;
+  border-radius: var(--ts-radius-s);
+  background: var(--ts-room-850);
+  color: var(--ts-steel-200);
+  box-shadow: var(--ts-shadow-button), 0 2px 6px var(--ts-scrim);
+  opacity: .94;
+}
+.controls button:hover { color: var(--ts-paper-50); background: var(--ts-room-750); }
+.controls button:focus-visible { box-shadow: var(--ts-focus-ring); }
+.controls svg { width: 16px; height: 16px; }
+.compact .controls button { width: 40px; height: 40px; }
+.compact .controls svg { width: 20px; height: 20px; }
+/* Coarse pointers (R-010): 44 px hit areas. Tablet buttons grow to 36 px with an 8 px gap, each taking 4 px of it;
+   compact buttons (40 px, 4 px gap) take 2 px. The hit areas of neighbours never overlap. */
+@media (pointer: coarse) {
+  .controls { gap: 8px; }
+  .controls button { position: relative; width: 36px; height: 36px; }
+  .controls button::after { content: ""; position: absolute; inset: -4px; }
+  .compact .controls { gap: var(--ts-space-1); }
+  .compact .controls button { width: 40px; height: 40px; }
+  .compact .controls button::after { inset: -2px; }
+}
+
+/* ── Table shadow, sea, coast, land ──────────────────────────────────────────────────── */
+.tableShadow { fill: none; stroke: var(--ts-room-950); }
+.sea { fill: var(--ts-map-sea); }
+.seaLine { stroke: var(--ts-map-sea-line); stroke-width: .7; opacity: .35; }
+.coastWide { fill: none; stroke: var(--ts-map-coast); stroke-width: 15; opacity: .09; stroke-linejoin: round; }
+.coastNarrow { fill: none; stroke: var(--ts-map-coast); stroke-width: 7; opacity: .22; stroke-linejoin: round; }
+.land { stroke: var(--ts-map-land-stroke); stroke-width: .7; stroke-linejoin: round; }
+.land_neutral { fill: var(--ts-land-neutral); }
+.land_usa { fill: var(--ts-land-usa); }
+.land_ussr { fill: var(--ts-land-ussr); }
+.land_china { fill: var(--ts-land-china); }
+.land_euw { fill: var(--ts-land-euw); }
+.land_eue { fill: var(--ts-land-eue); }
+.land_me { fill: var(--ts-land-me); }
+.land_asia { fill: var(--ts-land-asia); }
+.land_sea { fill: var(--ts-land-sea); }
+.land_af { fill: var(--ts-land-af); }
+.land_ca { fill: var(--ts-land-ca); }
+.land_sa { fill: var(--ts-land-sa); }
+.borders { fill: none; stroke: var(--ts-map-land-stroke); stroke-width: .55; opacity: .55; stroke-linejoin: round; stroke-dasharray: 2.4 1.6; }
+.grain { mix-blend-mode: multiply; opacity: .07; pointer-events: none; }
+.regionTint { fill: var(--ts-brass-400); opacity: .1; pointer-events: none; }
+.regionTintHot { opacity: .2; }
+.lettering { font-family: var(--ts-font-stencil); font-weight: 800; letter-spacing: .16em; pointer-events: none; }
+.letteringUS { fill: var(--ts-map-super-label-us); }
+.letteringUSSR { fill: var(--ts-map-super-label-ussr); }
+.frame { fill: none; stroke: var(--ts-line-hard); stroke-opacity: .6; stroke-width: 2; pointer-events: none; }
+
+/* ── Links ───────────────────────────────────────────────────────────────────────────── */
+.links { pointer-events: none; transition: opacity var(--ts-dur-s) var(--ts-ease-out); }
+.link { stroke: var(--ts-map-link); stroke-width: 1.6; opacity: .55; fill: none; }
+.linkInter { stroke: var(--ts-map-link-inter); stroke-width: 2.4; stroke-dasharray: 1 5.5; stroke-linecap: round; opacity: .9; fill: none; }
+.linkUS { stroke: var(--ts-us-600); stroke-width: 3.2; stroke-dasharray: 10 5; opacity: .75; fill: none; }
+.linkUSSR { stroke: var(--ts-ussr-600); stroke-width: 3.2; stroke-dasharray: 10 4 2 4; opacity: .75; fill: none; }
+.wrapHead { fill: none; stroke: var(--ts-us-600); stroke-width: 3; stroke-linejoin: round; opacity: .85; }
+.wrapLabel {
+  font: 700 12px var(--ts-font-ui);
+  letter-spacing: var(--ts-track-caps);
+  text-transform: var(--ts-caps);
+  /* Board ink: ≥ 4.8:1 on the sea and its line pattern (US blue was 3.7:1; the arrow keeps the US colour). */
+  fill: var(--ts-text-ink);
+}
+.focusMode .link { opacity: .25; }
+.focusMode .linkInter { opacity: .4; }
+.focusMode .linkUS, .focusMode .linkUSSR { opacity: .3; }
+.focusMode .plate { opacity: .7; }
+
+/* ── Superpower plates ───────────────────────────────────────────────────────────────── */
+.spShadow { fill: var(--ts-map-box-shadow); }
+.spPlateUS { fill: var(--ts-us-700); stroke: var(--ts-us-800); stroke-width: 1.5; }
+.spPlateUSSR { fill: var(--ts-ussr-700); stroke: var(--ts-ussr-800); stroke-width: 1.5; }
+.spRimUS { fill: none; stroke: var(--ts-us-100); stroke-opacity: .5; stroke-dasharray: 3 2; }
+.spRimUSSR { fill: none; stroke: var(--ts-ussr-gold); stroke-opacity: .55; stroke-dasharray: 3 2; }
+.spGlyphUS, .spTextUS { fill: var(--ts-side-us-solid-text); }
+.spGlyphUSSR, .spTextUSSR { fill: var(--ts-side-ussr-solid-text); }
+.spText { font: 800 25px var(--ts-font-stencil); letter-spacing: .1em; text-anchor: middle; }
+
+/* ── Region plates ("if scored now") ─────────────────────────────────────────────────── */
+.plate { cursor: pointer; transition: opacity var(--ts-dur-s) var(--ts-ease-out); outline: none; }
+.plateBody { fill: var(--ts-map-plate); stroke: var(--ts-line-ink); stroke-width: .8; }
+.plate:hover .plateBody, .plate:focus-visible .plateBody, .plateHot .plateBody { fill: var(--ts-paper-50); stroke: var(--ts-ink-900); stroke-width: 1.2; }
+.plate:focus-visible .plateFocus { stroke: var(--ts-ink-900); stroke-width: 2; }
+.plateFocus { fill: none; stroke: none; }
+.plateName {
+  font: 800 22px var(--ts-font-stencil);
+  letter-spacing: .1em;
+  text-transform: var(--ts-caps);
+  fill: var(--ts-text-ink);
+}
+.plateNetLabel {
+  font: 700 10px var(--ts-font-ui);
+  letter-spacing: var(--ts-track-caps);
+  text-transform: var(--ts-caps);
+  /* ink-700: ≥ 7:1 on the translucent plate over the map (ink-500 was 4.3:1 at 10 px). */
+  fill: var(--ts-text-ink-2);
+  text-anchor: end;
+}
+.plateNet { font: 800 15px var(--ts-font-ui); letter-spacing: .04em; text-anchor: end; }
+.netUS { fill: var(--ts-us-600); }
+.netUSSR { fill: var(--ts-ussr-600); }
+.netEven { fill: var(--ts-ink-700); }
+.netHazard { stroke: var(--ts-danger); stroke-width: 3; stroke-dasharray: 4 3; }
+.plateValues { font: 600 12px var(--ts-font-ui); letter-spacing: .04em; fill: var(--ts-ink-700); }
+.chipUS { fill: var(--ts-us-600); }
+.chipUSSR { fill: var(--ts-ussr-600); }
+/* Presence is told by its word, not a fainter chip: the gold-on-red pair needs full opacity (4.5:1). */
+.chipPres { opacity: 1; }
+.chipNone { fill: var(--ts-line-ink-soft); }
+.chipText { font: 700 12px var(--ts-font-ui); letter-spacing: .06em; text-transform: var(--ts-caps); text-anchor: middle; }
+.chipTextUS { fill: var(--ts-side-us-solid-text); }
+.chipTextUSSR { fill: var(--ts-side-ussr-solid-text); }
+.chipTextNone { fill: var(--ts-ink-700); }
+
+/* ── Country box ─────────────────────────────────────────────────────────────────────── */
+.box { cursor: default; outline: none; transition: opacity var(--ts-dur-s) var(--ts-ease-out), filter var(--ts-dur-s) var(--ts-ease-out); }
+.boxTarget { cursor: pointer; }
+.busy .boxTarget { cursor: progress; }
+.boxDim { opacity: var(--ts-map-dim-opacity); filter: saturate(var(--ts-map-dim-saturate)); }
+.compact .boxDim { filter: none; }
+.boxDim.boxHover { opacity: .9; filter: none; }
+.hit { fill: transparent; }
+.shadow { fill: var(--ts-map-box-shadow); }
+.boxHover .shadow { transform: translate(.4px, 1.6px); }
+.body {
+  fill: var(--ts-map-box);
+  stroke: var(--ts-map-box-stroke);
+  stroke-width: 1.1;
+  transition: fill var(--ts-dur-m) var(--ts-ease-in-out), stroke var(--ts-dur-m) var(--ts-ease-in-out), stroke-width var(--ts-dur-m) var(--ts-ease-in-out);
+}
+.ctrlUS .body { fill: var(--ts-us-100); stroke: var(--ts-us-600); stroke-width: 2.6; }
+.ctrlUSSR .body { fill: var(--ts-ussr-100); stroke: var(--ts-ussr-600); stroke-width: 2.6; }
+.bandEUW { fill: var(--ts-reg-euw); }
+.bandEUE { fill: var(--ts-reg-eue); }
+.bandME { fill: var(--ts-reg-me); }
+.bandASIA { fill: var(--ts-reg-asia); }
+.bandSEA { fill: var(--ts-reg-sea); }
+.bandAF { fill: var(--ts-reg-af); }
+.bandCA { fill: var(--ts-reg-ca); }
+.bandSA { fill: var(--ts-reg-sa); }
+.bandBG { fill: var(--ts-bg-band); }
+.name {
+  font-family: var(--ts-font-ui);
+  font-weight: 600;
+  letter-spacing: .015em;
+  text-transform: var(--ts-caps);
+  /* The band text ink, a shade darker (rgb 34,30,24 → 20,19,17; no visible difference at name size): the lamp over the
+     map (--ts-map-lamp, a vignette multiplied over the viewport) darkens the bands near the viewport's edges, and plain
+     ink on the Asia band there measured 4.45:1 (Australia, bottom right at 1440 × 900; QA round 2), EUW names at a
+     phone's edge 4.2:1. The darker ink keeps them ≥ 4.5:1 (Australia 4.98, phone edge 4.67). Paper names (E. Europe,
+     battlegrounds) only gain from a darker band. */
+  fill: color-mix(in srgb, var(--ts-band-text) 50%, var(--ts-room-950));
+  pointer-events: none;
+}
+.nameZh { font-family: var(--ts-font-body); font-weight: 700; letter-spacing: 0; }
+.nameEUE { fill: var(--ts-band-text-eue); }
+.nameBG { fill: var(--ts-band-text-bg); }
+.stabBox { fill: var(--ts-paper-50); stroke: var(--ts-line-ink); stroke-width: .8; }
+.stabNum { font: 700 13.5px var(--ts-font-num); text-anchor: middle; fill: var(--ts-ink-900); pointer-events: none; }
+.boxBG .stabBox { fill: var(--ts-bg-stab); stroke: var(--ts-paper-50); stroke-width: 1; }
+.boxBG .stabNum { fill: var(--ts-paper-50); }
+.divider { stroke: var(--ts-map-box-divider); stroke-width: .9; stroke-dasharray: 2 2.5; }
+.pulse { fill: none; stroke-width: 4; opacity: 0; pointer-events: none; transform-box: fill-box; transform-origin: center; }
+
+/* Target rings: drawn before the body, which covers their inner half. */
+.ringEdge { fill: none; stroke: var(--ts-map-ring-edge); }
+.ring { fill: none; }
+.ringGlow { fill: none; stroke: var(--ts-act-glow); stroke-width: 11; opacity: .7; }
+.quiet .ringEdge { stroke-width: 4.6; }
+.quiet .ring { stroke: var(--ts-map-ring-quiet); stroke-width: 2.4; opacity: .95; }
+.loud .ringEdge { stroke-width: 5.2; stroke-dasharray: 7 4; }
+.loud .ring { stroke: var(--ts-map-ring); stroke-width: 3; stroke-dasharray: 7 4; }
+.loud .ringEdge, .loud .ring {
+  animation: ts-map-march 1.4s linear infinite;
+  animation-play-state: var(--ts-ambient-state);
+}
+.danger .ringEdge { stroke-width: 5.2; stroke-dasharray: 4 4; }
+.danger .ring { stroke: var(--ts-danger); stroke-width: 3; stroke-dasharray: 4 4; }
+.danger .ringGlow { stroke: var(--ts-danger); opacity: .35; }
+.boxHover .ringEdge { stroke-width: 7.4; stroke-dasharray: none; animation: none; }
+.boxHover .ring { stroke: var(--ts-map-ring-hover); stroke-width: 5; stroke-dasharray: none; animation: none; opacity: 1; }
+.boxHover.danger .ring { stroke: var(--ts-danger); }
+@keyframes ts-map-march { to { stroke-dashoffset: -22; } }
+:global([data-motion="reduce"]) .loud .ringEdge, :global([data-motion="reduce"]) .loud .ring { animation: none; stroke-dasharray: none; }
+@media (prefers-reduced-motion: reduce) {
+  :global(:root:not([data-motion="full"])) .loud .ringEdge,
+  :global(:root:not([data-motion="full"])) .loud .ring { animation: none; stroke-dasharray: none; }
+}
+.box:focus-visible .focusRing { stroke: var(--ts-focus); stroke-width: 3; }
+.focusRing { fill: none; stroke: none; }
+
+/* ── Markers (cardboard counters) ────────────────────────────────────────────────────── */
+.mk { pointer-events: none; transform-box: fill-box; transform-origin: center; }
+.mkFace { stroke-width: 1.7; fill: var(--ts-paper-50); transition: fill var(--ts-dur-m) var(--ts-ease-in-out); }
+.mkUS .mkFace { stroke: var(--ts-us-600); }
+.mkUSSR .mkFace { stroke: var(--ts-ussr-600); }
+.mkSheen { fill: url(#tsmSheen); stroke: none; }
+.mkNum { font: 700 21px var(--ts-font-num); text-anchor: middle; }
+.mkUS .mkNum, .mkUS .mkGlyph { fill: var(--ts-us-600); }
+.mkUSSR .mkNum, .mkUSSR .mkGlyph { fill: var(--ts-ussr-600); }
+.mkGlyph { opacity: .9; }
+.mkFlip.mkUS .mkFace { fill: var(--ts-us-600); stroke: var(--ts-us-800); }
+.mkFlip.mkUSSR .mkFace { fill: var(--ts-ussr-600); stroke: var(--ts-ussr-800); }
+.mkFlip.mkUS .mkNum, .mkFlip.mkUS .mkGlyph { fill: var(--ts-side-us-solid-text); }
+.mkFlip.mkUSSR .mkNum, .mkFlip.mkUSSR .mkGlyph { fill: var(--ts-side-ussr-solid-text); }
+.hatch { fill: url(#tsmHatch); pointer-events: none; }
+.mkGhost { opacity: .8; }
+.mkGhost .mkFace { stroke-dasharray: 3 2; fill: var(--ts-map-plate); }
+.ghostStrike { stroke-width: 2; }
+.ghostRemove { font: 700 15px var(--ts-font-num); text-anchor: middle; }
+.ghostRemoveUS { fill: var(--ts-us-600); stroke: var(--ts-us-600); }
+.ghostRemoveUSSR { fill: var(--ts-ussr-600); stroke: var(--ts-ussr-600); }
+.ghostTag { fill: var(--ts-paper-50); stroke: var(--ts-ink-900); stroke-width: .8; }
+.slotHint { opacity: .18; pointer-events: none; }
+.slotHintUS { fill: var(--ts-us-600); }
+.slotHintUSSR { fill: var(--ts-ussr-600); }
+.dotUS { fill: var(--ts-us-600); stroke: var(--ts-us-800); }
+.dotUSSR { fill: var(--ts-ussr-600); stroke: var(--ts-ussr-800); }
+.ringDotUS { fill: var(--ts-paper-50); stroke: var(--ts-us-600); stroke-width: 3; }
+.ringDotUSSR { fill: var(--ts-paper-50); stroke: var(--ts-ussr-600); stroke-width: 3; }
+
+/* ── Annotations ─────────────────────────────────────────────────────────────────────── */
+.anno { pointer-events: none; }
+.pencilRing { fill: var(--ts-map-pencil); stroke: var(--ts-map-pencil-ink); stroke-width: 1.6; }
+.pencil { font: 700 15px var(--ts-font-type); fill: var(--ts-map-pencil-ink); text-anchor: middle; }
+.pillUS rect { fill: var(--ts-us-600); }
+.pillUSSR rect { fill: var(--ts-ussr-600); }
+.pill rect { stroke: var(--ts-paper-50); stroke-width: 1.2; }
+.pill text { font: 700 12px var(--ts-font-num); text-anchor: middle; }
+.pillUS text { fill: var(--ts-side-us-solid-text); }
+.pillUSSR text { fill: var(--ts-side-ussr-solid-text); }
+.costTag rect { fill: var(--ts-brass-400); stroke: var(--ts-ink-900); stroke-width: 1; }
+.costTag text { font: 700 11px var(--ts-font-ui); letter-spacing: .06em; text-transform: var(--ts-caps); fill: var(--ts-ink-900); text-anchor: middle; }
+.capTag rect { fill: var(--ts-ink-900); stroke: var(--ts-paper-50); stroke-width: 1; }
+.capTag text { font: 700 11px var(--ts-font-num); fill: var(--ts-paper-50); text-anchor: middle; }
+.reticle { fill: none; stroke: var(--ts-select); stroke-width: 3.5; stroke-linecap: square; }
+.fxText { font: 700 17px var(--ts-font-num); text-anchor: middle; pointer-events: none; paint-order: stroke; stroke: var(--ts-paper-50); stroke-width: 3; }
+.fxUS { fill: var(--ts-us-600); }
+.fxUSSR { fill: var(--ts-ussr-600); }
+.fxStamp { font: 800 13px var(--ts-font-stencil); letter-spacing: .12em; text-anchor: middle; text-transform: var(--ts-caps); }
+
+/* ── Chinese ─────────────────────────────────────────────────────────────────────────── */
+.zh .plateName { font-family: var(--ts-font-body); font-weight: 800; font-size: 18px; letter-spacing: .1em; }
+.zh .plateValues { font-family: var(--ts-font-body); font-size: 11px; letter-spacing: 0; }
+.zh .plateNetLabel { font-family: var(--ts-font-body); letter-spacing: 0; }
+.zh .plateNet { font-family: var(--ts-font-body); font-size: 13px; }
+.zh .chipText { font-family: var(--ts-font-body); font-size: 11.5px; letter-spacing: 0; }
+.zh .costTag text { font-family: var(--ts-font-body); font-size: 10.5px; letter-spacing: 0; }
+.zh .wrapLabel { font-family: var(--ts-font-body); }
+.zh .fxStamp { font-family: var(--ts-font-body); letter-spacing: .04em; }
+
+/* ── Tooltip (HTML popover, portal) ──────────────────────────────────────────────────── */
+.tip {
+  position: fixed;
+  z-index: var(--ts-z-popover);
+  min-width: 200px;
+  max-width: 260px;
+  padding: var(--ts-space-2) var(--ts-space-3);
+  border-radius: var(--ts-radius-m);
+  background: var(--ts-surface-paper);
+  color: var(--ts-text-ink);
+  box-shadow: var(--ts-shadow-pop);
+  font: 400 var(--ts-fs-m) / var(--ts-lh-body) var(--ts-font-body);
+  pointer-events: none;
+}
+.tipPinned { pointer-events: auto; }
+.tipArrow {
+  position: absolute;
+  width: 14px;
+  height: 14px;
+  background: var(--ts-surface-paper);
+  transform: rotate(45deg);
+  box-shadow: 1px 1px 0 var(--ts-line-ink);
+}
+.tipArrowLeft { left: -7px; box-shadow: -1px 1px 0 var(--ts-line-ink); }
+.tipArrowRight { right: -7px; box-shadow: 1px -1px 0 var(--ts-line-ink); }
+.tipArrowTop { top: -7px; box-shadow: -1px -1px 0 var(--ts-line-ink); }
+.tipArrowBottom { bottom: -7px; }
+.tipBody { position: relative; }
+.tipHead { display: flex; align-items: center; gap: var(--ts-space-2); margin-bottom: var(--ts-space-1); }
+.tipName {
+  font: 700 15px / 1.1 var(--ts-font-ui);
+  letter-spacing: var(--ts-track-tight);
+  text-transform: var(--ts-caps);
+}
+.zh .tipName { font: 700 14px / 1.2 var(--ts-font-body); }
+.tipChip {
+  font: 700 var(--ts-fs-xs) / 1 var(--ts-font-ui);
+  letter-spacing: var(--ts-track-caps);
+  text-transform: var(--ts-caps);
+  padding: 3px 5px 2px;
+  border-radius: var(--ts-radius-xs);
+  background: var(--ts-bg-band);
+  color: var(--ts-band-text-bg);
+}
+.tipRow { display: flex; justify-content: space-between; gap: var(--ts-space-3); }
+.tipLabel { color: var(--ts-text-ink-2); display: inline-flex; align-items: center; gap: 4px; }
+.tipValue { font-weight: 700; font-variant-numeric: tabular-nums; }
+.tipUS { color: var(--ts-us-600); }
+.tipUSSR { color: var(--ts-ussr-600); }
+.tipGlyph { width: 12px; height: 12px; }
+.tipHint { margin-top: var(--ts-space-1); padding-top: var(--ts-space-1); border-top: 1px dashed var(--ts-line-ink-soft); color: var(--ts-text-ink-3); font-size: var(--ts-fs-s); }
+.tipTable { width: 100%; border-collapse: collapse; font-size: var(--ts-fs-s); }
+.tipTable th, .tipTable td { padding: 1px 0; text-align: right; font-variant-numeric: tabular-nums; }
+.tipTable th:first-child, .tipTable td:first-child { text-align: left; color: var(--ts-text-ink-2); font-weight: 400; }
+.tipTable thead th { font-weight: 700; }
+.tipTable tfoot td { border-top: 1px solid var(--ts-line-ink-soft); font-weight: 700; }

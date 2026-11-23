@@ -1,0 +1,394 @@
+/*
+ * Twilight Struggle Playfield — design tokens ("War Table").
+ * Normative source for every colour, size, duration and layer in src/ui. Spec: docs/design/ui-spec.md §2.
+ *
+ * Rules
+ *  - Components use the SEMANTIC tokens (section B) where one exists; primitives (section A) only when
+ *    no semantic token fits. Never write a hex value in a component stylesheet.
+ *  - Side colours (--ts-us-*, --ts-ussr-*) are used for the two sides and for nothing else.
+ *  - Brass (--ts-brass-*) is the only "you can act here" colour; it belongs to neither side.
+ *  - Danger is alert orange + hazard stripes, never plain red (red is the USSR).
+ *  - Font stacks live in fonts.css (imported next to this file).
+ *  - motion.ts mirrors the duration / easing / z-index values for JavaScript; tests/theme keeps them equal.
+ *
+ * Runtime switches (set by src/ui on the game root or <html>):
+ *  - [data-human="US" | "USSR"]   → --ts-me / --ts-ai follow the human's side.
+ *  - [data-motion="reduce"]       → same as prefers-reduced-motion (settings override).
+ *  - [data-motion="full"]         → ignores prefers-reduced-motion (settings override).
+ *  - --ts-speed                    → animation speed multiplier written inline by the settings (0 = instant).
+ *  - [data-labels="115" | "130"]  → map label scale setting.
+ *  - [data-patterns="on"]         → hatch USSR fills for monochrome viewing.
+ */
+
+:root {
+  /* ═══════════════════════════════ A. PRIMITIVES ═══════════════════════════════ */
+
+  /* Room: the dark war room around the lit table (chrome surfaces). */
+  --ts-room-950: #06080a;
+  --ts-room-900: #0b0f12;
+  --ts-room-850: #10151a;
+  --ts-room-800: #151c22;
+  --ts-room-750: #1a2228;
+  --ts-room-700: #1d262d;
+  --ts-room-600: #29343c;
+  --ts-room-500: #3a4851;
+
+  /* Steel: text and lines on room surfaces. */
+  --ts-steel-400: #808f99; /* labels, ≥ 5.2:1 on room-800 */
+  --ts-steel-300: #98a6ae;
+  --ts-steel-200: #c2ccd1;
+  --ts-steel-100: #e3e8ea;
+
+  /* Paper and ink: map boxes, orders slip, teleprinter tape, dossiers. */
+  --ts-paper-50: #fbf7ec;
+  --ts-paper-100: #f3ead3;
+  --ts-paper-200: #e6d9b8;
+  --ts-paper-300: #d2c096;
+  --ts-folder: #d8c49a; /* dossier folder board */
+  --ts-ink-900: #221e18;
+  --ts-ink-700: #4a4236;
+  --ts-ink-500: #6f6553; /* ≥ 5.2:1 on paper-50 */
+
+  /* Sea and land (map). */
+  --ts-sea-500: #8fa5a8;
+  --ts-sea-600: #7b9296;
+  --ts-sea-700: #5f777c;
+  --ts-land-euw: #d9d0e6;
+  --ts-land-eue: #c3b6d9;
+  --ts-land-me: #c4dfe6;
+  --ts-land-asia: #efcca6;
+  --ts-land-sea: #f1dc9b;
+  --ts-land-china: #ead2c2;
+  --ts-land-af: #efe0b0;
+  --ts-land-ca: #dfe4ad;
+  --ts-land-sa: #c4dcae;
+  --ts-land-usa: #c6cfdc;
+  --ts-land-ussr: #e6b5a8;
+  --ts-land-neutral: #e7e0cd;
+
+  /* Region inks: country name bands, region plates, scoring-sheet headers (board heritage). */
+  --ts-reg-euw: #8f83b5;
+  --ts-reg-eue: #6b5d97;
+  --ts-reg-me: #4d93ab;
+  --ts-reg-asia: #cd7737;
+  --ts-reg-sea: #d6a12c;
+  --ts-reg-af: #c19a3a;
+  --ts-reg-ca: #8fa243;
+  --ts-reg-sa: #64a06b; /* lightened from the board's green so ink names pass 4.5:1 */
+
+  /* Name-band text: ink on every region band except Eastern Europe (paper), battlegrounds (paper). */
+  --ts-band-text: var(--ts-ink-900);
+  --ts-band-text-eue: var(--ts-paper-50);
+  --ts-band-text-bg: var(--ts-paper-50);
+
+  /* Battleground (board heritage: dark plum band, white name, red stability box). */
+  --ts-bg-band: #3a2140;
+  --ts-bg-stab: #c8432b;
+
+  /* Sides — used for the two superpowers and nothing else. */
+  --ts-us-800: #10254a;
+  --ts-us-700: #173262;
+  --ts-us-600: #1f4382;
+  --ts-us-500: #2f5ba6;
+  --ts-us-300: #93acd8;
+  --ts-us-100: #dde6f5;
+  --ts-ussr-800: #5e120d;
+  --ts-ussr-700: #7f1a13;
+  --ts-ussr-600: #a8231a;
+  --ts-ussr-500: #c9372b;
+  --ts-ussr-300: #eaa096;
+  --ts-ussr-100: #f7ddd7;
+  --ts-ussr-gold: #f3c84b; /* numerals and glyphs on solid USSR fills (physical counters) */
+
+  /* Brass: interaction ("you can act here"), focus, selection. Neutral between the sides. */
+  --ts-brass-700: #876520;
+  --ts-brass-500: #d3a240;
+  --ts-brass-400: #e6bd5f;
+  --ts-brass-300: #f2d68f;
+  --ts-brass-100: #f8ecc9;
+
+  /* Signals. Alert is always paired with hazard stripes or an icon. */
+  --ts-alert-500: #ff6b3d;
+  --ts-alert-700: #b03a17; /* alert text on paper, ≥ 5.3:1 */
+  --ts-alert-100: #f6e3bf; /* warning panel on paper */
+  --ts-ok-500: #6bb784;
+  --ts-ok-700: #2f7a4a;
+  --ts-phosphor: #a7e8b7; /* console readouts, boot line, "thinking" dot */
+  --ts-felt-500: #23402e;
+  --ts-felt-700: #142519;
+  --ts-walnut-600: #2a1d14;
+  --ts-walnut-800: #1a120c;
+
+  /* DEFCON lamp colours (console only; never sides). */
+  --ts-defcon-5: #4fb3a9;
+  --ts-defcon-4: #79d08c;
+  --ts-defcon-3: #f2c542;
+  --ts-defcon-2: #ff7a3d;
+  --ts-defcon-1: #fff1e6;
+
+  /* ═══════════════════════════════ B. SEMANTIC ═══════════════════════════════ */
+
+  /* Surfaces */
+  --ts-bg-app: var(--ts-room-900);
+  --ts-bg-app-gradient: radial-gradient(120% 90% at 40% 40%, #18212a 0%, var(--ts-room-900) 55%, var(--ts-room-950) 100%);
+  --ts-surface-console: linear-gradient(180deg, #1b232a 0%, #12181d 100%);
+  --ts-surface-rail: linear-gradient(180deg, #131a1f, #0d1216);
+  --ts-surface-panel: linear-gradient(180deg, rgba(22, 29, 35, .97), rgba(13, 18, 22, .97));
+  --ts-surface-raised: var(--ts-room-750);
+  --ts-surface-sunken: var(--ts-room-900);
+  --ts-surface-paper: var(--ts-paper-50);
+  --ts-surface-paper-2: var(--ts-paper-100);
+  --ts-surface-slip: linear-gradient(180deg, var(--ts-paper-50), var(--ts-paper-100));
+  --ts-surface-tape: var(--ts-paper-100);
+  --ts-surface-felt: radial-gradient(120% 90% at 50% 20%, var(--ts-felt-500), var(--ts-felt-700));
+  --ts-surface-walnut: linear-gradient(180deg, var(--ts-walnut-600), var(--ts-walnut-800));
+  --ts-scrim: rgba(6, 8, 10, .66);
+  --ts-scrim-stage: radial-gradient(70% 70% at 50% 48%, rgba(6, 8, 10, .55), rgba(6, 8, 10, .82));
+  --ts-scrim-gameover: radial-gradient(60% 60% at 50% 45%, rgba(20, 8, 6, .7), rgba(4, 4, 5, .95));
+
+  /* Lines */
+  --ts-line-hard: #000;
+  --ts-line-room: rgba(255, 255, 255, .06);
+  --ts-line-highlight: rgba(255, 255, 255, .05);
+  --ts-line-brass: rgba(211, 162, 64, .45);
+  --ts-line-ink: rgba(34, 30, 24, .5);
+  --ts-line-ink-soft: rgba(34, 30, 24, .18);
+
+  /* Text */
+  --ts-text-1: var(--ts-steel-100); /* values on room */
+  --ts-text-2: var(--ts-steel-300); /* secondary on room */
+  --ts-text-3: var(--ts-steel-400); /* labels on room (≥ 10 px only) */
+  --ts-text-hi: var(--ts-paper-100); /* headings on room */
+  --ts-text-ink: var(--ts-ink-900); /* on paper */
+  --ts-text-ink-2: var(--ts-ink-700);
+  --ts-text-ink-3: var(--ts-ink-500);
+  --ts-text-brass: var(--ts-brass-300);
+
+  /* Sides */
+  --ts-side-us: var(--ts-us-600);
+  --ts-side-us-solid-text: #fff;
+  --ts-side-us-on-room: var(--ts-us-300);
+  --ts-side-us-tint: var(--ts-us-100);
+  --ts-side-ussr: var(--ts-ussr-600);
+  --ts-side-ussr-solid-text: var(--ts-ussr-gold);
+  --ts-side-ussr-on-room: var(--ts-ussr-300);
+  --ts-side-ussr-tint: var(--ts-ussr-100);
+  /* The human's side and the AI's side (switched by [data-human]). Default: human = US. */
+  --ts-me: var(--ts-us-600);
+  --ts-me-on-room: var(--ts-us-300);
+  --ts-me-solid-text: #fff;
+  --ts-ai: var(--ts-ussr-600);
+  --ts-ai-on-room: var(--ts-ussr-300);
+  --ts-ai-solid-text: var(--ts-ussr-gold);
+
+  /* Interaction */
+  --ts-act: var(--ts-brass-500);
+  --ts-act-strong: var(--ts-brass-400);
+  --ts-act-soft: var(--ts-brass-300);
+  --ts-act-glow: rgba(230, 189, 95, .45);
+  --ts-focus: var(--ts-brass-300);
+  --ts-focus-ring: 0 0 0 2px var(--ts-room-950), 0 0 0 4px var(--ts-brass-300);
+  --ts-focus-ring-on-paper: 0 0 0 2px var(--ts-paper-50), 0 0 0 4px var(--ts-ink-900);
+  --ts-select: var(--ts-alert-500); /* staged-selection reticle on the map */
+
+  /* Danger / warning */
+  --ts-danger: var(--ts-alert-500);
+  --ts-danger-ink: var(--ts-alert-700);
+  --ts-warn-bg: var(--ts-alert-100);
+  --ts-hazard: repeating-linear-gradient(135deg, #1b1b1b 0 6px, #2a2a2a 6px 12px);
+  --ts-hazard-bright: repeating-linear-gradient(135deg, #1b1b1b 0 4px, var(--ts-alert-500) 4px 8px);
+
+  /* Map (SVG paint; values are colours, sizes are map units in ui-spec §5) */
+  --ts-map-sea: var(--ts-sea-500);
+  --ts-map-sea-line: var(--ts-sea-700);
+  --ts-map-coast: #6d8589;
+  --ts-map-land-stroke: rgba(60, 52, 40, .55);
+  --ts-map-link: #3b352c;
+  --ts-map-link-inter: #7a2a1f; /* dark oxblood, always dotted: the pattern carries the meaning */
+  --ts-map-super-label-us: rgba(23, 50, 98, .20);
+  --ts-map-super-label-ussr: rgba(122, 26, 20, .20);
+  --ts-map-box: var(--ts-paper-50);
+  --ts-map-box-stroke: #3b342a;
+  --ts-map-box-shadow: rgba(30, 24, 16, .35);
+  --ts-map-box-divider: rgba(34, 30, 24, .28);
+  --ts-map-ring: var(--ts-brass-400);
+  --ts-map-ring-quiet: var(--ts-brass-500);
+  --ts-map-ring-hover: var(--ts-brass-300);
+  --ts-map-ring-edge: rgba(34, 30, 24, .85); /* two-tone ring: brass over an ink edge (≥ 3:1 on sea/land) */
+  --ts-map-dim-opacity: .42;
+  --ts-map-dim-saturate: .3;
+  --ts-map-pencil: var(--ts-brass-300);
+  --ts-map-pencil-ink: #2b2b2b;
+  --ts-map-plate: rgba(251, 247, 236, .88);
+  --ts-map-lamp: radial-gradient(75% 85% at 48% 42%, rgba(255, 236, 200, 0) 55%, rgba(8, 10, 12, .32) 100%);
+
+  /* Dice */
+  --ts-die-us: linear-gradient(145deg, #3d68b0, var(--ts-us-700));
+  --ts-die-ussr: linear-gradient(145deg, #d64a3c, var(--ts-ussr-700));
+  --ts-die-neutral: linear-gradient(145deg, #fff, #e6dfcf);
+  --ts-die-ok: var(--ts-ok-700);
+  --ts-die-fail: #8a8173;
+
+  /* ═══════════════════════════════ C. TYPE SCALE ═══════════════════════════════ */
+  /* Families: fonts.css. Sizes in CSS px. CJK minimums are raised under :lang(zh) below. */
+  --ts-fs-micro: 9.5px; /* console sub-labels, Latin caps only */
+  --ts-fs-xs: 10.5px; /* labels (caps), chips */
+  --ts-fs-s: 11.5px; /* hints, log details */
+  --ts-fs-m: 12.5px; /* tooltips, body small */
+  --ts-fs-body: 14px;
+  --ts-fs-l: 16px; /* mode titles, adversary name */
+  --ts-fs-xl: 19px; /* prompt title */
+  --ts-fs-2xl: 24px; /* dossier titles */
+  --ts-fs-3xl: 30px; /* reveal banner, scoring header */
+  --ts-fs-4xl: 38px; /* DEFCON numeral, big counter */
+  --ts-fs-5xl: 64px; /* game-over verdict */
+  --ts-fs-hero: 104px; /* start-screen title */
+  --ts-lh-tight: 1;
+  --ts-lh-snug: 1.2;
+  --ts-lh-body: 1.4;
+  --ts-lh-prose: 1.45;
+  --ts-track-caps: .12em; /* uppercase labels */
+  --ts-track-wide: .2em; /* kickers, panel headers */
+  --ts-track-tight: .03em; /* uppercase titles */
+  --ts-caps: uppercase; /* text-transform for label styles; none in Chinese */
+  --ts-weight-label: 700;
+
+  /* ═══════════════════════════════ D. SPACE, SIZE, SHAPE ═══════════════════════════════ */
+  --ts-space-0: 2px;
+  --ts-space-1: 4px;
+  --ts-space-2: 8px;
+  --ts-space-3: 12px;
+  --ts-space-4: 16px;
+  --ts-space-5: 20px;
+  --ts-space-6: 24px;
+  --ts-space-8: 32px;
+  --ts-space-10: 40px;
+
+  --ts-radius-xs: 2px;
+  --ts-radius-s: 3px;
+  --ts-radius-m: 6px;
+  --ts-radius-l: 10px;
+  --ts-radius-xl: 16px;
+  --ts-radius-pill: 999px;
+  --ts-radius-card: 5px; /* hand cards (5:7 images) */
+  --ts-radius-card-big: 10px; /* zoom / stage cards */
+
+  --ts-touch-min: 44px; /* minimum touch target (WCAG 2.5.5) */
+  --ts-btn-h: 30px;
+  --ts-btn-h-touch: 44px;
+  --ts-btn-h-primary-touch: 52px;
+
+  /* Layout (ui-spec §3). Desktop ≥ 1200 × 640. */
+  --ts-console-h: 58px;
+  --ts-rail-w: 288px;
+  --ts-rail-strip-w: 60px;
+  --ts-tray-h: clamp(152px, 18.5vh, 184px);
+  --ts-table-pad: 10px;
+  --ts-slip-w: 344px;
+  --ts-hand-card-w: 104px; /* × 1.4 = height */
+  --ts-hand-card-h: 146px;
+  --ts-china-slot-w: 118px;
+  --ts-piles-w: 104px;
+  /* Compact (phones, portrait tablets) */
+  --ts-c-console-h: 48px;
+  --ts-c-theatre-h: 36px;
+  --ts-c-dock-h: 60px;
+  --ts-c-drawer-h: 224px;
+  --ts-c-card-w: 112px;
+  --ts-c-card-h: 157px;
+  --ts-c-side-col-w: 300px; /* compact-landscape right column */
+  /* Safe areas of notched phones (index.html sets viewport-fit=cover; 0 everywhere else) */
+  --ts-safe-left: env(safe-area-inset-left, 0px);
+  --ts-safe-right: env(safe-area-inset-right, 0px);
+  --ts-safe-bottom: env(safe-area-inset-bottom, 0px);
+
+  /* Elevation */
+  --ts-shadow-card: 0 1px 0 rgba(255, 255, 255, .05) inset, 0 8px 18px rgba(0, 0, 0, .45), 0 2px 4px rgba(0, 0, 0, .4);
+  --ts-shadow-slip: 0 10px 30px rgba(0, 0, 0, .5), 0 2px 6px rgba(0, 0, 0, .35);
+  --ts-shadow-pop: 0 12px 28px rgba(0, 0, 0, .45), 0 0 0 1px rgba(34, 30, 24, .6);
+  --ts-shadow-stage: 0 30px 60px rgba(0, 0, 0, .6);
+  --ts-shadow-modal: 0 30px 70px rgba(0, 0, 0, .7);
+  --ts-shadow-console: 0 1px 0 rgba(211, 162, 64, .35), 0 8px 18px rgba(0, 0, 0, .55);
+  --ts-shadow-button: 0 0 0 1px #000, inset 0 1px 0 rgba(255, 255, 255, .06);
+  --ts-glow-act: 0 0 0 2px var(--ts-brass-400), 0 0 18px rgba(230, 189, 95, .45);
+
+  /* ═══════════════════════════════ E. MOTION ═══════════════════════════════ */
+  /* Base durations at speed 1×. Effective = base × --ts-speed (JS: motion.ts `dur()`). */
+  --ts-speed: 1;
+  --ts-dur-xs: 120ms; /* hover, cross-fades */
+  --ts-dur-s: 220ms; /* lifts, small state changes */
+  --ts-dur-m: 380ms; /* panels, flips */
+  --ts-dur-l: 650ms; /* flights, dice tumble */
+  --ts-dur-xl: 900ms; /* banners, big reveals */
+  --ts-hold-read: 900ms; /* reading time after a die lands / a card is revealed */
+  --ts-hold-long: 1400ms; /* headline reveal, turn banner */
+  --ts-ease-out: cubic-bezier(.2, .8, .2, 1);
+  --ts-ease-in: cubic-bezier(.4, 0, 1, 1);
+  --ts-ease-in-out: cubic-bezier(.65, 0, .35, 1);
+  --ts-ease-thunk: cubic-bezier(.3, 1.45, .45, 1); /* counters landing */
+  --ts-ease-back: cubic-bezier(.34, 1.56, .64, 1); /* needles, chips settling */
+  --ts-ambient-state: running; /* animation-play-state of looping ambient animations */
+
+  /* ═══════════════════════════════ F. LAYERS ═══════════════════════════════ */
+  --ts-z-map: 0;
+  --ts-z-map-hud: 10; /* zoom buttons, theatre bar, ticker */
+  --ts-z-tray: 15;
+  --ts-z-rail: 20;
+  --ts-z-console: 30;
+  --ts-z-stage: 40; /* play-mode stage, reveal dock, dice trays, scoring sheet, headline, banners */
+  --ts-z-flight: 50; /* cards / chips in flight */
+  --ts-z-sheet: 60; /* compact sheets and drawers, rail flyouts */
+  --ts-z-modal: 70; /* dossiers with scrim: branch, DEFCON level, card picker, settings */
+  --ts-z-popover: 80; /* tooltips, card zoom (above modals so a picker can zoom) */
+  --ts-z-toast: 90;
+  --ts-z-gameover: 95;
+  --ts-z-danger: 100; /* DEFCON-2 frame; never interactive */
+
+  color-scheme: dark;
+}
+
+/* ── Human side: --ts-me / --ts-ai ───────────────────────────────────────────────────── */
+[data-human="USSR"] {
+  --ts-me: var(--ts-ussr-600);
+  --ts-me-on-room: var(--ts-ussr-300);
+  --ts-me-solid-text: var(--ts-ussr-gold);
+  --ts-ai: var(--ts-us-600);
+  --ts-ai-on-room: var(--ts-us-300);
+  --ts-ai-solid-text: #fff;
+}
+
+/* ── Chinese typography (html lang is "zh-CN"; :lang(zh) matches it) ───────────────── */
+:root:lang(zh) {
+  --ts-fs-micro: 11px;
+  --ts-fs-xs: 11.5px;
+  --ts-fs-s: 12px;
+  --ts-fs-m: 13px;
+  --ts-lh-body: 1.5;
+  --ts-lh-prose: 1.6;
+  --ts-track-caps: .04em;
+  --ts-track-wide: .08em;
+  --ts-track-tight: .02em;
+  --ts-caps: none;
+}
+
+/* ── Map label scale setting ───────────────────────────────────────────────────────── */
+:root { --ts-map-label-scale: 1; }
+[data-labels="115"] { --ts-map-label-scale: 1.15; }
+[data-labels="130"] { --ts-map-label-scale: 1.3; }
+
+/* ── Reduced motion: system preference unless the settings say "full" ─────────────── */
+@media (prefers-reduced-motion: reduce) {
+  :root:not([data-motion="full"]) { --ts-ambient-state: paused; }
+}
+[data-motion="reduce"] { --ts-ambient-state: paused; }
+
+/* ── Higher contrast on request ────────────────────────────────────────────────────── */
+@media (prefers-contrast: more) {
+  :root {
+    --ts-text-3: var(--ts-steel-300);
+    --ts-text-2: var(--ts-steel-200);
+    --ts-text-ink-3: var(--ts-ink-700);
+    --ts-map-dim-opacity: .55;
+    --ts-line-room: rgba(255, 255, 255, .16);
+  }
+}

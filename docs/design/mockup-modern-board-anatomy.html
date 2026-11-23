@@ -1,0 +1,205 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Twilight Struggle Playfield · modern-board component sheet</title>
+<!-- Component sheet for docs/design/proposal-modern-board.md: tokens, tile anatomy and states, cards,
+     tracks, every command-panel (PromptKind) variant, log entries, banners. Query: ?lang=en|zh -->
+<link rel="stylesheet" href="mockup-modern-board-assets/mockup.css">
+<style>
+  body { overflow: auto; background: var(--ink-0); }
+  .sheetpage { max-width: 1440px; margin: 0 auto; padding: 36px 40px 60px; }
+  h1 { font: 800 30px/1.1 var(--font-display); margin: 0; }
+  .lead { color: var(--text-2); margin: 8px 0 0; font-size: 14px; }
+  section.blk { margin-top: 38px; }
+  h2 { font: 700 13px/1 var(--font-ui); letter-spacing: .14em; text-transform: uppercase; color: var(--text-3); margin: 0 0 14px; display: flex; gap: 10px; align-items: center; }
+  h2::after { content: ""; flex: 1; height: 1px; background: var(--line-1); }
+  :lang(zh) h2 { letter-spacing: .05em; font-size: 14px; }
+  .row { display: flex; flex-wrap: wrap; gap: 14px; align-items: flex-start; }
+  .sw { width: 128px; border-radius: 10px; overflow: hidden; border: 1px solid var(--line-1); background: var(--ink-1); font-size: 11.5px; }
+  .sw i { display: block; height: 44px; }
+  .sw div { padding: 7px 9px; line-height: 1.35; }
+  .sw code { color: var(--text-3); font-size: 10.5px; }
+  .cell { background: var(--ink-1); border: 1px solid var(--line-1); border-radius: 12px; padding: 12px; }
+  .cap { font-size: 11.5px; color: var(--text-2); margin-top: 8px; text-align: center; max-width: 180px; line-height: 1.35; }
+  .cap b { color: var(--text-1); font-weight: 600; display: block; }
+  .tilebox { background: var(--ocean); border-radius: 10px; }
+  .annot { position: relative; }
+  .annot .lbl { position: absolute; font-size: 12px; color: var(--text-1); white-space: nowrap; display: flex; align-items: center; gap: 6px; }
+  .annot .lbl::before { content: ""; width: 26px; height: 1px; background: var(--text-3); }
+  .annot .lbl.l { flex-direction: row-reverse; }
+  .cmdbox { width: 430px; height: 172px; border-radius: 12px; overflow: hidden; border: 1px solid var(--line-2); background: var(--ink-1); position: relative; display: flex; }
+  .cmdbox .command { flex: 1; border-left: 0; }
+  .cmdcap { font-size: 12px; color: var(--text-2); margin: 8px 2px 0; max-width: 430px; line-height: 1.4; }
+  .cmdcap code { color: #b9c7ff; font-size: 11.5px; }
+  .grid3 { display: grid; grid-template-columns: repeat(3, 430px); gap: 22px 24px; }
+  .opt { display: flex; align-items: center; gap: 10px; padding: 8px 10px; border-radius: 9px; border: 1px solid var(--line-2); background: var(--ink-2); font-size: 12.5px; cursor: pointer; }
+  .opt b { font-weight: 700; }
+  .opt.sel { border-color: #fff; box-shadow: 0 0 0 1px #fff; }
+  .opt .ico { width: 16px; height: 16px; color: var(--me-on-dark); }
+  .typo div { margin-bottom: 8px; }
+  .banner-demo { position: relative; height: 96px; border-radius: 12px; overflow: hidden; background: var(--ocean); }
+  .banner-demo .banner { position: absolute; top: 0; }
+</style>
+<script src="mockup-modern-board-assets/layout.js"></script>
+<script>window.TSM_NO_AUTORENDER = true;</script>
+<script src="mockup-modern-board-assets/mockup.js"></script>
+</head>
+<body>
+<div class="sheetpage" id="root"></div>
+<script>
+(function () {
+  const M = window.TSM, zh = M.LANG === "zh", T = M.T, L = M.L, I = M.I;
+  const ico = M.ico, emb = M.emblem;
+  const tr = (en, z) => (zh ? z : en);
+  const C = (id) => L.countries[id];
+  // render one tile in its own little svg, with temporary influence
+  const tile = (id, inf, opts = {}, scale = 1.6) => {
+    const save = M.INF[id];
+    M.INF[id] = inf;
+    const c = C(id);
+    const pad = opts.pad ?? 26;
+    const w = (96 + pad * 2) * scale / 1.6 * 1.6, h = (64 + pad * 2) * scale;
+    const out = `<svg class="tilebox" viewBox="${c.x - 48 - pad} ${c.y - 32 - pad} ${96 + pad * 2} ${64 + pad * 2}" width="${(96 + pad * 2) * scale}" height="${(64 + pad * 2) * scale}">${M.tileSVG(c, opts)}</svg>`;
+    if (save === undefined) delete M.INF[id]; else M.INF[id] = save;
+    return out;
+  };
+  const cell = (inner, title, text) => `<div><div class="cell">${inner}</div><div class="cap"><b>${title}</b>${text || ""}</div></div>`;
+  const swatch = (v, name) => `<div class="sw"><i style="background:var(${v})"></i><div>${name}<br><code>${v}</code></div></div>`;
+
+  // ── command panel variants ──
+  const thumb = (id) => `<div class="cmd-thumb" style="background-image:url(${M.cardImg(id)})"></div>`;
+  const panel = ({ kicker, title, sub, card, counter, body = "", actions = "", ai = false }) =>
+    `<div class="cmdbox"><section class="command ${ai ? "ai" : ""}"><div class="cmd-head">${card ? thumb(card) : ""}<div style="min-width:0;flex:1"><div class="cmd-kicker">${kicker}</div><div class="cmd-title">${title}</div>${sub ? `<div class="cmd-sub">${sub}</div>` : ""}</div>${counter || ""}</div>${body}${actions ? `<div class="cmd-actions">${actions}</div>` : ""}</section></div>`;
+  const counter = (n, of, lbl) => `<div class="counter"><div class="big num">${n}<small>/${of}</small></div><div class="lbl">${lbl}</div><div class="pips">${Array.from({ length: of }, (_, i) => `<i class="${i < n ? "on" : ""}"></i>`).join("")}</div></div>`;
+  const btn = (t, cls = "", k = "") => `<button class="btn sm ${cls}">${t}${k ? ` <span class="kbd">${k}</span>` : ""}</button>`;
+  const undo = btn(ico("undo") + tr("Undo play", "撤销本次出牌"));
+  const sp = '<span class="sp"></span>';
+  const mode = (icon, lbl, v, warn, off) => `<div class="mode ${off ? "off" : ""}">${warn ? `<span class="wb">${ico("warn")}</span>` : ""}${ico(icon)}<span class="lbl">${lbl}</span><span class="v">${v}</span></div>`;
+  const us = (t) => `${emb("US")} ${t}`;
+  const variants = [
+    [panel({ kicker: us(tr("US · Setup", "美国 · 布置")), title: tr("Place 7 influence in Western Europe", "在西欧放置 7 点影响力"), sub: tr("One click = one influence. Any split.", "每次点击放置 1 点，可任意分配。"), counter: counter(4, 7, tr("Left", "剩余")), actions: undo + sp + `<span class="faint" style="font-size:12px">${tr("Camera framed on Europe", "镜头已对准欧洲")}</span>` }),
+      "setup-place", tr("Camera auto-frames the eligible region; the counter counts down; finishes by itself at 0.", "镜头自动对准可放置区域；计数器递减，归零时自动结束。")],
+    [panel({ kicker: us(tr("US · Bid", "美国 · 竞价")), title: tr("Bid: +2 influence", "竞价：额外 2 点影响力"), sub: tr("Only where you already have influence (tournament bid).", "只能放在已有美国影响力的国家（锦标赛竞价）。"), counter: counter(2, 2, tr("Left", "剩余")), actions: undo }),
+      "bid-place", tr("Distinct title so it is never confused with setup (DS bug §3.5.3).", "使用独立标题，避免与布置阶段混淆。")],
+    [panel({ kicker: us(tr("US · Headline", "美国 · 头条")), title: tr("Choose your headline", "选择头条牌"), sub: tr("Select a card, then confirm. The AI chooses at the same time.", "选择一张牌后确认；AI 同时选择。"), card: 74, actions: btn(tr("Change", "更换"), "ghost") + sp + btn(tr("Headline The Voice of America", "以「美国之音」作为头条"), "primary", "↵") }),
+      "headline", tr("Two-step: select (card lifts into the play slot) → confirm. Hidden opponent headline shows as a face-down card.", "两步：选择（卡牌升入出牌位）→ 确认。对手头条以背面显示。")],
+    [panel({ kicker: us(tr("US · Action round 2", "美国 · 第 2 行动轮")), title: tr("Play a card", "打出一张牌"), sub: tr("Highlighted cards are playable. ⚠ marks a risky choice.", "高亮的牌可以打出；⚠ 表示有风险。"), actions: `<div class="note warn" style="margin:0;flex:1;padding:6px 9px;font-size:12px">${ico("warn")}<span>${tr("2 scoring cards, 2 rounds left", "手中 2 张计分牌，仅剩 2 个行动轮")}</span></div>` + btn(tr("Pass", "跳过"), "ghost") }),
+      "action-card", tr("Cards in the hand are the options; Pass only when the engine offers it (done → \"pass\"). Scoring-stranded warning is persistent here.", "手牌即选项；仅当引擎允许时显示「跳过」。计分牌滞留警告在此常驻。")],
+    [panel({ kicker: us(tr("US · Brezhnev Doctrine · 3 Ops", "美国 · 勃列日涅夫主义 · 3 行动点数")), title: tr("How do you play it?", "如何使用这张牌？"), card: 51,
+      body: `<div class="modes">${mode("bolt", tr("Event", "事件"), tr("USSR event", "苏联事件"), false, true)}${mode("plus", tr("Influence", "影响力"), "3", true)}${mode("coup", tr("Coup", "政变"), "3", true)}${mode("realign", tr("Realign", "调整"), "3", true)}${mode("rocket", tr("Space", "太空"), tr("1–3", "1–3"))}</div>`,
+      actions: `<span class="faint" style="font-size:11.5px">${ico("warn")} ${tr("Ops modes: the USSR event fires afterwards", "使用行动点数后苏联事件随即发生")}</span>${sp}${btn(ico("undo") + tr("Back", "返回"), "", "Esc")}` }),
+      "play-mode", tr("Five tiles in fixed order (keys 1–5); illegal modes stay visible but disabled; per-mode warnings as ⚠ badges with the text on hover/focus. Space shows the roll needed.", "五个模式固定顺序（快捷键 1–5）；不可用的模式保持可见但禁用；警告以 ⚠ 标记，悬停显示说明。太空显示所需骰点。")],
+    [panel({ kicker: us(tr("US · Junta · free action", "美国 · 军政府 · 免费行动")), title: tr("Use 2 Ops in Central/South America", "在中南美洲使用 2 行动点数"), card: 47,
+      body: `<div class="modes" style="grid-template-columns:repeat(3,1fr)">${mode("plus", tr("Influence", "影响力"), "2", false, true)}${mode("coup", tr("Coup", "政变"), tr("2 · free", "2 · 免费"))}${mode("realign", tr("Realign", "调整"), "2")}</div>`,
+      actions: sp + btn(tr("Decline", "放弃"), "ghost", "Esc") }),
+      "op-mode", tr("Names the granting card (pendingCard/resolvingCard). Decline appears whenever the engine offers done (Junta, Tear Down This Wall, nothing spendable).", "显示授予行动点数的卡牌；当引擎允许时显示「放弃」（军政府、推倒这堵墙等）。")],
+    [panel({ kicker: us(tr("US · Shuttle Diplomacy · 3 Ops", "美国 · 穿梭外交 · 3 行动点数")), title: tr("Realign", "调整"), sub: tr("Each click rolls once (US die vs USSR die + modifiers).", "每次点击掷骰一次（美方骰 vs 苏方骰 + 修正）。"), card: 73, counter: counter(2, 3, tr("Rolls left", "剩余次数")), actions: undo.replace(tr("Undo play", "撤销本次出牌"), tr("Undo (before the first roll)", "撤销（首次掷骰前）")) + sp + btn(tr("Stop realigning", "停止调整"), "", "S") }),
+      "realign-target", tr("Remaining rolls counter (DS shows none). Hover shows both sides' modifiers; Stop = done.", "显示剩余次数；悬停显示双方修正值；「停止」即 done。")],
+    [panel({ kicker: us(tr("US · Event · Decolonization", "苏联 · 事件 · 去殖民化")).replace(emb("US"), emb("USSR")), title: tr("Add USSR influence", "放置苏联影响力"), sub: tr("Africa or Southeast Asia · max 1 per country", "非洲或东南亚 · 每国至多 1 点"), card: 30, counter: counter(1, 4, tr("Left", "剩余")), actions: undo }),
+      "event-target", tr("Verb (add/remove), side, area and the per-country cap (maxPerCountry) are always in the title/sub; the map ghost shows +1 or −1 on hover.", "标题/副标题始终说明动作（放置/移除）、阵营、范围和每国上限；悬停时地图显示 +1 或 −1 预览。")],
+    [panel({ kicker: us(tr("US · Event · Blockade", "美国 · 事件 · 柏林封锁")), title: tr("Discard a 3+ Ops card or lose West Germany", "弃掉一张行动点数 ≥3 的牌，否则失去西德影响力"), card: 10,
+      body: `<div style="display:flex;gap:6px"><span class="opt sel">${ico("cards")}<b>${M.ctitle(73)}</b> 3</span><span class="opt">${ico("cards")}<b>${M.ctitle(39)}</b> 3</span></div>`,
+      actions: btn(tr("Lose W. Germany influence", "放弃西德影响力"), "ghost") + sp + btn(tr("Discard", "弃掉"), "primary", "↵") }),
+      "event-card", tr("Few options → inline chips; many (discard pile) → the card-picker sheet. The done label comes from doneMeaning.", "选项少时内联显示；多时（弃牌堆）打开选牌面板。done 的文字取决于 doneMeaning。")],
+    [panel({ kicker: emb("USSR") + " " + tr("USSR · Olympic Games (US sponsors)", "苏联 · 奥运会（美国主办）"), title: tr("Participate or boycott?", "参赛还是抵制？"), card: 20,
+      body: `<div style="display:grid;grid-template-columns:1fr 1fr;gap:6px"><span class="opt sel">${ico("check")}<span><b>${tr("Participate", "参赛")}</b> · ${tr("dice, sponsor +2", "掷骰，主办方 +2")}</span></span><span class="opt">${ico("warn")}<span><b>${tr("Boycott", "抵制")}</b> · DEFCON −1</span></span></div>`,
+      }),
+      "branch", tr("One button per branch with consequence text; game-ending branches (Wargames) are red and need a second confirmation.", "每个分支一个按钮并附后果说明；导致对局结束的分支（战争游戏）为红色且需二次确认。")],
+    [panel({ kicker: us(tr("US · Event · Chernobyl", "美国 · 事件 · 切尔诺贝利")), title: tr("Pick a region", "选择一个区域"), sub: tr("Hover a region on the map or use the chips. The USSR cannot place Ops influence there this turn.", "在地图上悬停区域或使用下方按钮。苏联本回合不能在该区域用行动点数放置影响力。"), card: 94,
+      body: `<div style="display:flex;flex-wrap:wrap;gap:5px">${[0, 2, 1, 3, 4, 5].map((r) => `<span class="chip" style="height:24px;padding:0 9px;${r === 2 ? "background:#eef2f7;color:#0d141d" : ""}">${T.regionShort[r]}</span>`).join("")}</div>` }),
+      "region", tr("Region mode on the map: hovering a region lights its land + tiles; click = choose.", "地图进入区域模式：悬停高亮该区域，点击即选择。")],
+    [panel({ ai: true, kicker: emb("USSR") + " " + tr("USSR · Action round 3", "苏联 · 第 3 行动轮"), title: tr("DeepStruggle is thinking…", "DeepStruggle 思考中…"), sub: tr("6 s · deep search on hard positions can take ~10 s", "6 秒 · 复杂局面的深度搜索可能需要约 10 秒"), counter: `<div class="avatar" style="margin-left:auto">${ico("radar")}<div class="sweep"></div></div>`,
+      actions: `<div style="flex:1;height:3px;border-radius:2px;background:var(--ink-4);overflow:hidden"><div style="width:40%;height:100%;background:linear-gradient(90deg,transparent,var(--ussr))"></div></div>` }),
+      "AI thinking", tr("Indeterminate shimmer (no fake progress); elapsed seconds appear after 2 s. You can still inspect the board, log and cards.", "不确定进度的流光（不伪造进度）；2 秒后显示已用时间。期间仍可查看地图、记录和卡牌。")],
+  ];
+
+  const anat = () => {
+    const c = C(8), save = M.INF[8];
+    M.INF[8] = [4, 1];
+    const svg = `<svg class="tilebox" viewBox="${c.x - 80} ${c.y - 56} 160 112" width="${160 * 3.1}" height="${112 * 3.1}">${M.tileSVG(c, { emblem: true })}</svg>`;
+    M.INF[8] = save;
+    const L2 = [[tr("Name (condensed, 21u; short form if needed)", "国家名（窄体 21u，必要时用简称）"), 82, 0, "l"], [tr("Stability chip · gold = battleground", "稳定度 · 金色 = 战场国"), 82, 1, ""], [tr("Strip: region hue · deep hue on battlegrounds", "名称条：区域色 · 战场国为深色"), 112, 1, ""], [tr("US influence (always left)", "美国影响力（固定在左）"), 236, 0, "l"], [tr("USSR influence (always right)", "苏联影响力（固定在右）"), 236, 1, ""], [tr("Controller: solid half + emblem + 3u outline", "控制方：实色半区 + 徽记 + 描边"), 300, 0, "l"]];
+    return `<div class="annot" style="width:${160 * 3.1}px;margin:0 300px">${svg}${L2.map(([t, y, right]) => `<span class="lbl ${right ? "" : "l"}" style="top:${y - 9}px;${right ? "left:calc(100% - 70px)" : "right:calc(100% - 70px)"}">${t}</span>`).join("")}</div>`;
+  };
+
+  const root = document.getElementById("root");
+  root.innerHTML = `
+  <h1>${tr("Modern board — component sheet", "Modern board —— 组件规范")}</h1>
+  <p class="lead">${tr("Every visual state the game screen needs. Sizes are in map units (u) for the board and CSS px elsewhere. Rendered from the same code as the mockups.", "游戏界面需要的所有视觉状态。地图元素以地图单位（u）计，其余为 CSS 像素。与原型使用同一套代码渲染。")}</p>
+
+  <section class="blk"><h2>${tr("Palette", "色板")}</h2><div class="row">
+    ${swatch("--ink-0", "App background")}${swatch("--ink-1", "Panel")}${swatch("--ink-2", "Raised")}${swatch("--ocean", "Ocean")}${swatch("--land", "Land")}
+    ${swatch("--us", "US")}${swatch("--us-ink", "US numeral")}${swatch("--us-on-dark", "US text on ink")}${swatch("--ussr", "USSR")}${swatch("--ussr-ink", "USSR numeral")}${swatch("--ussr-on-dark", "USSR text on ink")}
+  </div><div class="row" style="margin-top:14px">
+    ${swatch("--r-eu", "Europe")}${swatch("--r-eu-deep", "Europe BG strip")}${swatch("--r-me", "Middle East")}${swatch("--r-as", "Asia")}${swatch("--r-sea", "SE Asia mark")}${swatch("--r-af", "Africa")}${swatch("--r-ca", "Central America")}${swatch("--r-sa", "South America")}${swatch("--bg-chip", "Battleground chip")}
+  </div><div class="row" style="margin-top:14px">
+    ${swatch("--defcon-5", "DEFCON 5")}${swatch("--defcon-4", "DEFCON 4")}${swatch("--defcon-3", "DEFCON 3")}${swatch("--defcon-2", "DEFCON 2")}${swatch("--defcon-1", "DEFCON 1")}${swatch("--warn", "Warning")}${swatch("--danger", "Danger")}${swatch("--ok", "OK")}
+  </div></section>
+
+  <section class="blk"><h2>${tr("Type, emblems, dice, ops badges", "字体、徽记、骰子、行动点数徽章")}</h2><div class="row" style="gap:40px">
+    <div class="typo"><div style="font:800 30px/1 var(--font-display)">Display 30 · 冷战热斗 1945</div><div style="font:700 19px/1.2 var(--font-display)">Prompt title 19 · 放置影响力</div><div style="font:600 14px/1.4 var(--font-ui)">UI 14 · The USSR event fires after your Ops · 苏联事件随后发生</div><div style="font:500 12px/1.4 var(--font-ui);color:var(--text-2)">Small 12 · secondary text · 次要文字</div><div class="caps" style="font:700 10.5px/1 var(--font-ui);color:var(--text-3)">Label 10.5 caps · 标签</div><div class="num" style="font-size:30px;font-weight:700">0123456789</div></div>
+    <div><div class="row" style="align-items:center">${M.sideBadge("US")}${M.sideBadge("USSR")}${M.sideBadge("US", true)}${M.sideBadge("USSR", true)}</div>
+      <div class="row" style="margin-top:14px;color:#fff;align-items:center"><svg viewBox="0 0 24 24" width="44" height="44" fill="currentColor">${I.star}</svg><svg viewBox="0 0 24 24" width="44" height="44" fill="currentColor" color="#fff">${I.sickle}</svg>${["bolt", "plus", "coup", "realign", "rocket", "undo", "warn", "eye", "radar"].map((k) => `<svg viewBox="0 0 24 24" width="28" height="28" fill="currentColor" style="color:var(--text-2)">${I[k]}</svg>`).join("")}</div>
+      <div class="row" style="margin-top:14px;align-items:center">${[1, 2, 3, 4, 5, 6].map((d) => `<span style="width:34px;display:inline-block">${M.die(d)}</span>`).join("")}<span style="width:34px">${M.die(4, "var(--ussr)", "#fff")}</span><span style="width:34px">${M.die(6, "var(--us)", "#fff")}</span></div>
+      <div class="row" style="margin-top:14px;align-items:center">${[73, 51, 39, 3, 6].map((id) => `<span style="width:40px;display:inline-block">${M.opsBadge(id)}</span>`).join("")}<span class="faint" style="font-size:12px">${tr("US · USSR · neutral · scoring · China", "美国 · 苏联 · 中立 · 计分 · 中国牌")}</span></div></div>
+  </div></section>
+
+  <section class="blk"><h2>${tr("Country tile anatomy", "国家格结构")}</h2>${anat()}</section>
+
+  <section class="blk"><h2>${tr("Tile states", "国家格状态")}</h2><div class="row">
+    ${cell(tile(64, [0, 0]), tr("Empty", "无影响力"), tr("No numerals at 0", "0 不显示数字"))}
+    ${cell(tile(10, [2, 2]), tr("Contested", "争夺中"), tr("Coloured numerals, no fill", "彩色数字，无填充"))}
+    ${cell(tile(8, [4, 1]), tr("US control", "美国控制"), tr("Left half solid blue", "左半实色蓝"))}
+    ${cell(tile(24, [1, 4]), tr("USSR control", "苏联控制"), tr("Right half solid red", "右半实色红"))}
+    ${cell(tile(36, [1, 2]), tr("SE Asia subregion", "东南亚子区域"), tr("Amber rule under the strip", "名称条下方琥珀色细线"))}
+    ${cell(tile(13, [1, 1]), tr("Both subregions", "同属东西欧"), tr("Austria, Finland: split body", "奥地利、芬兰：对角分割"))}
+    ${cell(tile(17, [0, 3], { emblem: true }), tr("Zoomed (≥0.8)", "放大（≥0.8）"), tr("Control emblem appears", "显示控制徽记"))}
+  </div><div class="row" style="margin-top:16px">
+    ${cell(tile(74, [0, 0], { target: true }), tr("Legal target", "合法目标"), tr("White ring + breathing halo", "白色描边 + 呼吸光晕"))}
+    ${cell(tile(74, [0, 0], { target: true, hover: true, ghost: true }), tr("Hover / focus", "悬停 / 焦点"), tr("Thicker ring, ghost result", "加粗描边，结果预览"))}
+    ${cell(tile(59, [0, 2], { target: true, locked: true }), tr("Locked target", "锁定目标"), tr("Reticle; confirm in panel", "准星；在面板中确认"))}
+    ${cell(tile(5, [0, 2], { dim: true }), tr("Not a target", "非目标"), tr("34% opacity, desaturated", "34% 不透明度，去饱和"))}
+    ${cell(tile(59, [0, 2], { delta: { n: 2, side: "USSR" } }), tr("Opponent's last move", "对手上一步"), tr("Pill until your next play ends", "保留至你的下一次出牌结束"))}
+    ${cell(tile(70, [3, 0], { delta: { n: 1, side: "US" } }), tr("This play so far", "本次出牌已放置"), tr("Pill in your colour; Undo clears", "你方颜色；撤销即清除"))}
+  </div></section>
+
+  <section class="blk"><h2>${tr("Hand cards", "手牌")}</h2><div class="row" style="align-items:flex-end;gap:18px;padding-top:20px">
+    ${cell(M.miniCard(73, {}), tr("Default", "默认"))}
+    ${cell(M.miniCard(73, { playable: true, hovered: true }), tr("Playable · hover", "可打出 · 悬停"), tr("Lifts 14px, white ring", "上移 14px，白色描边"))}
+    ${cell(M.miniCard(39, { selected: true }), tr("Selected", "已选择"), tr("Ring in your side colour", "你方颜色描边"))}
+    ${cell(M.miniCard(60, { unplayable: true }), tr("Not playable", "不可打出"))}
+    ${cell(M.miniCard(57, { playable: true, warn: true }), tr("Playable with warning", "可打出但有警告"), tr("⚠ badge; confirm dialog", "⚠ 标记；确认对话框"))}
+    ${cell(M.miniCard(37, { playable: true }), tr("Scoring card", "计分牌"), tr("MAY NOT BE HELD band", "「不得持有」色带"))}
+    ${cell(M.miniCard(63, { playable: true, eff: 3 }), tr("Modified Ops", "行动点数修正"), tr("Effective Ops from the engine", "引擎给出的实际点数"))}
+    ${cell(M.chinaCard(true), tr("China Card · face up", "中国牌 · 正面"))}
+    ${cell(M.chinaCard(false), tr("China Card · face down", "中国牌 · 背面"), tr("Playable next turn", "下回合可用"))}
+    ${cell(`<div class="cb" style="width:104px;height:146px;border-radius:9px"></div>`, tr("Card back", "卡背"), tr("AI's unknown cards", "AI 的未知手牌"))}
+    ${cell(`<div style="display:flex;gap:16px;align-items:flex-start"><div class="bigcard" style="width:200px;background-image:url(${M.cardImg(51)})"></div><div style="width:200px;font-size:12.5px;line-height:1.45"><div style="font:700 17px var(--font-display)">${M.ctitle(51)}</div><div class="faint" style="margin:2px 0 8px">#51 · ${tr("USSR · Mid War · 3 Ops", "苏联 · 战争中期 · 3 行动点数")}</div><div class="note info" style="margin:0 0 6px">${ico("info")}<span>${tr("Effective Ops now: 3", "当前实际点数：3")}</span></div><div class="note warn" style="margin:0">${ico("warn")}<span>${tr("Removed after its event (★)", "作为事件使用后移出游戏（★）")}</span></div><div class="faint" style="margin-top:8px">${tr("Zoom: hover 350 ms (desktop), long-press (touch), or Z.", "放大：桌面悬停 350 毫秒，触屏长按，或按 Z。")}</div></div></div>`, tr("Zoom", "放大预览"))}
+  </div></section>
+
+  <section class="blk"><h2>${tr("Tracks", "轨道")}</h2><div class="row" style="gap:28px;align-items:center">
+    <div class="cell" style="width:270px">${M.vpBar(3)}</div><div class="cell" style="width:270px">${M.vpBar(0)}</div><div class="cell" style="width:270px">${M.vpBar(-7)}</div>
+    <div class="cell"><div class="tb-label" style="margin-bottom:6px">${T.defcon}</div>${[5, 4, 3, 2, 1].map((n) => `<div class="defcon" style="margin:4px 0">${[5, 4, 3, 2, 1].map((d) => `<i class="d${d} ${d === n ? "on" : ""}">${d}</i>`).join("")}</div>`).join("")}</div>
+    <div class="cell"><div class="tb-label" style="margin-bottom:8px">${T.ar} 3 · USSR</div>${M.arPips(3, "USSR")}<div class="tb-label" style="margin:12px 0 8px">${T.ar} 7 · US (+AR8)</div>${M.arPips(7, "US")}</div>
+    <div class="cell"><div class="tb-label" style="margin-bottom:8px">${T.milops} · 3</div><div class="duo"><span class="meter-tag us-t">${emb("US")}1</span>${M.meter(1, 3, "US")}<span class="meter-tag ussr-t">${emb("USSR")}3</span>${M.meter(3, 3, "USSR")}</div>
+      <div class="tb-label" style="margin:12px 0 8px">${T.space}</div><div class="duo"><span class="meter-tag us-t">${emb("US")}3</span>${M.spaceTrack(3, "US")}<span class="meter-tag ussr-t">${emb("USSR")}4</span>${M.spaceTrack(4, "USSR")}</div></div>
+  </div></section>
+
+  <section class="blk"><h2>${tr("Command panel: every PromptKind", "指令面板：所有 PromptKind")}</h2><div class="grid3">
+    ${variants.map(([html, kind, cap]) => `<div>${html}<div class="cmdcap"><code>${kind}</code> — ${cap}</div></div>`).join("")}
+  </div></section>
+
+  <section class="blk"><h2>${tr("Banners and toasts", "横幅与提示")}</h2><div class="row" style="gap:18px">
+    <div class="banner-demo" style="width:700px"><div class="banner"><div style="text-align:center"><div class="caps" style="font:700 12px/1 var(--font-ui);color:var(--text-3)">${tr("Turn 4 of 10", "第 4 / 10 回合")}</div><div style="font:800 34px/1.1 var(--font-display);margin-top:6px">${tr("MID WAR", "战争中期")}</div><div class="muted" style="font-size:12.5px">${tr("Mid War cards shuffled into the deck · DEFCON +1 · hands to 9", "战争中期卡牌加入抽牌堆 · DEFCON +1 · 手牌补至 9 张")}</div></div></div></div>
+    <div style="display:flex;flex-direction:column;gap:10px">
+      <div class="toast" style="position:static;transform:none">${`<span class="chip" style="height:24px;padding:0 8px">${ico("cards")}</span>`}${tr("Deck reshuffled — the AI's 2 held cards are now known", "抽牌堆已重洗 —— AI 保留的 2 张手牌现已公开")}</div>
+      <div class="toast" style="position:static;transform:none;border-color:rgba(240,138,62,.6)"><span class="defcon"><i class="d2 on">2</i></span>${tr("DEFCON 2 — a coup in a battleground would end the game", "DEFCON 2 —— 在战场国发动政变将导致对局结束")}</div>
+      <div class="toast" style="position:static;transform:none">${M.sideBadge("USSR", true)}${tr("China Card passed to the USSR, face down", "中国牌交给苏联，背面朝上")}</div>
+    </div></div></section>`;
+  M.fitNames(document);
+})();
+</script>
+</body>
+</html>

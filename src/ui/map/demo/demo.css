@@ -1,0 +1,74 @@
+/* Map demo chrome (dev only): stand-ins for the console, rail, tray and compact parts. */
+.demo {
+  height: 100vh;
+  height: 100dvh;
+  display: grid;
+  background: var(--ts-bg-app-gradient);
+  color: var(--ts-text-2);
+  font: 600 var(--ts-fs-xs) / 1 var(--ts-font-ui);
+  letter-spacing: var(--ts-track-caps);
+  text-transform: var(--ts-caps);
+}
+.demo-desktop {
+  grid-template-columns: minmax(0, 1fr) var(--ts-rail-w);
+  grid-template-rows: var(--ts-console-h) minmax(0, 1fr);
+  grid-template-areas: "console console" "table rail";
+}
+.demo-compact {
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-rows: var(--ts-c-console-h) var(--ts-c-theatre-h) minmax(0, 1fr) 150px var(--ts-c-dock-h);
+  grid-template-areas: "console" "theatre" "table" "sheet" "dock";
+}
+.demo-console {
+  grid-area: console;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 0 10px;
+  background: var(--ts-surface-console);
+  box-shadow: var(--ts-shadow-console);
+  overflow-x: auto;
+  z-index: var(--ts-z-console);
+}
+.demo-word { font: 800 var(--ts-fs-l) var(--ts-font-stencil); color: var(--ts-paper-100); margin-right: 8px; white-space: nowrap; }
+.demo-console button {
+  height: 26px;
+  padding: 0 8px;
+  border: 0;
+  border-radius: var(--ts-radius-s);
+  background: var(--ts-room-750);
+  color: var(--ts-steel-200);
+  box-shadow: var(--ts-shadow-button);
+  font: inherit;
+  text-transform: inherit;
+  white-space: nowrap;
+}
+.demo-console button[aria-pressed="true"] { background: var(--ts-brass-500); color: var(--ts-ink-900); }
+.demo-sep { width: 12px; flex: none; }
+.demo-log { color: var(--ts-phosphor); white-space: nowrap; margin-left: 8px; }
+.demo-table { grid-area: table; position: relative; overflow: hidden; }
+.demo-desktop .demo-mapframe { position: absolute; inset: var(--ts-table-pad); }
+.demo-compact .demo-mapframe { position: absolute; inset: 0; }
+.demo-tray {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: var(--ts-z-tray);
+  display: grid;
+  place-items: center;
+  background: linear-gradient(180deg, transparent, var(--ts-room-900) 70%);
+  border-bottom: 64px solid var(--ts-walnut-800);
+  color: var(--ts-text-3);
+  pointer-events: none;
+}
+.demo-rail, .demo-theatre, .demo-sheet, .demo-dock {
+  display: grid;
+  place-items: center;
+  color: var(--ts-text-3);
+  background: var(--ts-surface-rail);
+}
+.demo-rail { grid-area: rail; z-index: var(--ts-z-rail); }
+.demo-theatre { grid-area: theatre; }
+.demo-sheet { grid-area: sheet; background: var(--ts-surface-slip); color: var(--ts-text-ink-3); border-radius: 14px 14px 0 0; margin-top: -14px; z-index: var(--ts-z-tray); }
+.demo-dock { grid-area: dock; }

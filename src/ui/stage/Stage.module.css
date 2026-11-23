@@ -1,0 +1,27 @@
+/* Stage layer inside the table (ui-spec §3.1, §3.5 z 40). Tokens only. */
+.stage {
+  position: absolute;
+  inset: 0;
+  z-index: var(--ts-z-stage);
+  pointer-events: none;
+  overflow: hidden;
+  /* The tray overlays the table's bottom band on desktop / tablet: waiting overlays stop above it, so
+     the orders slip (and its Continue) stays visible. The shell may override the value. */
+  --stage-bottom: 0px;
+}
+
+.stage[data-layout="wide"] {
+  --stage-bottom: var(--ts-tray-h);
+}
+
+/* The `stage` anchor: the table centre, card-sized (flights to and from the stage). */
+.centre {
+  position: absolute;
+  left: 50%;
+  top: 42%;
+  width: 60px;
+  height: 84px;
+  translate: -50% -50%;
+  opacity: 0;
+  pointer-events: none;
+}

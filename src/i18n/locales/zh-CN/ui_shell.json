@@ -1,0 +1,56 @@
+{
+  "table": {
+    "label": "作战桌：地图"
+  },
+  "sheet": {
+    "label": "指令",
+    "expand": "展开指令",
+    "collapse": "收起指令"
+  },
+  "theatre": {
+    "label": "战区",
+    "count_other": "{{region}}：{{count}} 个目标"
+  },
+  "dock": {
+    "label": "手牌、对手、电报与状态",
+    "hand": "手牌 · {{count}}",
+    "handAria_other": "你的手牌：{{count}} 张",
+    "adversaryAria_other": "对手：手牌 {{count}} 张",
+    "log": "电报",
+    "logAria_other": "电报：{{count}} 条新电报"
+  },
+  "ticker": {
+    "ar": "{{side}} · 第 {{ar}} 行动轮",
+    "headline": "{{side}} · 头条",
+    "open": "打开电报"
+  },
+  "menu": {
+    "about": "关于与致谢"
+  },
+  "over": {
+    "result": "结果"
+  },
+  "about": {
+    "title": "关于与致谢",
+    "rules": "规则",
+    "credits": "致谢",
+    "save": "对局只保存在此浏览器中。存档并不防篡改：借助开发者工具，任何人都能读取其中内容，包括 AI 尚未公开的卡牌。",
+    "legal": "法律声明",
+    "fonts": "字体：Big Shoulders Stencil Display、Barlow Condensed 与 Courier Prime，采用 SIL 开放字体许可证 1.1。",
+    "map": "地图海岸线：Natural Earth（公有领域），为本地图重新绘制。",
+    "leaderboard": "DeepStruggle 排行榜",
+    "modelLink": "Hugging Face 上的模型",
+    "oflLink": "字体许可证（OFL）",
+    "naturalEarth": "Natural Earth"
+  },
+  "error": {
+    "gameChunk": "无法加载游戏界面。请检查网络连接后重试。",
+    "language": "无法加载{{lang}}。请检查网络连接后重试。",
+    "saveUnreadable": "无法读取已保存的对局（已被修改或损坏），已将其删除。"
+  },
+  "superseded": {
+    "title": "这局游戏已在另一个标签页中继续",
+    "body": "同一局存档一次只能在一个标签页中进行。重新加载即可在此继续。",
+    "reload": "重新加载"
+  }
+}

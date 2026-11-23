@@ -1,0 +1,54 @@
+/* Boot line (ui-spec §11.1; final.css .boot-line). Tokens only. */
+.boot {
+  width: min(680px, calc(100vw - 32px));
+  font: 500 var(--ts-fs-m) / 1.4 var(--ts-font-type);
+  color: var(--ts-phosphor);
+  text-align: left;
+  text-transform: var(--ts-caps);
+}
+:root:lang(zh) .boot { font-size: var(--ts-fs-m); }
+.line { overflow-wrap: anywhere; }
+.done { color: var(--ts-phosphor); }
+.now { color: var(--ts-phosphor); text-shadow: 0 0 8px color-mix(in srgb, var(--ts-phosphor) 55%, transparent); }
+.todo { color: color-mix(in srgb, var(--ts-phosphor) 45%, transparent); }
+.dot { color: color-mix(in srgb, var(--ts-phosphor) 55%, transparent); }
+.bar {
+  height: 3px;
+  margin-top: 6px;
+  border-radius: 2px;
+  overflow: hidden;
+  background: color-mix(in srgb, var(--ts-phosphor) 15%, transparent);
+}
+.bar > i {
+  display: block;
+  height: 100%;
+  background: var(--ts-phosphor);
+  box-shadow: 0 0 8px var(--ts-phosphor);
+  transition: width var(--ts-dur-m) var(--ts-ease-out);
+}
+.note {
+  margin-top: 6px;
+  font: 400 var(--ts-fs-s) / 1.4 var(--ts-font-body);
+  color: var(--ts-steel-400);
+  text-transform: none;
+}
+
+.ready {
+  color: var(--ts-phosphor);
+  font: 700 var(--ts-fs-s) / 1.4 var(--ts-font-type);
+  letter-spacing: .1em;
+  text-transform: var(--ts-caps);
+}
+
+.error { color: var(--ts-alert-500); }
+.errorRow { display: flex; align-items: flex-start; gap: var(--ts-space-3); margin-top: var(--ts-space-2); text-transform: none; }
+.details { color: var(--ts-steel-300); font: 400 var(--ts-fs-s) / 1.4 var(--ts-font-body); max-width: 520px; }
+.details summary { cursor: pointer; color: var(--ts-steel-200); }
+.details pre {
+  margin: 6px 0 0;
+  max-height: 120px;
+  overflow: auto;
+  white-space: pre-wrap;
+  font: 400 var(--ts-fs-s) / 1.4 var(--ts-font-type);
+  color: var(--ts-steel-200);
+}

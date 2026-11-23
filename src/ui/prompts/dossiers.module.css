@@ -1,0 +1,119 @@
+/*
+ * Branch and DEFCON dossiers (ui-spec §8.8, §8.9; situation-room-defcon-choice.png). Inside the common Dossier.
+ */
+.header { display: flex; gap: 14px; align-items: flex-start; margin-bottom: 14px; }
+.headCard { flex: none; box-shadow: var(--ts-shadow-card); }
+.detail { margin: 0; font: 400 var(--ts-fs-m) / var(--ts-lh-body) var(--ts-font-body); color: var(--ts-ink-700); }
+.footHint { margin-right: auto; align-self: center; font: 500 var(--ts-fs-s) / 1.2 var(--ts-font-body); color: var(--ts-ink-500); }
+.footHint:first-child { margin-left: 0; }
+
+/* Branch tiles */
+.tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; }
+.tile {
+  display: grid;
+  grid-template-columns: 34px minmax(0, 1fr);
+  grid-template-rows: auto 1fr;
+  align-content: start;
+  gap: 6px 12px;
+  min-height: 120px;
+  padding: 14px;
+  border: 0;
+  border-radius: var(--ts-radius-s);
+  background: var(--ts-paper-100);
+  color: var(--ts-ink-900);
+  text-align: left;
+  cursor: pointer;
+  box-shadow: inset 0 0 0 1.5px color-mix(in srgb, var(--ts-ink-900) 30%, transparent);
+}
+.tile:hover:not([aria-disabled="true"]) { box-shadow: inset 0 0 0 2px var(--ts-brass-500); }
+.tile:focus-visible { outline: none; box-shadow: var(--ts-focus-ring-on-paper); }
+.tile[aria-disabled="true"] { cursor: progress; }
+.selected { box-shadow: 0 0 0 3px var(--ts-brass-400), inset 0 0 0 2px var(--ts-ink-900); background: var(--ts-brass-100); }
+.tileIco {
+  grid-row: 1 / span 2;
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  border-radius: var(--ts-radius-s);
+  background: var(--ts-ink-900);
+  color: var(--ts-paper-50);
+}
+.tileIco svg { width: 20px; height: 20px; }
+.tileTitle { font: 700 var(--ts-fs-l) / 1.1 var(--ts-font-ui); letter-spacing: .05em; text-transform: var(--ts-caps); }
+:global(:root:lang(zh)) .tileTitle { font-family: var(--ts-font-body); letter-spacing: 0; }
+.tileDesc { grid-column: 2; font: 400 var(--ts-fs-m) / 1.35 var(--ts-font-body); color: var(--ts-ink-700); }
+.tileWarn { grid-column: 1 / -1; font: 700 var(--ts-fs-s) / 1.25 var(--ts-font-ui); color: var(--ts-alert-500); }
+:global(:root:lang(zh)) .tileWarn { font-family: var(--ts-font-body); }
+.hazard { background: var(--ts-hazard); color: var(--ts-alert-500); box-shadow: inset 0 0 0 1.5px var(--ts-alert-500); }
+.hazard .tileDesc { color: var(--ts-paper-200); }
+.hazard .tileIco { background: transparent; }
+.hazard.selected { box-shadow: 0 0 0 3px var(--ts-alert-500), inset 0 0 0 2px var(--ts-alert-500); background: var(--ts-hazard); }
+.hz { width: 24px; height: 21px; background: var(--ts-hazard-bright); clip-path: polygon(50% 0, 100% 100%, 0 100%); }
+/* A game end the human wins (§8.3 caution): said on the tile, no hazard stripes, no hold. */
+.tileCaution {
+  grid-column: 1 / -1;
+  padding: 4px 7px;
+  border-radius: var(--ts-radius-xs);
+  background: var(--ts-brass-100);
+  box-shadow: inset 0 0 0 1px var(--ts-brass-500);
+  font: 700 var(--ts-fs-s) / 1.25 var(--ts-font-ui);
+  color: var(--ts-ink-900);
+}
+:global(:root:lang(zh)) .tileCaution { font-family: var(--ts-font-body); }
+.tile.cautionTile { box-shadow: inset 0 0 0 2px var(--ts-brass-500); }
+.tile.cautionTile.selected { box-shadow: 0 0 0 3px var(--ts-brass-400), inset 0 0 0 2px var(--ts-ink-900); }
+
+/* DEFCON lamp tiles 5 → 1 */
+.lamps { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 10px; }
+.lamp {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-height: 92px;
+  padding: 8px 6px;
+  border: 0;
+  border-radius: var(--ts-radius-xs);
+  background: var(--ts-room-800);
+  color: var(--ts-paper-100);
+  cursor: pointer;
+  box-shadow: 0 2px 0 var(--ts-line-hard);
+}
+.lamp:disabled { opacity: .35; cursor: not-allowed; }
+.lamp:focus-visible { outline: none; box-shadow: var(--ts-focus-ring-on-paper); }
+.lamp:hover:not(:disabled) { box-shadow: 0 0 0 2px var(--ts-brass-300); }
+.lampNum { font: 800 var(--ts-fs-4xl) / 1 var(--ts-font-stencil); }
+.lampCap { font: 700 var(--ts-fs-xs) / 1.15 var(--ts-font-ui); letter-spacing: var(--ts-track-caps); text-transform: var(--ts-caps); text-align: center; }
+:global(:root:lang(zh)) .lampCap { font-family: var(--ts-font-body); }
+.l5 .lampNum { color: var(--ts-defcon-5); }
+.l4 .lampNum { color: var(--ts-defcon-4); }
+.l3 .lampNum { color: var(--ts-defcon-3); }
+.l2 .lampNum { color: var(--ts-defcon-2); }
+.l1 .lampNum { color: var(--ts-defcon-1); }
+.current { background: linear-gradient(180deg, var(--ts-brass-300), var(--ts-brass-500)); color: var(--ts-ink-900); }
+.current .lampNum { color: var(--ts-ink-900); }
+.lamp.hazard { background: var(--ts-hazard); color: var(--ts-alert-500); box-shadow: inset 0 0 0 1.5px var(--ts-alert-500); }
+.lamp.hazard .lampNum { color: var(--ts-alert-500); }
+.lamp.selected { box-shadow: 0 0 0 3px var(--ts-brass-400), inset 0 0 0 2px var(--ts-paper-50); }
+.lamp.win { box-shadow: inset 0 0 0 2px var(--ts-brass-400), 0 2px 0 var(--ts-line-hard); }
+.lamp.win .lampCap { color: var(--ts-brass-300); }
+.lamp.win.selected { box-shadow: 0 0 0 3px var(--ts-brass-400), inset 0 0 0 2px var(--ts-paper-50); }
+.rule { margin: 12px 0 0; font: 500 var(--ts-fs-m) / 1.3 var(--ts-font-body); color: var(--ts-ink-700); }
+.caution {
+  margin: 8px 0 0;
+  padding: 6px 9px;
+  border-radius: var(--ts-radius-s);
+  background: var(--ts-brass-100);
+  box-shadow: inset 0 0 0 1px var(--ts-brass-500);
+  font: 700 var(--ts-fs-m) / 1.3 var(--ts-font-ui);
+  color: var(--ts-ink-900);
+}
+:global(:root:lang(zh)) .caution { font-family: var(--ts-font-body); }
+
+@media (max-width: 699px) {
+  .lamps { grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 6px; }
+  .lamp { min-height: 84px; }
+  .tiles { grid-template-columns: 1fr; }
+}

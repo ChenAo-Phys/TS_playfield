@@ -1,0 +1,54 @@
+{
+  "hand": {
+    "label": "你的手牌 · {{count}}",
+    "empty": "没有手牌",
+    "region_other": "你的手牌：{{count}} 张。方向键移动，回车打出，空格查看卡牌"
+  },
+  "card": {
+    "ops_other": "{{count}} 行动点",
+    "aria": "{{card}}，{{ops}}。{{state}}",
+    "state": {
+      "neutral": "在你手中",
+      "playable": "可以打出",
+      "unplayable": "现在不能打出",
+      "passive": "在你手中",
+      "lifted": "正在打出",
+      "staged": "已选中：再次点击或按回车确认",
+      "stagedTouch": "已选中：再次轻触确认"
+    },
+    "ariaKnown": "{{card}}，{{ops}}。{{state}}。AI 已知"
+  },
+  "china": {
+    "label": {
+      "faceUp": "中国牌 · 正面朝上",
+      "faceDown": "中国牌 · 正面朝下"
+    },
+    "withSide": "在{{side}}手中",
+    "aria": {
+      "faceUp": "{{card}}，正面朝上。{{state}}",
+      "faceDown": "{{card}}，正面朝下。下回合才能打出",
+      "withAiUp": "{{card}}在{{side}}手中，正面朝上",
+      "withAiDown": "{{card}}在{{side}}手中，正面朝下"
+    }
+  },
+  "pile": {
+    "short": {
+      "deck": "抽牌堆",
+      "discard": "弃牌堆",
+      "removed": "移出游戏"
+    },
+    "count_other": "{{pile}}：{{count}} 张",
+    "group": "抽牌堆、弃牌堆与移出游戏的牌",
+    "open_other": "{{pile}}：{{count}} 张。点击查看"
+  },
+  "headline": {
+    "aria": {
+      "committed": "你的头条：{{card}}（已提交，正面朝下）",
+      "revealed": "你的头条：{{card}}（已揭晓）"
+    }
+  },
+  "drawer": {
+    "label": "你的手牌",
+    "title": "你的手牌 · {{count}}"
+  }
+}

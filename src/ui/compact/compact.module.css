@@ -1,0 +1,205 @@
+/* Compact parts (ui-spec §3.3, §3.4; final.css 7.10). Tokens only. */
+
+/* ── Theatre bar ── */
+.theatres {
+  display: flex;
+  gap: 5px;
+  padding: 5px 8px;
+  height: var(--ts-c-theatre-h);
+  overflow-x: auto;
+  overflow-y: hidden;
+  background: var(--ts-room-850);
+  border-bottom: 1px solid var(--ts-line-hard);
+  scrollbar-width: none;
+  position: relative;
+  z-index: var(--ts-z-map-hud);
+}
+.theatres::-webkit-scrollbar { display: none; }
+.theatresOverlay { background: transparent; border-bottom: 0; }
+.chip {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 26px;
+  padding: 0 9px;
+  border: 0;
+  border-radius: 3px;
+  background: var(--ts-room-750);
+  color: var(--ts-steel-200);
+  font: 700 var(--ts-fs-s) / 1 var(--ts-font-ui);
+  letter-spacing: .08em;
+  text-transform: var(--ts-caps);
+  box-shadow: 0 0 0 1px var(--ts-line-hard);
+  white-space: nowrap;
+}
+:root:lang(zh) .chip { font-family: var(--ts-font-body); font-size: var(--ts-fs-m); letter-spacing: 0; }
+.chip[aria-pressed="true"] { background: var(--ts-brass-500); color: var(--ts-ink-900); }
+.chipNone { color: var(--ts-text-3); }
+.chipOffered { box-shadow: 0 0 0 1px var(--ts-line-hard), inset 0 0 0 1.5px var(--ts-brass-400); color: var(--ts-paper-50); }
+.count {
+  min-width: 17px;
+  height: 17px;
+  padding: 0 4px;
+  border-radius: 9px;
+  display: grid;
+  place-items: center;
+  font: 700 var(--ts-fs-xs) / 1 var(--ts-font-num);
+  background: var(--ts-brass-400);
+  color: var(--ts-ink-900);
+  box-shadow: inset 0 0 0 1px var(--ts-line-ink);
+}
+.chip[aria-pressed="true"] .count { background: var(--ts-ink-900); color: var(--ts-brass-300); }
+
+/* Touch screens (Q-048): each chip answers a 44 px tall hit area (the gaps split between neighbours) while it
+   stays 26 px on screen. The bar's box grows by 8 px over the map's top edge, transparent (its 36 px look is
+   painted), and lets the pointer through outside the chips. */
+@media (pointer: coarse) {
+  .theatres {
+    height: calc(var(--ts-c-theatre-h) + 8px);
+    margin-bottom: -8px;
+    padding-bottom: 13px;
+    border-bottom: 0;
+    background: linear-gradient(to bottom, var(--ts-room-850) 0 calc(var(--ts-c-theatre-h) - 1px), var(--ts-line-hard) calc(var(--ts-c-theatre-h) - 1px) var(--ts-c-theatre-h), transparent var(--ts-c-theatre-h));
+    pointer-events: none;
+  }
+  .theatresOverlay { background: transparent; }
+  .chip { position: relative; pointer-events: auto; }
+  .chip::after { content: ""; position: absolute; left: -2.5px; right: -2.5px; top: -5px; bottom: -13px; }
+}
+
+/* ── Ticker / play banner ── */
+.ticker {
+  position: absolute;
+  left: 8px;
+  right: 8px;
+  top: 8px;
+  z-index: var(--ts-z-map-hud);
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 6px 8px;
+  border: 0;
+  border-left: 3px solid var(--ts-ai);
+  border-radius: 2px;
+  background: color-mix(in srgb, var(--ts-paper-100) 96%, transparent);
+  color: var(--ts-ink-900);
+  font: 500 var(--ts-fs-s) / 1.3 var(--ts-font-type);
+  text-align: left;
+  box-shadow: 0 4px 12px color-mix(in srgb, var(--ts-room-950) 35%, transparent);
+  animation: tickerIn var(--ts-dur-s) var(--ts-ease-out) both;
+}
+:root:lang(zh) .ticker { font-size: var(--ts-fs-s); }
+@keyframes tickerIn { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: none; } }
+:global([data-motion="reduce"]) .ticker { animation-name: tickerFade; }
+@media (prefers-reduced-motion: reduce) { :global(:root:not([data-motion="full"])) .ticker { animation-name: tickerFade; } }
+@keyframes tickerFade { from { opacity: 0; } to { opacity: 1; } }
+.tkSide { flex: none; display: grid; color: var(--ts-ai); }
+.tkText { min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.banner { min-height: 72px; gap: 10px; padding: 6px 10px; }
+.bannerCard { flex: none; border-radius: 3px; box-shadow: var(--ts-shadow-card); }
+.bannerText { display: flex; flex-direction: column; gap: 3px; min-width: 0; flex: 1; }
+.bannerKicker {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  color: var(--ts-ai);
+  font: 700 var(--ts-fs-xs) / 1 var(--ts-font-ui);
+  letter-spacing: var(--ts-track-caps);
+  text-transform: var(--ts-caps);
+}
+:root:lang(zh) .bannerKicker { font-family: var(--ts-font-body); }
+.bannerName {
+  font: 800 var(--ts-fs-l) / 1.1 var(--ts-font-stencil);
+  letter-spacing: .04em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+:root:lang(zh) .bannerName { font-family: var(--ts-font-serif-zh); font-weight: 900; text-transform: none; letter-spacing: 0; }
+.howChip {
+  flex: none;
+  padding: 4px 7px 3px;
+  border-radius: 2px;
+  background: var(--ts-ink-900);
+  color: var(--ts-paper-50);
+  font: 700 var(--ts-fs-xs) / 1 var(--ts-font-ui);
+  letter-spacing: var(--ts-track-caps);
+  text-transform: var(--ts-caps);
+}
+:root:lang(zh) .howChip { font-family: var(--ts-font-body); }
+
+/* ── Dock ── */
+.dock {
+  display: grid;
+  grid-template-columns: 1.5fr 1fr 1fr 1fr;
+  background: var(--ts-room-850);
+  border-top: 1px solid var(--ts-line-hard);
+  box-shadow: inset 0 1px 0 var(--ts-line-highlight);
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+  position: relative;
+  z-index: var(--ts-z-tray);
+}
+.dock > button {
+  position: relative;
+  min-width: 0;
+  min-height: var(--ts-c-dock-h);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  padding: 0 4px;
+  border: 0;
+  background: transparent;
+  color: var(--ts-steel-300);
+  font: 700 var(--ts-fs-xs) / 1 var(--ts-font-ui);
+  letter-spacing: .1em;
+  text-transform: var(--ts-caps);
+}
+:root:lang(zh) .dock > button { font-family: var(--ts-font-body); font-size: var(--ts-fs-xs); letter-spacing: 0; }
+.dock > button[aria-expanded="true"] { color: var(--ts-brass-300); }
+.dock > button:focus-visible { box-shadow: inset var(--ts-focus-ring); }
+.dockSeal { width: 22px; height: 22px; }
+.dl { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
+.badge {
+  position: absolute;
+  top: 7px;
+  left: calc(50% + 8px);
+  min-width: 16px;
+  height: 16px;
+  padding: 0 4px;
+  border-radius: 8px;
+  background: var(--ts-brass-400);
+  color: var(--ts-ink-900);
+  font: 700 var(--ts-fs-xs) / 16px var(--ts-font-num);
+  letter-spacing: 0;
+}
+.badgeN { background: var(--ts-room-500); color: var(--ts-text-1); }
+.dockHand {
+  flex-direction: row !important;
+  gap: 8px !important;
+  border-right: 1px solid var(--ts-line-hard) !important;
+  box-shadow: 1px 0 0 var(--ts-line-highlight);
+}
+/* "Hand · 6" is never cut (Q-041): below ~380 px the thumbnail stack closes up, then the chevron gives way. */
+.dockHand .dl { color: var(--ts-steel-100); flex: none; overflow: visible; max-width: none; }
+.thumbs { position: relative; width: 46px; height: 40px; flex: 0 1 46px; min-width: 26px; }
+.thumb {
+  position: absolute;
+  bottom: 0;
+  left: calc(var(--i) * (100% - 26px) / 2);
+  transform: rotate(calc((var(--i) - 1) * 6deg));
+  filter: saturate(.75) brightness(.85);
+  box-shadow: 0 2px 4px color-mix(in srgb, var(--ts-room-950) 50%, transparent);
+  border-radius: 2px;
+}
+.chev { display: grid; color: var(--ts-brass-400); }
+.dockHand .chev { flex: 0 1 auto; min-width: 0; overflow: hidden; }
+.dockIcons { grid-template-columns: repeat(4, 1fr); }
+.dockIcons > button { min-height: 52px; }
+
+/* ── Sheets ── */
+.sheetBody { display: flex; flex-direction: column; background: var(--ts-surface-rail); color: var(--ts-text-1); }
+.sheetFill { height: 100%; min-height: 0; }

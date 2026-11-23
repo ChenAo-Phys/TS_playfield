@@ -1,0 +1,35 @@
+{
+  "name": "ts-playfield",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc -b && vite build",
+    "preview": "vite preview",
+    "engine": "bash scripts/build-engine.sh",
+    "cards": "node scripts/build-cards.mjs"
+  },
+  "dependencies": {
+    "i18next": "26.5.4",
+    "onnxruntime-web": "1.30.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  },
+  "devDependencies": {
+    "@types/d3-geo": "^3.1.1",
+    "@types/node": "^26.6.6",
+    "@types/react": "^18.3.31",
+    "@types/react-dom": "^18.3.7",
+    "@types/topojson-client": "^3.1.5",
+    "@vitejs/plugin-react": "^4.7.0",
+    "d3-geo": "^3.1.2",
+    "playwright": "^1.65.1",
+    "sharp": "^0.35.5",
+    "topojson-client": "^3.1.0",
+    "typescript": "~5.7",
+    "vite": "^6.4.6",
+    "vitest": "^5.1.1",
+    "world-atlas": "^2.0.2"
+  }
+}

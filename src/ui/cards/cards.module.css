@@ -1,0 +1,393 @@
+/*
+ * Cards (ui-spec §7.1, §7.5; final.css `.hcard`, `.card-back`, `.zoom`). Tokens only.
+ */
+
+/* ── Card face ────────────────────────────────────────────────────────────────────────── */
+.face {
+  --card-r: var(--ts-radius-card);
+  position: relative;
+  flex: none;
+  border-radius: var(--card-r);
+  box-shadow: var(--ts-shadow-card);
+  background: var(--ts-paper-200);
+}
+.img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border-radius: var(--card-r);
+  object-fit: cover;
+  -webkit-user-drag: none;
+  user-select: none;
+  transition: filter var(--ts-dur-s) var(--ts-ease-out);
+}
+.prevImg { position: absolute; inset: 0; pointer-events: none; }
+.fadeOut { animation: img-out var(--ts-dur-xs) var(--ts-ease-out) forwards; }
+@keyframes img-out { from { opacity: 1; } to { opacity: 0; } }
+
+.dim_passive .img { filter: saturate(.7) brightness(.8); }
+.dim_passive .cap { opacity: .9; }
+.dim_unplayable .img { filter: saturate(.25) brightness(.62); }
+.dim_unplayable .cap { opacity: .75; }
+
+/* Caption over the bottom 40 % (hand cards) */
+.cap {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  min-height: 40%;
+  display: flex;
+  align-items: flex-end;
+  gap: 5px;
+  padding: 14px calc(var(--ov, 0px) + 5px) 5px 6px;
+  border-radius: 0 0 var(--card-r) var(--card-r);
+  background: linear-gradient(color-mix(in srgb, var(--ts-room-900) 0%, transparent), color-mix(in srgb, var(--ts-room-900) 92%, transparent) 45%);
+  color: var(--ts-paper-50);
+  font: 700 var(--ts-fs-xs) / 1.1 var(--ts-font-ui);
+  letter-spacing: var(--ts-track-tight);
+  text-transform: var(--ts-caps);
+  pointer-events: none;
+  transition: opacity var(--ts-dur-s) var(--ts-ease-out);
+  /* The caption's own width (card − the strip the next card covers) picks the name's layout below. */
+  container-type: inline-size;
+}
+:global(:root:lang(zh)) .cap { font-family: var(--ts-font-body); letter-spacing: 0; }
+.small .cap { padding: 10px calc(var(--ov, 0px) + 4px) 4px 4px; font-size: var(--ts-fs-micro); gap: 4px; }
+/* Whole words on up to two lines (never "CONTAIN MENT"); a word wider than the line ends in an ellipsis. */
+.capName {
+  min-width: 0;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow-wrap: normal;
+  word-break: normal;
+  text-overflow: ellipsis;
+}
+/* A narrow strip (an overlapped hand card): one line with an ellipsis; too narrow for that, the Ops badge
+   alone (the name is in the card's accessible name and its zoom). Widths are the caption's content box. */
+@container (max-width: 70px) {
+  .capName { display: block; white-space: nowrap; }
+}
+@container (max-width: 44px) {
+  .capName { display: none; }
+}
+
+/*
+ * Spine (an overlapped hand card, QA OD-3): the name as a vertical label, like a book spine, in a narrow band of
+ * the card's side tone (the Ops badge's: US navy, USSR red with gold, neutral ink) running from the top edge down
+ * to the Ops badge, centred over it. English reads top to bottom (Barlow Condensed caps), Chinese stands upright
+ * (the CJK stack); a name longer than the band ends in "…". The caption keeps the badge; its name hides while the
+ * spine shows. `--spine-on` (1 by default) is set to 0 by the hand on a hovered / focused / staged card, which
+ * then shows its normal caption.
+ */
+.spine {
+  --spine-w: 19px;
+  position: absolute;
+  top: 0;
+  bottom: 25px;
+  left: 5px;
+  width: var(--spine-w);
+  box-sizing: border-box;
+  padding: 9px 0 5px;
+  writing-mode: vertical-rl;
+  text-orientation: mixed;
+  font: 700 var(--ts-fs-xs) / var(--spine-w) var(--ts-font-ui);
+  letter-spacing: .06em;
+  text-transform: var(--ts-caps);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  border-radius: 0 0 var(--ts-radius-xs) var(--ts-radius-xs);
+  box-shadow: 1px 0 0 color-mix(in srgb, var(--ts-paper-50) 28%, transparent), 0 1px 4px color-mix(in srgb, var(--ts-room-950) 50%, transparent);
+  pointer-events: none;
+  opacity: var(--spine-on, 1);
+  transition: opacity var(--ts-dur-s) var(--ts-ease-out), filter var(--ts-dur-s) var(--ts-ease-out);
+}
+:global(:root:lang(zh)) .spine { font-family: var(--ts-font-body); font-size: var(--ts-fs-s); letter-spacing: .1em; }
+/* Chinese: the name is cut in script (`.spineMore` follows it); the browser's ellipsis would be drawn into the last
+   upright glyph (R-013), so a name that still overflows is clipped, never deformed. */
+:global(:root:lang(zh)) .spine { text-overflow: clip; }
+/* Tablet cards (86 px): a shorter band, so a smaller face and less tracking keep more names whole. */
+.small .spine { --spine-w: 17px; left: 3px; bottom: 22px; padding: 7px 0 4px; font-size: var(--ts-fs-micro); letter-spacing: .04em; }
+:global(:root:lang(zh)) .small .spine { font-size: var(--ts-fs-xs); letter-spacing: .04em; }
+.spine_us { background: var(--ts-us-700); color: var(--ts-paper-50); }
+.spine_ussr { background: var(--ts-ussr-700); color: var(--ts-ussr-gold); }
+.spine_neutral { background: var(--ts-ink-900); color: var(--ts-paper-100); }
+.spineText { display: inline; }
+/* A Chinese name cut to whole characters (CardFace `useSpineText`, QA R-013): three small drawn dots (︙) in a
+   .75 em slot half an em after it, centred across the band. An ellipsis glyph is drawn into the last character in
+   vertical text, and dots right under a glyph join its strokes ("兰" read "羊"). */
+.spineMore {
+  display: inline-block;
+  inline-size: .75em;
+  block-size: 100%;
+  margin-inline-start: .5em;
+  vertical-align: top;
+  background: radial-gradient(circle, currentColor 0 .8px, transparent 1.2px) center / 100% 33.333% repeat-y;
+}
+.dim_passive .spine { filter: saturate(.7) brightness(.85); }
+.dim_unplayable .spine { filter: saturate(.3) brightness(.7); }
+/* While the spine shows, the caption carries the Ops badge alone. */
+.spined .capName { opacity: calc(1 - var(--spine-on, 1)); transition: opacity var(--ts-dur-s) var(--ts-ease-out); }
+@media (forced-colors: active) {
+  .spine { border: 1px solid CanvasText; }
+}
+
+/* Ops badge: US square, USSR chamfered, neutral paper (shape carries side, not only colour) */
+.ops {
+  flex: none;
+  width: 17px;
+  height: 17px;
+  display: grid;
+  place-items: center;
+  font: 700 var(--ts-fs-xs) / 1 var(--ts-font-num);
+  border-radius: var(--ts-radius-xs);
+}
+.small .ops { width: 15px; height: 15px; font-size: var(--ts-fs-micro); }
+.ops_us { background: var(--ts-us-600); color: var(--ts-side-us-solid-text); }
+.ops_ussr { background: var(--ts-ussr-600); color: var(--ts-ussr-gold); clip-path: polygon(22% 0, 100% 0, 100% 78%, 78% 100%, 0 100%, 0 22%); border-radius: 0; }
+.ops_neutral { background: var(--ts-paper-200); color: var(--ts-ink-900); box-shadow: inset 0 0 0 1px var(--ts-line-ink); }
+
+/* Image failed: a paper placeholder with name and Ops */
+.placeholder {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 8px;
+  border-radius: var(--card-r);
+  background: var(--ts-paper-100);
+  color: var(--ts-ink-900);
+  box-shadow: inset 0 0 0 1px var(--ts-line-ink);
+  text-align: center;
+}
+.phOps { width: 22px; height: 22px; display: grid; place-items: center; font: 700 var(--ts-fs-s) / 1 var(--ts-font-num); border-radius: var(--ts-radius-xs); }
+.phName { font: 700 var(--ts-fs-xs) / 1.15 var(--ts-font-ui); letter-spacing: var(--ts-track-tight); text-transform: var(--ts-caps); overflow-wrap: anywhere; }
+:global(:root:lang(zh)) .phName { font-family: var(--ts-font-body); }
+
+/* Tags hanging from the top edge, centred, rotated 4° */
+.tags {
+  position: absolute;
+  top: -8px;
+  left: 50%;
+  translate: -50% 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  pointer-events: none;
+  z-index: 1;
+}
+.tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 5px 2px;
+  border-radius: var(--ts-radius-xs);
+  font: 700 var(--ts-fs-micro) / 1 var(--ts-font-ui);
+  letter-spacing: .1em;
+  text-transform: var(--ts-caps);
+  white-space: nowrap;
+  transform: rotate(4deg);
+  box-shadow: 0 2px 4px color-mix(in srgb, var(--ts-room-950) 40%, transparent);
+}
+.tag + .tag { transform: rotate(-2deg); }
+.tagCompact { padding: 3px 4px 2px; gap: 0; }
+:global(:root:lang(zh)) .tag { font-family: var(--ts-font-body); letter-spacing: .02em; }
+.tag svg { width: 1.1em; height: 1.1em; }
+.tag_scoring { background: var(--ts-hazard); color: var(--ts-alert-500); box-shadow: inset 0 0 0 1px var(--ts-alert-500), 0 2px 4px color-mix(in srgb, var(--ts-room-950) 40%, transparent); }
+.tag_hazard { background: var(--ts-hazard-bright); color: var(--ts-paper-50); box-shadow: inset 0 0 0 1px var(--ts-alert-500), 0 2px 4px color-mix(in srgb, var(--ts-room-950) 40%, transparent); text-shadow: 0 0 2px var(--ts-room-950), 0 0 3px var(--ts-room-950); }
+.tag_info { background: var(--ts-alert-100); color: var(--ts-alert-700); box-shadow: inset 0 0 0 1px var(--ts-alert-700), 0 2px 4px color-mix(in srgb, var(--ts-room-950) 40%, transparent); }
+.tag_known { background: var(--ts-brass-400); color: var(--ts-ink-900); }
+
+/* ── Card back (SVG) ──────────────────────────────────────────────────────────────────── */
+.back { display: block; flex: none; border-radius: var(--ts-radius-card); box-shadow: var(--ts-shadow-card); }
+.backTop { stop-color: var(--ts-us-800); }
+.backBottom { stop-color: var(--ts-room-850); }
+.backHatch { fill: color-mix(in srgb, var(--ts-paper-50) 5%, transparent); }
+.backRim { fill: none; stroke: var(--ts-brass-500); stroke-opacity: .55; stroke-width: 1.2; }
+.backRing { fill: color-mix(in srgb, var(--ts-room-950) 35%, transparent); stroke: var(--ts-brass-500); stroke-opacity: .8; stroke-width: 1.4; }
+.backRingInner { fill: none; stroke: var(--ts-brass-500); stroke-opacity: .45; stroke-width: .6; }
+.backMono { fill: var(--ts-brass-400); font-family: var(--ts-font-stencil); font-weight: 800; letter-spacing: .06em; }
+
+/* ── China Card face down ─────────────────────────────────────────────────────────────── */
+.china { position: relative; flex: none; border-radius: var(--ts-radius-card); box-shadow: var(--ts-shadow-card); overflow: hidden; }
+.chinaSvg { display: block; }
+.lacquerTop { stop-color: var(--ts-ussr-700); }
+.lacquerBottom { stop-color: var(--ts-ussr-800); }
+.sheenTop { stop-color: var(--ts-paper-50); stop-opacity: .16; }
+.sheenNone { stop-color: var(--ts-paper-50); stop-opacity: 0; }
+.goldRim { fill: none; stroke: var(--ts-ussr-gold); stroke-width: 1.4; }
+.goldRimThin { fill: none; stroke: var(--ts-ussr-gold); stroke-opacity: .55; stroke-width: .6; }
+.goldFill { fill: var(--ts-ussr-gold); }
+.goldLine { stroke: var(--ts-ussr-gold); stroke-opacity: .6; stroke-width: .6; }
+.chinaEn { fill: var(--ts-ussr-gold); font-family: var(--ts-font-ui); font-weight: 700; letter-spacing: .08em; }
+.chinaZh { fill: var(--ts-ussr-gold); font-family: var(--ts-font-serif-zh); font-weight: 900; letter-spacing: .12em; }
+.ribbon {
+  position: absolute;
+  left: -12%;
+  right: -12%;
+  top: 86%;
+  transform: translateY(-50%) rotate(-6deg);
+  padding: 3px 0 2px;
+  background: var(--ts-paper-100);
+  color: var(--ts-ussr-800);
+  box-shadow: 0 0 0 1px var(--ts-ussr-gold), 0 3px 6px color-mix(in srgb, var(--ts-room-950) 45%, transparent);
+  font-family: var(--ts-font-ui);
+  font-weight: 800;
+  letter-spacing: var(--ts-track-wide);
+  text-transform: var(--ts-caps);
+  text-align: center;
+  white-space: nowrap;
+  pointer-events: none;
+}
+:global(:root:lang(zh)) .ribbon { font-family: var(--ts-font-body); }
+.ribbonS { font-size: var(--ts-fs-micro); padding: 2px 0 1px; }
+.ribbonM { font-size: var(--ts-fs-xs); }
+.ribbonL { font-size: var(--ts-fs-body); padding: 5px 0 4px; }
+
+/* ── Zoom (desktop popover) ───────────────────────────────────────────────────────────── */
+.zoomPop { background: transparent; box-shadow: none; filter: drop-shadow(0 24px 40px color-mix(in srgb, var(--ts-room-950) 60%, transparent)); }
+.zoom { display: flex; align-items: stretch; }
+.zoomImg { box-shadow: none; }
+.zoomText {
+  width: 236px;
+  margin: 18px 0;
+  padding: 14px 15px;
+  background: var(--ts-paper-50);
+  color: var(--ts-ink-900);
+  border-radius: 0 var(--ts-radius-m) var(--ts-radius-m) 0;
+  font-size: var(--ts-fs-m);
+  line-height: 1.42;
+  overflow: auto;
+}
+.zoomTitle {
+  margin: 0 0 3px;
+  font: 700 var(--ts-fs-xl) / 1.1 var(--ts-font-ui);
+  letter-spacing: var(--ts-track-tight);
+  text-transform: var(--ts-caps);
+}
+:global(:root:lang(zh)) .zoomTitle { font-family: var(--ts-font-serif-zh); font-weight: 900; }
+
+.meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  margin-bottom: 9px;
+  font: 600 var(--ts-fs-xs) / 1.3 var(--ts-font-ui);
+  letter-spacing: .08em;
+  color: var(--ts-ink-500);
+  text-transform: var(--ts-caps);
+}
+:global(:root:lang(zh)) .meta { font-family: var(--ts-font-body); letter-spacing: 0; }
+.metaPart { display: inline-flex; align-items: center; gap: 3px; white-space: nowrap; }
+.metaDot { margin: 0 5px; }
+.metaUs { color: var(--ts-us-600); }
+.metaUssr { color: var(--ts-ussr-600); }
+
+.cardText p { margin: 0 0 7px; }
+.cardText em { font-style: italic; }
+.cardLabel { font-style: italic; font-size: var(--ts-fs-s); color: var(--ts-ink-700); }
+
+/* Play notes and warnings */
+.notes {
+  display: grid;
+  gap: 4px;
+  margin-top: 10px;
+  padding-top: 8px;
+  border-top: 1px dashed color-mix(in srgb, var(--ts-ink-900) 30%, transparent);
+  font-size: var(--ts-fs-m);
+}
+.notesTitle {
+  font: 700 var(--ts-fs-micro) / 1 var(--ts-font-ui);
+  letter-spacing: var(--ts-track-caps);
+  text-transform: var(--ts-caps);
+  color: var(--ts-ink-500);
+  margin-bottom: 2px;
+}
+:global(:root:lang(zh)) .notesTitle { font-family: var(--ts-font-body); }
+.note { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; column-gap: 8px; }
+.noteLabel { color: var(--ts-ink-700); white-space: nowrap; }
+.noteValue { display: grid; justify-items: end; margin-left: auto; text-align: right; font-weight: 700; white-space: nowrap; }
+.noteWide { justify-items: start; text-align: left; flex: 1; margin-left: 0; white-space: normal; color: var(--ts-ink-700); }
+.noteDetail { font-weight: 500; font-size: var(--ts-fs-s); color: var(--ts-ink-500); }
+.warnline {
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+  margin-top: 6px;
+  padding: 7px 8px;
+  border-radius: var(--ts-radius-s);
+  background: var(--ts-warn-bg);
+  color: var(--ts-alert-700);
+  font: 700 var(--ts-fs-s) / 1.3 var(--ts-font-ui);
+  letter-spacing: .02em;
+}
+:global(:root:lang(zh)) .warnline { font-family: var(--ts-font-body); letter-spacing: 0; }
+.warnFatal { box-shadow: inset 0 0 0 1.5px var(--ts-alert-500); }
+.warnInfo .hazard { background: var(--ts-alert-700); clip-path: circle(45%); width: 12px; height: 12px; margin-top: 1px; }
+.hazard {
+  flex: none;
+  width: 15px;
+  height: 13px;
+  margin-top: 1px;
+  background: var(--ts-hazard-bright);
+  clip-path: polygon(50% 0, 100% 100%, 0 100%);
+}
+.errata {
+  margin-top: 8px;
+  font: 600 var(--ts-fs-micro) / 1.2 var(--ts-font-ui);
+  letter-spacing: .08em;
+  color: var(--ts-brass-700);
+  text-transform: var(--ts-caps);
+}
+:global(:root:lang(zh)) .errata { font-family: var(--ts-font-body); letter-spacing: 0; }
+
+/* Room tone (card sheet) */
+.notesRoom { border-top-color: var(--ts-room-600); }
+.notesRoom .notesTitle, .notesRoom .noteDetail { color: var(--ts-text-3); }
+.notesRoom .noteLabel, .notesRoom .noteWide { color: var(--ts-text-2); }
+.notesRoom .noteValue { color: var(--ts-text-1); }
+.notesRoom .metaUs { color: var(--ts-us-300); }
+.notesRoom .metaUssr { color: var(--ts-ussr-300); }
+.errataRoom { color: var(--ts-brass-400); }
+
+/* ── Card sheet (compact) ─────────────────────────────────────────────────────────────── */
+.sheetCard { display: flex; flex-direction: column; gap: 4px; padding-top: 2px; }
+.sheetTop { display: flex; align-items: flex-start; gap: 12px; }
+.sheetImg { flex: none; }
+.sheetHead { min-width: 0; flex: 1; }
+.sheetTitle {
+  margin: 0 0 4px;
+  font: 700 var(--ts-fs-xl) / 1.1 var(--ts-font-ui);
+  letter-spacing: var(--ts-track-tight);
+  text-transform: var(--ts-caps);
+  color: var(--ts-text-hi);
+}
+:global(:root:lang(zh)) .sheetTitle { font-family: var(--ts-font-serif-zh); font-weight: 900; }
+.sheetMeta .meta { color: var(--ts-text-3); }
+.sheetMeta .metaUs { color: var(--ts-us-300); }
+.sheetMeta .metaUssr { color: var(--ts-ussr-300); }
+.sheetText { font-size: var(--ts-fs-body); line-height: var(--ts-lh-body); color: var(--ts-text-1); }
+.sheetText .cardLabel { color: var(--ts-text-2); }
+/*
+ * The answer ("Play Red Scare/Purge") stays in view at the bottom of the sheet while the card above it scrolls
+ * (QA Q-029: on short screens it was below the fold). The play-mode rows (a tall panel) scroll with the card.
+ */
+.sheetActions {
+  display: grid;
+  gap: 8px;
+  margin: 12px 0 -12px;
+  padding: 10px 0 12px;
+  position: sticky;
+  bottom: -12px;
+  z-index: 1;
+  background: var(--ts-room-900);
+  box-shadow: 0 -10px 12px -10px var(--ts-scrim);
+}
+.sheetActions:has([data-rows]) { position: static; box-shadow: none; }

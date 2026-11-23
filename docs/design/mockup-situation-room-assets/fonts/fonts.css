@@ -1,0 +1,7 @@
+/* Latin-only subsets (SIL Open Font License 1.1). Total ≈ 140 KB. CJK always uses system fonts. */
+@font-face { font-family: "SR Stencil"; src: url("BigShouldersStencilDisplay-var.woff2") format("woff2"); font-weight: 100 900; font-display: swap; unicode-range: U+0000-00FF, U+2013-2014, U+2018-201E, U+2022, U+2026, U+2212; }
+@font-face { font-family: "SR Condensed"; src: url("BarlowCondensed-500.woff2") format("woff2"); font-weight: 500; font-display: swap; unicode-range: U+0000-00FF, U+2013-2014, U+2018-201E, U+2022, U+2026, U+2212; }
+@font-face { font-family: "SR Condensed"; src: url("BarlowCondensed-600.woff2") format("woff2"); font-weight: 600; font-display: swap; unicode-range: U+0000-00FF, U+2013-2014, U+2018-201E, U+2022, U+2026, U+2212; }
+@font-face { font-family: "SR Condensed"; src: url("BarlowCondensed-700.woff2") format("woff2"); font-weight: 700; font-display: swap; unicode-range: U+0000-00FF, U+2013-2014, U+2018-201E, U+2022, U+2026, U+2212; }
+@font-face { font-family: "SR Typewriter"; src: url("CourierPrime-400.woff2") format("woff2"); font-weight: 400; font-display: swap; unicode-range: U+0000-00FF, U+2013-2014, U+2018-201E, U+2022, U+2026, U+2212; }
+@font-face { font-family: "SR Typewriter"; src: url("CourierPrime-700.woff2") format("woff2"); font-weight: 700; font-display: swap; unicode-range: U+0000-00FF, U+2013-2014, U+2018-201E, U+2022, U+2026, U+2212; }

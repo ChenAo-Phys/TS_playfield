@@ -1,0 +1,156 @@
+/*
+ * The hand (ui-spec §7.2; final.css `.hand`, `.hcard`, 7.5). Tokens only. Local stacking (z 1) lifts a
+ * hovered / staged card above its neighbours inside the hand's own stacking context.
+ */
+.hand {
+  position: relative;
+  flex: 1;
+  min-width: 0;
+  height: 100%;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding-bottom: 4px;
+  pointer-events: none;
+}
+.row {
+  position: relative;
+  isolation: isolate;
+  width: 100%;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding: 0 8px;
+}
+.scrolling .row {
+  justify-content: flex-start;
+  overflow-x: auto;
+  overflow-y: hidden;
+  /* room above for the lift and the tags, which the scroller would clip */
+  margin-top: -34px;
+  padding-top: 34px;
+  padding-inline: 24px;
+  scroll-padding-inline: 24px;
+  scrollbar-width: none;
+  pointer-events: auto;
+  -webkit-mask-image: linear-gradient(90deg, transparent, black 24px, black calc(100% - 24px), transparent);
+  mask-image: linear-gradient(90deg, transparent, black 24px, black calc(100% - 24px), transparent);
+}
+.scrolling .row::-webkit-scrollbar { display: none; }
+
+.label {
+  position: absolute;
+  left: 50%;
+  bottom: 3px;
+  transform: translateX(-50%);
+  font: 700 var(--ts-fs-micro) / 1 var(--ts-font-ui);
+  letter-spacing: var(--ts-track-wide);
+  color: color-mix(in srgb, var(--ts-brass-500) 64%, transparent);
+  text-transform: var(--ts-caps);
+  white-space: nowrap;
+  pointer-events: none;
+}
+:global(:root:lang(zh)) .label { font-family: var(--ts-font-body); }
+.empty {
+  margin-bottom: 40px;
+  font: 600 var(--ts-fs-s) / 1.2 var(--ts-font-ui);
+  letter-spacing: var(--ts-track-caps);
+  text-transform: var(--ts-caps);
+  color: var(--ts-text-3);
+}
+
+/* ── A card ───────────────────────────────────────────────────────────────────────────── */
+.card {
+  position: relative;
+  flex: none;
+  display: block;
+  margin: 0 0 8px;
+  padding: 0;
+  border: 0;
+  border-radius: var(--ts-radius-card);
+  background: none;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  pointer-events: auto;
+  transform-origin: 50% 100%;
+  transition: transform var(--ts-dur-s) var(--ts-ease-out);
+  outline: none;
+  -webkit-tap-highlight-color: transparent;
+}
+.face { transition: box-shadow var(--ts-dur-s) var(--ts-ease-out); }
+.card:focus-visible .face { box-shadow: var(--ts-focus-ring), var(--ts-shadow-card); }
+
+/* playable: lifted 10 px, brass glow */
+.st_playable { transform: translateY(-10px); }
+.st_playable .face { box-shadow: var(--ts-glow-act), var(--ts-shadow-card); }
+
+/* hovered / focused: lifted 22 px, scale 1.06, above its neighbours */
+.card:not(.st_lifted):hover,
+.card:not(.st_lifted):focus-visible { transform: translateY(-22px) scale(1.06); z-index: 1; }
+
+/* on top of its neighbours, the caption may use the card's full width, and a spined card shows its caption */
+.card:not(.st_lifted):hover .face,
+.card:not(.st_lifted):focus-visible .face,
+.st_staged .face { --ov: 0px !important; --spine-on: 0; }
+
+/* staged: lifted 22 px, 3 px brass ring, verb stamp */
+.st_staged { transform: translateY(-22px); z-index: 1; }
+.st_staged .face { box-shadow: 0 0 0 3px var(--ts-brass-400), 0 0 22px var(--ts-act-glow), var(--ts-shadow-card); }
+.st_staged:hover, .st_staged:focus-visible { transform: translateY(-22px) scale(1.06); }
+
+/* lifted out: the slot keeps a dashed brass outline (the card is on the stage / in the slip clip) */
+.st_lifted { cursor: default; }
+.st_lifted .face { visibility: hidden; }
+.st_lifted::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: var(--ts-radius-card);
+  border: 1.5px dashed color-mix(in srgb, var(--ts-brass-500) 60%, transparent);
+  background: color-mix(in srgb, var(--ts-brass-500) 5%, transparent);
+}
+
+/* frames animating: hover and zoom still work, clicks do not activate */
+.busy .card, .inert.st_playable, .inert.st_staged { cursor: progress; }
+
+.stamp {
+  position: absolute;
+  left: 50%;
+  top: 30%;
+  translate: -50% -50%;
+  pointer-events: none;
+  z-index: 1;
+}
+.stampInner.stampInner {
+  font-size: var(--ts-fs-m);
+  background: var(--ts-paper-50);
+  box-shadow: 0 2px 6px color-mix(in srgb, var(--ts-room-950) 45%, transparent);
+}
+
+/* hand-revealed: the KNOWN TO AI tag blinks on, card by card */
+.blink :global([data-tone="known"]) {
+  animation: known-blink var(--blink-ms, 350ms) var(--ts-ease-in-out) var(--blink-delay, 0ms) both;
+}
+@keyframes known-blink {
+  0% { opacity: 0; }
+  30% { opacity: 1; }
+  50% { opacity: .2; }
+  75% { opacity: 1; }
+  100% { opacity: 1; }
+}
+
+/* ── Tablet: 86 × 120 cards ───────────────────────────────────────────────────────────── */
+.tablet .card { margin-bottom: 8px; }
+
+/* ── Reduced motion: position cuts, no blink ──────────────────────────────────────────── */
+:global([data-motion="reduce"]) .card { transition: none; }
+:global([data-motion="reduce"]) .blink :global([data-tone="known"]) { animation: none; }
+@media (prefers-reduced-motion: reduce) {
+  :global(:root:not([data-motion="full"])) .card { transition: none; }
+  :global(:root:not([data-motion="full"])) .blink :global([data-tone="known"]) { animation: none; }
+}
+
+/* Tags centred on the visible strip of an overlapped card */
+.tagShift { display: flex; flex-direction: column; align-items: center; gap: 2px; }

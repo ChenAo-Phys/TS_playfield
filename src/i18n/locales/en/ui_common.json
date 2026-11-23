@@ -1,0 +1,47 @@
+{
+  "die": {
+    "label": "Die: {{face}}",
+    "labelSide": "{{side}} die: {{face}}",
+    "withResult": "{{die}}, {{result}}",
+    "result": {
+      "ok": "success",
+      "fail": "failure",
+      "boom": "ends the game"
+    }
+  },
+  "hold": {
+    "hint": "Press and hold to confirm"
+  },
+  "sheet": {
+    "grab": "Drag down or tap to close"
+  },
+  "toast": {
+    "region": "Notifications"
+  },
+  "china": {
+    "faceDownLabel": "{{card}}, face down"
+  },
+  "tag": {
+    "scoring": "Scoring",
+    "strands": "Strands a scoring card",
+    "opponentEvent": "{{side}} event",
+    "known": "Known to AI"
+  },
+  "zoom": {
+    "label": "{{card}}: card details",
+    "neutral": "Both sides",
+    "errata": "Text shown is the current errata",
+    "notes": {
+      "title": "If you play it now",
+      "event": "Event",
+      "eventOwn": "Fires for you",
+      "eventOpponent": "Fires for the {{side}}",
+      "eventNeutral": "Fires for whoever plays it",
+      "ops": "Effective Ops",
+      "space": "Space race",
+      "spaceValue": "Box {{from}} → {{to}} · roll 1–{{roll}}",
+      "spaceOps": "Needs {{ops}} Ops",
+      "asiaBonus": "+1 Op if every point goes to Asia"
+    }
+  }
+}

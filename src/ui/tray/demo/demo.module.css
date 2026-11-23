@@ -1,0 +1,144 @@
+/* Tray demo (dev only): a stand-in game grid (ui-spec §3). Tokens only. */
+.game {
+  display: grid;
+  height: 100vh;
+  height: 100dvh;
+  overflow: hidden;
+  grid-template-columns: minmax(0, 1fr) var(--ts-rail-w);
+  grid-template-rows: var(--ts-console-h) minmax(0, 1fr) var(--ts-tray-h);
+  background: var(--ts-bg-app-gradient);
+  color: var(--ts-text-1);
+}
+@media (min-width: 1600px) { .game { grid-template-columns: minmax(0, 1fr) 336px; } }
+.tablet {
+  grid-template-columns: minmax(0, 1fr) var(--ts-rail-strip-w);
+  grid-template-rows: 54px minmax(0, 1fr) clamp(132px, 18vh, 150px);
+}
+.console {
+  grid-column: 1 / -1;
+  grid-row: 1;
+  background: var(--ts-surface-console);
+  box-shadow: var(--ts-shadow-console);
+  z-index: var(--ts-z-console);
+}
+.table {
+  grid-column: 1;
+  grid-row: 2 / 4;
+  position: relative;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+}
+.table[aria-busy="true"] { cursor: progress; }
+.table > :first-child { position: absolute; inset: var(--ts-table-pad) var(--ts-table-pad) 0; }
+.stage {
+  position: absolute;
+  left: 50%;
+  top: 42%;
+  width: 1px;
+  height: 1px;
+  pointer-events: none;
+}
+.rail {
+  grid-column: 2;
+  grid-row: 2 / 4;
+  min-height: 0;
+  overflow: auto;
+  padding: var(--ts-space-3);
+  background: var(--ts-surface-rail);
+  box-shadow: inset 1px 0 0 var(--ts-line-hard);
+  z-index: var(--ts-z-rail);
+  display: flex;
+  flex-direction: column;
+  gap: var(--ts-space-3);
+}
+.dev { margin: 0; padding-left: var(--ts-space-4); font: 400 var(--ts-fs-s) / 1.35 var(--ts-font-type); color: var(--ts-text-2); }
+.adversary { display: flex; gap: var(--ts-space-2); align-items: flex-end; margin-top: auto; }
+.effects { width: 40px; height: 40px; border: 1px dashed var(--ts-line-brass); border-radius: var(--ts-radius-s); }
+.trayArea {
+  grid-column: 1;
+  grid-row: 3;
+  min-width: 0;
+  min-height: 0;
+  z-index: var(--ts-z-tray);
+}
+
+/* Stub slip (the real one: src/ui/prompts OrdersSlip) */
+.slip {
+  position: relative;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 9px 12px;
+  background: var(--ts-surface-slip);
+  color: var(--ts-ink-900);
+  border-radius: 2px 2px 3px 3px;
+  box-shadow: var(--ts-shadow-slip);
+  overflow: hidden;
+}
+.slipHead {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 5px;
+  border-bottom: 1px solid var(--ts-line-ink);
+  font: 700 var(--ts-fs-xs) / 1 var(--ts-font-ui);
+  letter-spacing: var(--ts-track-wide);
+  text-transform: var(--ts-caps);
+  color: var(--ts-ink-700);
+}
+.slipTitle {
+  font: 700 var(--ts-fs-xl) / 1.05 var(--ts-font-ui);
+  letter-spacing: var(--ts-track-tight);
+  text-transform: var(--ts-caps);
+}
+:global(:root:lang(zh)) .slipTitle { font-family: var(--ts-font-body); font-size: var(--ts-fs-l); }
+.slipHint { font: 400 var(--ts-fs-s) / 1.3 var(--ts-font-body); color: var(--ts-ink-500); }
+.slipActions { margin-top: auto; display: flex; gap: 6px; }
+
+/* Compact stand-ins: the sheet with the slip, and a dock (the shell owns the real BottomDock) */
+.compact, .compact-landscape {
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-rows: var(--ts-c-console-h) minmax(0, 1fr) auto calc(var(--ts-c-dock-h) + env(safe-area-inset-bottom, 0px));
+}
+.compact .console, .compact-landscape .console { grid-row: 1; }
+.compact .table, .compact-landscape .table { grid-row: 2; }
+.compact .table > :first-child, .compact-landscape .table > :first-child { inset: 0; }
+.sheet {
+  grid-row: 3;
+  position: relative;
+  z-index: var(--ts-z-tray);
+  margin-top: -14px;
+  padding: 6px 8px 8px;
+  background: var(--ts-room-900);
+  border-radius: 14px 14px 0 0;
+  box-shadow: 0 -10px 24px var(--ts-scrim);
+}
+.sheet .slip { height: auto; min-height: 120px; }
+.dock {
+  grid-row: 4;
+  display: grid;
+  grid-template-columns: 1.5fr 2fr;
+  align-items: center;
+  gap: 8px;
+  padding: 0 8px env(safe-area-inset-bottom, 0px);
+  background: var(--ts-room-850);
+  border-top: 1px solid var(--ts-line-hard);
+}
+.dockHand {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: var(--ts-touch-min);
+  border: 0;
+  background: transparent;
+  color: var(--ts-steel-100);
+  font: 700 var(--ts-fs-xs) / 1 var(--ts-font-ui);
+  letter-spacing: var(--ts-track-caps);
+  text-transform: var(--ts-caps);
+}
+.thumbs { display: flex; }
+.thumbs > * + * { margin-left: -16px; }
+.thumb { box-shadow: 0 2px 4px var(--ts-scrim); }
+.dockPiles { min-width: 0; }

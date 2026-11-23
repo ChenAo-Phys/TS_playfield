@@ -1,0 +1,422 @@
+/* Start screen (ui-spec §11.1; final.css section 4 + 7.9). Tokens only. */
+.start {
+  position: relative;
+  height: 100vh;
+  height: 100dvh;
+  overflow: hidden;
+  color: var(--ts-text-1);
+  background: radial-gradient(52% 60% at 50% 46%,
+    color-mix(in srgb, var(--ts-walnut-600) 55%, var(--ts-room-600)) 0%,
+    var(--ts-room-800) 55%,
+    var(--ts-room-950) 100%);
+}
+
+/* ── The table in perspective (the real map, empty, non-interactive) ── */
+.wall { position: absolute; inset: 0; pointer-events: none; overflow: hidden; }
+.tableTop {
+  position: absolute;
+  left: 50%;
+  top: 77%;
+  width: 1640px;
+  height: 960px;
+  transform: translate(-50%, -50%) perspective(1300px) rotateX(52deg);
+  opacity: .62;
+  filter: blur(.4px) saturate(.8);
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 40px 80px color-mix(in srgb, var(--ts-room-950) 70%, transparent);
+}
+.drift {
+  width: 100%;
+  height: 100%;
+  animation: drift 30s var(--ts-ease-in-out) infinite alternate;
+  animation-play-state: var(--ts-ambient-state);
+}
+@keyframes drift {
+  from { transform: translate(-8px, -4px); }
+  to { transform: translate(8px, 4px); }
+}
+.reduced .drift { animation: none; }
+/* The map backdrop arrives in its own chunk: it fades in under the wall. */
+.mapIn {
+  width: 100%;
+  height: 100%;
+  animation: map-in var(--ts-dur-xl) var(--ts-ease-out) both;
+}
+@keyframes map-in { from { opacity: 0; } to { opacity: 1; } }
+.reduced .mapIn { animation: none; }
+.lampPool {
+  position: absolute;
+  left: 50%;
+  top: 80%;
+  width: 1100px;
+  height: 380px;
+  transform: translate(-50%, -50%);
+  background: radial-gradient(50% 50% at 50% 50%, color-mix(in srgb, var(--ts-brass-100) 22%, transparent), transparent 70%);
+  mix-blend-mode: screen;
+}
+.vignette {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(180deg,
+      var(--ts-room-950) 0%,
+      color-mix(in srgb, var(--ts-room-950) 96%, transparent) 34%,
+      color-mix(in srgb, var(--ts-room-950) 35%, transparent) 58%,
+      color-mix(in srgb, var(--ts-room-950) 25%, transparent) 80%,
+      color-mix(in srgb, var(--ts-room-950) 90%, transparent) 100%),
+    radial-gradient(60% 70% at 50% 75%, transparent 30%, color-mix(in srgb, var(--ts-room-950) 85%, transparent) 100%);
+}
+.lampCone {
+  position: absolute;
+  left: 50%;
+  top: 0;
+  width: 1100px;
+  height: 900px;
+  transform: translateX(-50%);
+  background: conic-gradient(from 180deg at 50% 0%,
+    transparent 155deg,
+    color-mix(in srgb, var(--ts-brass-100) 7%, transparent) 168deg,
+    color-mix(in srgb, var(--ts-brass-100) 7%, transparent) 192deg,
+    transparent 205deg);
+}
+
+/* ── Foreground ── */
+.scroll {
+  position: relative;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  /* Notched phones held sideways: the backdrop runs under the notch, the controls stay clear (Q-042). */
+  padding: 0 var(--ts-safe-right) var(--ts-safe-bottom) var(--ts-safe-left);
+}
+.top {
+  /* Above the centre column, which pulls itself up under the header (margin-top −36 px): without this
+     the transparent <main> took the clicks meant for the language switch and ⚙ (local stacking only). */
+  position: relative;
+  z-index: 1;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 28px 0;
+}
+.classified {
+  font: 700 var(--ts-fs-s) / 1 var(--ts-font-ui);
+  letter-spacing: .3em;
+  color: var(--ts-steel-400);
+  text-transform: var(--ts-caps);
+}
+:root:lang(zh) .classified { letter-spacing: .2em; }
+.topActions { display: flex; align-items: center; gap: var(--ts-space-2); }
+.iconBtn {
+  width: 32px;
+  height: 32px;
+  display: grid;
+  place-items: center;
+  padding: 0;
+  border: 0;
+  border-radius: var(--ts-radius-s);
+  background: var(--ts-room-750);
+  color: var(--ts-steel-200);
+  box-shadow: var(--ts-shadow-button);
+}
+.iconBtn:hover { color: var(--ts-paper-50); }
+
+.center {
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 0 var(--ts-space-4);
+  margin-top: -36px;
+}
+.kicker {
+  font: 700 var(--ts-fs-m) / 1 var(--ts-font-ui);
+  letter-spacing: .5em;
+  color: var(--ts-brass-400);
+  text-transform: var(--ts-caps);
+}
+:root:lang(zh) .kicker { letter-spacing: .3em; font-size: var(--ts-fs-m); }
+.title {
+  margin: 14px 0 6px;
+  font: 800 var(--ts-fs-hero) / .86 var(--ts-font-stencil);
+  letter-spacing: .06em;
+  color: var(--ts-paper-50);
+  text-transform: uppercase;
+  text-shadow: 0 6px 30px color-mix(in srgb, var(--ts-room-950) 60%, transparent);
+}
+.title span { display: block; }
+.zhTitle {
+  font: 900 var(--ts-fs-3xl) / 1 var(--ts-font-serif-zh);
+  letter-spacing: .5em;
+  margin: 6px 0 0 .5em;
+  color: var(--ts-paper-200);
+}
+:root:lang(zh) .zhTitle { font-size: calc(var(--ts-fs-4xl) * 1.1); margin-top: 12px; color: var(--ts-paper-50); }
+.tagline {
+  margin: 18px 0 0;
+  font: 500 var(--ts-fs-body) / 1.4 var(--ts-font-type);
+  color: var(--ts-steel-200);
+}
+
+/* ── Side dossiers ── */
+.sides { display: flex; gap: 22px; justify-content: center; align-items: stretch; margin-top: 34px; }
+.folder {
+  position: relative;
+  width: 250px;
+  padding: 22px 18px 18px;
+  border: 0;
+  border-radius: 4px 12px 4px 4px;
+  text-align: left;
+  color: var(--ts-paper-50);
+  box-shadow: 0 20px 40px color-mix(in srgb, var(--ts-room-950) 60%, transparent);
+  transition: transform var(--ts-dur-s) var(--ts-ease-out), box-shadow var(--ts-dur-s) var(--ts-ease-out);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+.folder::before {
+  content: "";
+  position: absolute;
+  top: -14px;
+  left: 16px;
+  width: 96px;
+  height: 16px;
+  border-radius: 6px 6px 0 0;
+  background: inherit;
+}
+.folder:hover:not(:disabled), .folder:focus-visible { transform: translateY(-6px) rotate(-.6deg); }
+.reduced .folder:hover:not(:disabled), .reduced .folder:focus-visible { transform: none; }
+.folder:focus-visible { box-shadow: var(--ts-focus-ring), 0 20px 40px color-mix(in srgb, var(--ts-room-950) 60%, transparent); }
+.folder:disabled { cursor: progress; }
+.folder:disabled:not(.f_random) { filter: saturate(.75) brightness(.85); }
+/* After a failed load the folders are unavailable, not busy: Retry on the boot line is the way on (Q-052). */
+.failed .folder:disabled { cursor: not-allowed; opacity: .5; filter: saturate(.35) brightness(.8); }
+.failed .resume:disabled { cursor: not-allowed; }
+.f_US { background: linear-gradient(170deg, var(--ts-us-600), var(--ts-us-700)); }
+.f_USSR { background: linear-gradient(170deg, var(--ts-ussr-600), var(--ts-ussr-700)); }
+.f_random { background: linear-gradient(170deg, var(--ts-room-500), var(--ts-room-700)); width: 200px; }
+.asking { box-shadow: 0 0 0 2px var(--ts-brass-400), 0 20px 40px color-mix(in srgb, var(--ts-room-950) 60%, transparent); }
+.seal { width: 54px; height: 54px; flex: none; }
+.folderText { display: flex; flex-direction: column; align-items: flex-start; }
+.nm {
+  margin-top: 12px;
+  font: 800 var(--ts-fs-3xl) / 1 var(--ts-font-stencil);
+  letter-spacing: .06em;
+  text-transform: uppercase;
+}
+:root:lang(zh) .nm { font-family: var(--ts-font-body); font-weight: 800; letter-spacing: .1em; font-size: var(--ts-fs-3xl); }
+.ds { margin-top: 6px; font: 500 var(--ts-fs-m) / 1.4 var(--ts-font-body); opacity: .88; }
+.go {
+  margin-top: 14px;
+  font: 700 var(--ts-fs-s) / 1 var(--ts-font-ui);
+  letter-spacing: .2em;
+  text-transform: var(--ts-caps);
+  color: var(--ts-ussr-gold);
+}
+:root:lang(zh) .go { letter-spacing: .1em; }
+.f_US .go { color: var(--ts-us-100); }
+.f_random .go { color: var(--ts-brass-300); }
+.stampx {
+  position: absolute;
+  right: 12px;
+  top: 14px;
+  font: 800 var(--ts-fs-s) / 1 var(--ts-font-stencil);
+  letter-spacing: .14em;
+  border: 1.5px solid currentColor;
+  padding: 3px 5px 2px;
+  transform: rotate(6deg);
+  opacity: .65;
+}
+.chev { margin-left: auto; font: 700 var(--ts-fs-2xl) / 1 var(--ts-font-ui); color: var(--ts-brass-300); }
+
+/* The coin */
+.coinWrap { display: inline-grid; width: 54px; height: 54px; transform-style: preserve-3d; }
+.coin { width: 54px; height: 54px; }
+.coinRim { fill: var(--ts-brass-500); stroke: var(--ts-brass-700); }
+.coinRing { stroke: var(--ts-brass-700); }
+.coinUs { fill: var(--ts-us-600); opacity: .85; }
+.coinUssr { fill: var(--ts-ussr-600); opacity: .85; }
+.coinSpin { animation: coinSpin 420ms linear infinite; }
+.coinLand { animation: coinLand 900ms var(--ts-ease-out) both; }
+@keyframes coinSpin { to { transform: rotateY(360deg); } }
+@keyframes coinLand {
+  from { transform: rotateY(1080deg) translateY(-10px); }
+  70% { transform: rotateY(60deg) translateY(-4px); }
+  to { transform: rotateY(0) translateY(0); }
+}
+.reduced .coinSpin, .reduced .coinLand { animation: none; }
+
+/* ── Buttons row, confirm, chips ── */
+.row { display: flex; gap: 10px; justify-content: center; align-items: stretch; margin-top: 26px; flex-wrap: wrap; }
+.btnDark, .btnBrass, .resume {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 16px 9px;
+  border: 0;
+  border-radius: var(--ts-radius-s);
+  font: 700 var(--ts-fs-m) / 1 var(--ts-font-ui);
+  letter-spacing: var(--ts-track-caps);
+  text-transform: var(--ts-caps);
+  text-decoration: none;
+}
+:root:lang(zh) .btnDark, :root:lang(zh) .btnBrass, :root:lang(zh) .resume { font-family: var(--ts-font-body); font-size: var(--ts-fs-m); }
+.btnDark {
+  background: color-mix(in srgb, var(--ts-room-800) 90%, transparent);
+  color: var(--ts-paper-100);
+  box-shadow: 0 0 0 1px var(--ts-line-brass);
+}
+.btnDark:hover { background: var(--ts-room-700); }
+.btnBrass, .resume {
+  background: linear-gradient(180deg, var(--ts-brass-400), var(--ts-brass-500));
+  color: var(--ts-ink-900);
+  box-shadow: 0 0 0 1px var(--ts-brass-700), 0 6px 14px color-mix(in srgb, var(--ts-room-950) 45%, transparent);
+}
+.resume { flex-direction: column; align-items: flex-start; gap: 4px; padding: 8px 16px 7px; }
+.resume:disabled { opacity: .6; }
+.resumeTitle { display: inline-flex; gap: 6px; align-items: center; }
+.resume small {
+  font: 600 var(--ts-fs-s) / 1 var(--ts-font-ui);
+  letter-spacing: .06em;
+  text-transform: none;
+  opacity: .8;
+}
+:root:lang(zh) .resume small { font-family: var(--ts-font-body); letter-spacing: 0; }
+.replace {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 26px;
+  padding: 8px 10px 8px 14px;
+  border-radius: var(--ts-radius-s);
+  background: color-mix(in srgb, var(--ts-room-850) 92%, transparent);
+  box-shadow: inset 0 0 0 1px var(--ts-line-brass);
+  font: 500 var(--ts-fs-m) / 1.3 var(--ts-font-body);
+  color: var(--ts-paper-100);
+  flex-wrap: wrap;
+  justify-content: center;
+}
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 6px;
+  margin: 20px auto 0;
+  padding: 0;
+  max-width: 820px;
+  list-style: none;
+}
+.chips li {
+  font: 600 var(--ts-fs-s) / 1 var(--ts-font-ui);
+  letter-spacing: .06em;
+  color: var(--ts-steel-200);
+  padding: 6px 9px 5px;
+  border-radius: 3px;
+  background: color-mix(in srgb, var(--ts-room-850) 82%, transparent);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--ts-brass-500) 30%, transparent);
+}
+:root:lang(zh) .chips li { font-family: var(--ts-font-body); font-size: var(--ts-fs-s); letter-spacing: 0; }
+
+/* ── Boot line and fine print ── */
+.foot {
+  position: relative;
+  flex: none;
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  padding: 0 28px 22px;
+  min-height: 64px;
+}
+.boot { margin: 0 auto; }
+.fine {
+  position: absolute;
+  right: 28px;
+  bottom: 22px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  font: 500 var(--ts-fs-s) / 1.5 var(--ts-font-body);
+  color: var(--ts-steel-400);
+  text-align: right;
+  max-width: 330px;
+}
+.link {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--ts-steel-300);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  font: inherit;
+}
+.link:hover { color: var(--ts-paper-100); }
+
+/* Narrow desktops: the fine print goes under the boot line. */
+@media (max-width: 1399px) {
+  .foot { flex-direction: column; align-items: center; gap: 8px; padding-bottom: 14px; }
+  .fine { position: static; align-items: center; text-align: center; max-width: none; flex-direction: row; gap: 6px; flex-wrap: wrap; justify-content: center; }
+}
+/* Short viewports: a smaller title and folders. */
+@media (max-height: 860px) {
+  .title { font-size: calc(var(--ts-fs-hero) * .8); }
+  .tagline { margin-top: 12px; }
+  .sides { margin-top: 26px; }
+  .folder { padding: 18px 16px 14px; }
+  .row { margin-top: 18px; }
+  .chips { margin-top: 14px; }
+  .center { margin-top: -10px; }
+}
+@media (max-height: 700px) {
+  .title { font-size: calc(var(--ts-fs-hero) * .62); }
+  .zhTitle { margin-top: 2px; }
+  .ds { display: none; }
+}
+
+/* ── Compact: everything stacks, the screen scrolls ── */
+.compact .scroll { overflow-y: auto; -webkit-overflow-scrolling: touch; }
+.compact .top { padding: 14px 16px 0; }
+.compact .center { justify-content: flex-start; margin-top: 18px; padding: 0 16px 16px; flex: none; }
+.compact .title { font-size: calc(var(--ts-fs-hero) * .54); margin-top: 10px; }
+.compact .zhTitle { font-size: var(--ts-fs-xl); }
+:root:lang(zh) .compact .zhTitle { font-size: var(--ts-fs-3xl); }
+.compact .tagline { font-size: var(--ts-fs-m); margin-top: 10px; }
+.compact .sides { flex-direction: column; gap: 10px; width: 100%; margin-top: 20px; }
+.compact .folder {
+  width: 100%;
+  min-height: 84px;
+  flex-direction: row;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+  border-radius: 4px 10px 4px 4px;
+}
+.compact .folder::before { display: none; }
+.compact .f_US { order: 1; }
+.compact .f_USSR { order: 2; }
+.compact .f_random { order: 3; }
+.compact .folder:hover:not(:disabled), .compact .folder:focus-visible { transform: none; }
+.compact .seal, .compact .coinWrap, .compact .coin { width: 40px; height: 40px; }
+.compact .nm { margin-top: 0; font-size: var(--ts-fs-xl); }
+:root:lang(zh) .compact .nm { font-size: var(--ts-fs-xl); }
+.compact .ds { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; font-size: var(--ts-fs-s); margin-top: 4px; }
+.compact .stampx { display: none; }
+.compact .row { margin-top: 16px; width: 100%; }
+.compact .row .resume { width: 100%; }
+.compact .chips { margin-top: 14px; }
+.compact .foot { padding: 8px 16px 18px; flex-direction: column; align-items: stretch; }
+.compact .fine { position: static; align-items: flex-start; text-align: left; margin-top: 10px; flex-direction: column; }
+
+/* Compact landscape (phones held sideways): a short title, the folders side by side. */
+.landscape .center { margin-top: 4px; }
+.landscape .title { font-size: calc(var(--ts-fs-hero) * .36); margin-top: 6px; }
+.landscape .zhTitle { display: none; }
+.landscape .tagline { margin-top: 6px; }
+.landscape .sides { flex-direction: row; margin-top: 12px; }
+.landscape .folder { flex: 1 1 0; min-width: 0; min-height: 64px; }
+.landscape .ds { -webkit-line-clamp: 2; }
+.landscape .chev { display: none; }

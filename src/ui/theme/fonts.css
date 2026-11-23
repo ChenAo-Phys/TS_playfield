@@ -1,0 +1,126 @@
+/*
+ * Twilight Struggle Playfield — fonts and font stacks. Spec: docs/design/ui-spec.md §2.3.
+ *
+ * Self-hosted: three small Latin-only families (SIL OFL 1.1, licence in public/fonts/OFL.txt),
+ * five WOFF2 files, ≈ 117 KB in total, `font-display: swap`. Chinese never downloads a font: every
+ * stack ends in the system CJK fonts. The URLs are root-absolute so Vite prefixes the base
+ * (/TS_playfield/) at build time.
+ *
+ * Each family is registered twice over the same file:
+ *   "TS …"     Latin-1 + typographic punctuation (English pages: curly quotes, dashes, ellipsis);
+ *   "TS … ZH"  Latin-1 only, so Chinese pages keep full-width CJK quotes and ellipses from the
+ *              system CJK font. The browser downloads each file once.
+ * :lang(zh) switches the stacks to the "ZH" registrations and puts CJK fonts ahead of system-ui.
+ *
+ * Preload in index.html (owner of index.html): BarlowCondensed-700 and BigShouldersStencil only.
+ */
+
+/* ── English pages ─────────────────────────────────────────────────────────────────── */
+@font-face {
+  font-family: "TS Stencil";
+  src: url("/fonts/BigShouldersStencilDisplay-var.woff2") format("woff2");
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+0000-00FF, U+2013-2014, U+2018-201E, U+2022, U+2026, U+2212;
+}
+@font-face {
+  font-family: "TS Condensed";
+  src: url("/fonts/BarlowCondensed-600.woff2") format("woff2");
+  font-weight: 500 600;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+0000-00FF, U+2013-2014, U+2018-201E, U+2022, U+2026, U+2212;
+}
+@font-face {
+  font-family: "TS Condensed";
+  src: url("/fonts/BarlowCondensed-700.woff2") format("woff2");
+  font-weight: 700 900;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+0000-00FF, U+2013-2014, U+2018-201E, U+2022, U+2026, U+2212;
+}
+@font-face {
+  font-family: "TS Typewriter";
+  src: url("/fonts/CourierPrime-400.woff2") format("woff2");
+  font-weight: 400 600;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+0000-00FF, U+2013-2014, U+2018-201E, U+2022, U+2026, U+2212;
+}
+@font-face {
+  font-family: "TS Typewriter";
+  src: url("/fonts/CourierPrime-700.woff2") format("woff2");
+  font-weight: 700 900;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+0000-00FF, U+2013-2014, U+2018-201E, U+2022, U+2026, U+2212;
+}
+
+/* ── Chinese pages: Latin-1 only (CJK punctuation stays full-width) ────────────────── */
+@font-face {
+  font-family: "TS Stencil ZH";
+  src: url("/fonts/BigShouldersStencilDisplay-var.woff2") format("woff2");
+  font-weight: 100 900;
+  font-display: swap;
+  unicode-range: U+0020-007E, U+00A0-00B6, U+00B8-00FF, U+2212;
+}
+@font-face {
+  font-family: "TS Condensed ZH";
+  src: url("/fonts/BarlowCondensed-600.woff2") format("woff2");
+  font-weight: 500 600;
+  font-display: swap;
+  unicode-range: U+0020-007E, U+00A0-00B6, U+00B8-00FF, U+2212;
+}
+@font-face {
+  font-family: "TS Condensed ZH";
+  src: url("/fonts/BarlowCondensed-700.woff2") format("woff2");
+  font-weight: 700 900;
+  font-display: swap;
+  unicode-range: U+0020-007E, U+00A0-00B6, U+00B8-00FF, U+2212;
+}
+@font-face {
+  font-family: "TS Typewriter ZH";
+  src: url("/fonts/CourierPrime-400.woff2") format("woff2");
+  font-weight: 400 600;
+  font-display: swap;
+  unicode-range: U+0020-007E, U+00A0-00B6, U+00B8-00FF, U+2212;
+}
+@font-face {
+  font-family: "TS Typewriter ZH";
+  src: url("/fonts/CourierPrime-700.woff2") format("woff2");
+  font-weight: 700 900;
+  font-display: swap;
+  unicode-range: U+0020-007E, U+00A0-00B6, U+00B8-00FF, U+2212;
+}
+
+/* ── Stacks ────────────────────────────────────────────────────────────────────────── */
+:root {
+  --ts-font-cjk: "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei UI", "Microsoft YaHei", "Noto Sans CJK SC",
+    "Noto Sans SC", "Source Han Sans SC", "WenQuanYi Micro Hei";
+  --ts-font-cjk-serif: "Songti SC", "STSong", "Noto Serif CJK SC", "Noto Serif SC", "Source Han Serif SC", "SimSun";
+
+  /* Stencil display: wordmark, DEFCON numeral, region names, verdicts, big numbers. */
+  --ts-font-stencil: "TS Stencil", "Big Shoulders Stencil Display", "Oswald", "Arial Narrow", var(--ts-font-cjk), sans-serif;
+  /* Condensed UI: labels, buttons, map names, numerals (use tabular-nums where numbers change). */
+  --ts-font-ui: "TS Condensed", "Barlow Condensed", "Roboto Condensed", "Arial Narrow", var(--ts-font-cjk), sans-serif;
+  /* Body: tooltips, descriptions, card text, hints. */
+  --ts-font-body: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, var(--ts-font-cjk), sans-serif;
+  /* Typewriter: teleprinter log, slip sub-lines, telex. */
+  --ts-font-type: "TS Typewriter", "Courier Prime", "Courier New", ui-monospace, var(--ts-font-cjk), monospace;
+  /* Newspaper mastheads and headlines (headline reveal). */
+  --ts-font-news: "Times New Roman", Georgia, var(--ts-font-cjk-serif), serif;
+  /* Chinese display serif for card names ≥ 19 px (never smaller: thin Song is unreadable on Windows). */
+  --ts-font-serif-zh: var(--ts-font-cjk-serif), serif;
+}
+
+:root:lang(zh) {
+  --ts-font-stencil: "TS Stencil ZH", var(--ts-font-cjk), sans-serif;
+  --ts-font-ui: "TS Condensed ZH", var(--ts-font-cjk), sans-serif;
+  --ts-font-body: var(--ts-font-cjk), system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --ts-font-type: "TS Typewriter ZH", var(--ts-font-cjk), monospace;
+  --ts-font-news: var(--ts-font-cjk-serif), "Times New Roman", serif;
+}
+
+/* Numerals: condensed, tabular, identical in both languages. */
+:root { --ts-font-num: "TS Condensed", "Barlow Condensed", "Roboto Condensed", "Arial Narrow", sans-serif; }

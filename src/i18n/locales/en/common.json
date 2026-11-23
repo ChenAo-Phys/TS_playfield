@@ -1,0 +1,14 @@
+{
+  "brand": "TWILIGHT STRUGGLE",
+  "disclaimer": "Unofficial fan project, not affiliated with or endorsed by GMT Games. Twilight Struggle® is a registered trademark of GMT Games, LLC.",
+  "language": "Language",
+  "side": {
+    "US": "US",
+    "USSR": "USSR"
+  },
+  "round": {
+    "setup": "Setup",
+    "headline": "T{{turn}} Headline",
+    "actionRound": "T{{turn}} AR{{ar}}"
+  }
+}

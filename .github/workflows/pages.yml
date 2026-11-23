@@ -1,0 +1,66 @@
+# Build the static site and publish it to GitHub Pages: https://chenao-phys.github.io/TS_playfield/
+#
+# The built assets are committed (owner decision 2026-11-23): public/engine (DeepStruggle's rules
+# engine as WebAssembly), public/cards and public/models (the pinned ONNX network). This workflow
+# only installs, checks and builds: no Emscripten, no submodule checkout, no model download, and
+# no browser (the Playwright scripts under src/**/demo/ and tests/ai/browser/ are not vitest tests).
+# Tests gated on env vars this workflow does NOT set: TSP_CAPTURE (tests/fixtures/capture.test.ts,
+# rewrites the UI fixtures) and TSP_SEEDS (tests/ai/autopilot-seeds.test.ts, a seed finder).
+#
+# One-time setup: Settings -> Pages -> Build and deployment -> Source: GitHub Actions
+# (docs/DEPLOY.md does it with `gh api`).
+name: pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# One deployment at a time; a newer push waits instead of cancelling a deployment in progress.
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      # No submodules: the engine is committed, and vendor/DeepStruggle is only its source.
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "26"   # the Node major the site is developed and tested with
+          cache: npm
+
+      - name: Install
+        run: npm ci --no-audit --no-fund
+
+      - name: Typecheck
+        run: npx tsc --noEmit -p .
+
+      - name: Tests
+        run: npx vitest run --maxWorkers=2
+
+      - name: Build
+        run: npx vite build   # vite.config.ts: base /TS_playfield/, outDir dist
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-24.04
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

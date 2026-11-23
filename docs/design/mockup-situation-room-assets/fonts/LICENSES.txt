@@ -1,0 +1,7 @@
+Latin subsets downloaded from Google Fonts (fonts.gstatic.com), 2026-11-22. All three families are licensed under the
+SIL Open Font License, Version 1.1 (https://openfontlicense.org). If they ship in the site, add the OFL text and these
+notices to THIRD_PARTY_LICENSES.md.
+
+BigShouldersStencilDisplay-var.woff2  Big Shoulders Stencil Display — Copyright 2019 The Big Shoulders Project Authors
+BarlowCondensed-{500,600,700}.woff2   Barlow Condensed — Copyright 2017 The Barlow Project Authors
+CourierPrime-{400,700}.woff2          Courier Prime — Copyright 2015 The Courier Prime Project Authors

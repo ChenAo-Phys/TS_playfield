@@ -1,0 +1,185 @@
+/* Reveal dock (ui-spec §9.5, final.css .reveal-dock). Tokens only. */
+.slot {
+  position: absolute;
+  top: 34px;
+  right: 64px;
+  pointer-events: none;
+  --side-accent: var(--ts-us-500);
+  --side-ring: var(--ts-us-300);
+  --side-text: var(--ts-side-us-on-room);
+}
+
+.slot[data-side="USSR"] {
+  --side-accent: var(--ts-ussr-500);
+  --side-ring: var(--ts-ussr-300);
+  --side-text: var(--ts-side-ussr-on-room);
+}
+
+.slot[data-pos="left"] {
+  right: auto;
+  left: 28px;
+}
+
+.slot[data-compact] {
+  top: 46%;
+  right: auto;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.dock {
+  width: calc(36px + 200px * var(--k, 1));
+  max-width: calc(100vw - 32px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--ts-space-2);
+  padding: var(--ts-space-3) var(--ts-space-3) 14px;
+  border-radius: var(--ts-radius-m);
+  background: var(--ts-surface-panel);
+  box-shadow: 0 0 0 1px var(--ts-line-hard), inset 0 2px 0 var(--side-accent), var(--ts-shadow-stage);
+  color: var(--ts-text-hi);
+  transition: width var(--dock-ms, 350ms) var(--ts-ease-in-out);
+}
+
+.kicker {
+  align-self: flex-start;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--ts-font-ui);
+  font-weight: 700;
+  font-size: var(--ts-fs-xs);
+  line-height: 1;
+  letter-spacing: var(--ts-track-wide);
+  text-transform: var(--ts-caps);
+  color: var(--side-text);
+}
+
+.glyph {
+  flex: none;
+  color: var(--side-text);
+}
+
+.cardBox {
+  position: relative;
+  width: calc(200px * var(--k, 1));
+  height: calc(280px * var(--k, 1));
+  perspective: 1200px;
+  transition: width var(--dock-ms, 350ms) var(--ts-ease-in-out), height var(--dock-ms, 350ms) var(--ts-ease-in-out);
+}
+
+.flip {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 200px;
+  height: 280px;
+  transform-style: preserve-3d;
+  transform: scale(var(--k, 1));
+  transform-origin: 0 0;
+  transition: transform var(--dock-ms, 350ms) var(--ts-ease-in-out);
+}
+
+.front,
+.back {
+  position: absolute;
+  inset: 0;
+  border-radius: var(--ts-radius-card-big);
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+
+.front {
+  box-shadow: 0 0 0 2px var(--side-ring), 0 0 24px color-mix(in srgb, var(--side-ring) 35%, transparent);
+}
+
+.back {
+  transform: rotateY(180deg);
+}
+
+.stamp {
+  position: absolute;
+  left: 50%;
+  top: 42%;
+  translate: -50% -50%;
+}
+
+.cap {
+  width: 100%;
+  text-align: center;
+}
+
+.name {
+  font-family: var(--ts-font-stencil);
+  font-weight: 800;
+  font-size: var(--ts-fs-2xl);
+  line-height: 1;
+  letter-spacing: .06em;
+  text-transform: var(--ts-caps);
+  color: var(--ts-paper-50);
+  overflow-wrap: anywhere;
+}
+
+:root:lang(zh) .name {
+  font-family: var(--ts-font-serif-zh);
+  font-weight: 900;
+  letter-spacing: .02em;
+}
+
+.dock[data-pinned] {
+  width: 200px;
+}
+
+.dock[data-pinned] .name {
+  font-size: var(--ts-fs-l);
+}
+
+.how {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0 6px;
+  margin-top: 6px;
+  font-family: var(--ts-font-ui);
+  font-weight: 700;
+  font-size: var(--ts-fs-m);
+  line-height: 1.2;
+  letter-spacing: .1em;
+  text-transform: var(--ts-caps);
+  color: var(--ts-paper-200);
+}
+
+:root:lang(zh) .how {
+  letter-spacing: .04em;
+}
+
+.ops::before {
+  content: "· ";
+}
+
+.dock[data-pinned] .how {
+  font-size: var(--ts-fs-xs);
+  letter-spacing: var(--ts-track-caps);
+}
+
+.note {
+  margin-top: 6px;
+  font-family: var(--ts-font-body);
+  font-weight: 500;
+  font-size: var(--ts-fs-s);
+  line-height: 1.3;
+  color: var(--ts-ai-on-room);
+}
+
+.slot[data-side="US"] .note {
+  color: var(--ts-side-ussr-on-room);
+}
+
+.slot[data-side="USSR"] .note {
+  color: var(--ts-side-us-on-room);
+}
+
+.dock[data-pinned] .note {
+  font-size: var(--ts-fs-xs);
+}

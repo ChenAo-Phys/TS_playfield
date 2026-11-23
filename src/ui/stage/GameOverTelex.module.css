@@ -1,0 +1,253 @@
+/* Game-over telex (ui-spec §10.4, final.css .over / .telex). Tokens only. */
+.whiteout {
+  position: fixed;
+  inset: 0;
+  z-index: var(--ts-z-gameover);
+  pointer-events: none;
+  animation: whiteout var(--ms, 2000ms) linear both;
+}
+
+@keyframes whiteout {
+  0% { background: var(--ts-paper-50); opacity: 1; }
+  6% { background: var(--ts-paper-50); opacity: 1; }
+  30% { background: var(--ts-room-950); opacity: .6; }
+  100% { background: var(--ts-room-950); opacity: .92; }
+}
+
+.whiteout[data-reduced] {
+  animation-name: fadeDark;
+}
+
+@keyframes fadeDark {
+  from { background: var(--ts-room-950); opacity: 0; }
+  to { background: var(--ts-room-950); opacity: .92; }
+}
+
+.over {
+  position: fixed;
+  inset: 0;
+  z-index: var(--ts-z-gameover);
+  display: grid;
+  place-items: center;
+  padding: var(--ts-space-6) var(--ts-space-4);
+  overflow: auto;
+  background: var(--ts-scrim-gameover);
+  animation: scrim var(--ts-dur-m) linear both;
+}
+
+@keyframes scrim {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.telex {
+  position: relative;
+  width: 700px;
+  max-width: 100%;
+  padding: 22px 28px 24px;
+  background: var(--ts-paper-50);
+  color: var(--ts-ink-900);
+  box-shadow: var(--ts-shadow-modal);
+  font-family: var(--ts-font-type);
+  outline: none;
+}
+
+.telex[data-animate] {
+  animation: rise var(--rise, 480ms) var(--ts-ease-out) both;
+}
+
+@keyframes rise {
+  from { opacity: 0; transform: translateY(60px); }
+  to { opacity: 1; transform: none; }
+}
+
+/* Perforated edges */
+.telex::before,
+.telex::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 10px;
+  background: radial-gradient(circle at 5px 5px, var(--ts-room-900) 0 3px, transparent 3.5px) 0 0 / 14px 10px repeat-x;
+}
+
+.telex::before {
+  top: -5px;
+}
+
+.telex::after {
+  bottom: -5px;
+}
+
+.flash {
+  font-family: var(--ts-font-type);
+  font-weight: 700;
+  font-size: var(--ts-fs-m);
+  line-height: 1;
+  letter-spacing: .2em;
+  text-transform: var(--ts-caps);
+  color: var(--ts-ink-500);
+}
+
+.verdict {
+  margin: 12px 0 6px;
+  padding-right: 190px;
+  font-family: var(--ts-font-stencil);
+  font-weight: 800;
+  font-size: var(--ts-fs-5xl);
+  line-height: .9;
+  letter-spacing: .04em;
+  text-transform: var(--ts-caps);
+  color: var(--ts-ink-900);
+}
+
+.telex[data-winner="US"] .verdict {
+  color: var(--ts-side-us);
+}
+
+.telex[data-winner="USSR"] .verdict {
+  color: var(--ts-side-ussr);
+}
+
+:root:lang(zh) .verdict {
+  font-family: var(--ts-font-body);
+  font-weight: 900;
+}
+
+.telex .rubber {
+  position: absolute;
+  right: 30px;
+  top: 30px;
+  mix-blend-mode: multiply;
+  animation-delay: var(--rise, 480ms);
+  animation-duration: var(--stamp, 300ms);
+}
+
+.reason {
+  margin: 0;
+  font-family: var(--ts-font-type);
+  font-size: var(--ts-fs-body);
+  line-height: var(--ts-lh-prose);
+}
+
+:root:lang(zh) .reason {
+  font-family: var(--ts-font-body);
+}
+
+.held {
+  display: flex;
+  align-items: center;
+  gap: var(--ts-space-2);
+  margin-top: var(--ts-space-3);
+  font-family: var(--ts-font-ui);
+  font-weight: 700;
+  font-size: var(--ts-fs-xs);
+  letter-spacing: var(--ts-track-caps);
+  text-transform: var(--ts-caps);
+  color: var(--ts-danger-ink);
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 300px;
+  gap: 18px;
+  align-items: center;
+  margin: 16px 0 18px;
+  padding: 12px 0;
+  border-top: 1px solid var(--ts-line-ink);
+  border-bottom: 1px solid var(--ts-line-ink);
+}
+
+.stats {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px 10px;
+  margin: 0;
+}
+
+.stats dt {
+  font-family: var(--ts-font-ui);
+  font-weight: 600;
+  font-size: var(--ts-fs-xs);
+  line-height: 1.2;
+  letter-spacing: .14em;
+  text-transform: var(--ts-caps);
+  color: var(--ts-ink-500);
+}
+
+.stats dd {
+  margin: 4px 0 0;
+  font-family: var(--ts-font-stencil);
+  font-weight: 800;
+  font-size: var(--ts-fs-l);
+  white-space: nowrap;
+  line-height: 1.1;
+  letter-spacing: .04em;
+  color: var(--ts-ink-900);
+}
+
+:root:lang(zh) .stats dd {
+  font-family: var(--ts-font-body);
+  font-size: var(--ts-fs-body);
+}
+
+.stats div:first-child dd {
+  font-size: var(--ts-fs-3xl);
+  line-height: 1;
+}
+
+.fig {
+  margin: 0;
+}
+
+.fig figcaption {
+  margin-bottom: 4px;
+  font-family: var(--ts-font-ui);
+  font-weight: 600;
+  font-size: var(--ts-fs-xs);
+  line-height: 1;
+  letter-spacing: .14em;
+  text-transform: var(--ts-caps);
+  color: var(--ts-ink-500);
+}
+
+.acts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--ts-space-2);
+}
+
+@media (max-width: 699px) {
+  .over {
+    padding: var(--ts-space-3) var(--ts-space-2);
+    align-items: start;
+  }
+
+  .telex {
+    width: 100%;
+    padding: 18px 16px 20px;
+  }
+
+  .verdict {
+    padding-right: 0;
+    margin-top: 44px;
+    font-size: var(--ts-fs-3xl);
+  }
+
+  .telex .rubber {
+    top: 34px;
+    right: 14px;
+  }
+
+  .grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+:root:lang(zh) .stats div:first-child dd {
+  font-size: var(--ts-fs-3xl);
+}
+
+/* Touch screens: 44 px buttons (ui-spec §3.3, §12; Q-048). */
+@media (pointer: coarse) { .acts :global(button) { min-height: 44px; min-width: 44px; } }

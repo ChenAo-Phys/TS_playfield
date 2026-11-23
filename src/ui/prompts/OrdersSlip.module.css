@@ -1,0 +1,455 @@
+/*
+ * The orders slip (ui-spec §8.1; docs/design/mockup-final-assets/final.css `.slip*`, §7.6). Tokens only.
+ */
+.slip {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  padding: 9px 12px;
+  background: var(--ts-surface-slip);
+  color: var(--ts-ink-900);
+  border-radius: var(--ts-radius-xs) var(--ts-radius-xs) var(--ts-radius-s) var(--ts-radius-s);
+  box-shadow: var(--ts-shadow-slip), inset 0 0 0 1px color-mix(in srgb, var(--ts-ink-900) 25%, transparent);
+  overflow: hidden;
+}
+/* The typed rule under the head: 1 px ink 50 % + 1 px ink 20 %. */
+.slip::before {
+  content: "";
+  position: absolute;
+  left: 12px;
+  right: 12px;
+  top: 27px;
+  height: 1px;
+  border-top: 1px solid var(--ts-line-ink);
+  border-bottom: 1px solid color-mix(in srgb, var(--ts-ink-900) 20%, transparent);
+  pointer-events: none;
+}
+.desktop { width: var(--ts-slip-w); height: 100%; flex: none; }
+.tablet { width: 296px; height: 100%; flex: none; }
+.compact { width: auto; padding: 9px 11px 10px; }
+.compact::before { top: 26px; }
+
+.head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--ts-space-2);
+  height: 14px;
+  font: 700 var(--ts-fs-xs) / 1 var(--ts-font-ui);
+  letter-spacing: var(--ts-track-wide);
+  text-transform: var(--ts-caps);
+  color: var(--ts-ink-700);
+  white-space: nowrap;
+}
+:global(:root:lang(zh)) .head { font-family: var(--ts-font-body); }
+.headText { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+
+.body { display: flex; gap: 11px; margin-top: 9px; flex: 1; min-height: 0; }
+.main { flex: 1; min-width: 0; min-height: 0; display: flex; flex-direction: column; }
+
+/* Card clip (56×78, −2.5°, a paper clip) */
+.clip {
+  position: relative;
+  flex: none;
+  width: 56px;
+  height: 78px;
+  margin-top: 1px;
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: zoom-in;
+  transform: rotate(-2.5deg);
+  border-radius: var(--ts-radius-s);
+}
+.clip:focus-visible { box-shadow: var(--ts-focus-ring-on-paper); }
+.clipCard { box-shadow: 0 3px 8px color-mix(in srgb, var(--ts-room-950) 35%, transparent), 0 0 0 1px color-mix(in srgb, var(--ts-room-950) 35%, transparent); }
+.paperclip {
+  position: absolute;
+  top: -9px;
+  left: 19px;
+  width: 12px;
+  height: 30px;
+  border: 2.2px solid var(--ts-steel-300);
+  border-bottom-color: transparent;
+  border-radius: 6px;
+  box-shadow: 0 1px 1px color-mix(in srgb, var(--ts-room-950) 30%, transparent);
+}
+.compact .clip { width: 46px; height: 64px; }
+.compact .paperclip { left: 15px; }
+
+/* Title, crumb, big counter */
+.top {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  column-gap: 10px;
+  align-items: start;
+}
+.title {
+  grid-column: 1;
+  font: 700 var(--ts-fs-xl) / 1.05 var(--ts-font-ui);
+  letter-spacing: var(--ts-track-tight);
+  text-transform: var(--ts-caps);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+:global(:root:lang(zh)) .title { font-family: var(--ts-font-body); font-size: var(--ts-fs-l); line-height: 1.25; }
+/* Desktop / tablet: the lines the slip has room for (OrdersSlip `useTitleLines`, QA R-012): 2 at least, up to 4;
+   1 beside the dense region grid. */
+.title[data-lines="1"] { -webkit-line-clamp: 1; }
+.title[data-lines="3"] { -webkit-line-clamp: 3; }
+.title[data-lines="4"] { -webkit-line-clamp: 4; }
+/* A cut title or crumb: a tap (click, Enter) shows the whole question in place, the crumb wrapping between its
+   parts as in the side column; a second tap folds it (R-012, §12: no hover on touch). The slip then scrolls. */
+.top[data-toggle] { cursor: pointer; }
+.top[data-toggle] .title:focus-visible { outline: none; border-radius: var(--ts-radius-xs); box-shadow: var(--ts-focus-ring-on-paper); }
+.top[data-open] .title { display: block; -webkit-line-clamp: unset; overflow: visible; }
+.top[data-open] .crumb { flex-wrap: wrap; white-space: normal; row-gap: 1px; }
+.top[data-open] .crumbPart, .top[data-open] .crumbTarget, .top[data-open] .crumbOps { white-space: nowrap; }
+.top[data-open] .crumbPart:first-child { min-width: 0; max-width: 100%; }
+.top[data-open] .crumbTarget { max-width: 100%; }
+.main:has(> .top[data-open]) { overflow-y: auto; }
+.aiTitle { color: var(--ts-ai); grid-column: 1 / -1; }
+.nowrap { white-space: nowrap; }
+.crumb {
+  grid-column: 1;
+  display: flex;
+  align-items: baseline;
+  min-width: 0;
+  margin-top: 3px;
+  font: 600 var(--ts-fs-m) / 1.25 var(--ts-font-ui);
+  letter-spacing: .02em;
+  color: var(--ts-ink-700);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+:global(:root:lang(zh)) .crumb { font-family: var(--ts-font-body); letter-spacing: 0; }
+.crumb i { font-style: normal; color: var(--ts-ink-500); margin: 0 4px; }
+/* One line: the card name gives way (full text in the title); a long target is capped; mode and Ops stay whole. */
+.crumbPart, .crumbTarget, .crumbOps { flex: none; }
+.crumbPart:first-child { flex: 0 1 auto; min-width: 1.5em; overflow: hidden; text-overflow: ellipsis; }
+.crumbCard { color: var(--ts-ink-700); }
+.crumbTarget { max-width: 45%; overflow: hidden; text-overflow: ellipsis; }
+.crumbMode { color: var(--ts-brass-700); }
+.crumbTarget { font-weight: 700; color: var(--ts-ink-900); }
+
+.bigCount {
+  grid-column: 2;
+  grid-row: 1 / span 2;
+  text-align: right;
+  line-height: .8;
+  margin-top: -1px;
+}
+.bigCount b { font: 800 var(--ts-fs-4xl) / .8 var(--ts-font-stencil); color: var(--ts-ink-900); letter-spacing: .02em; }
+.bigCount small { font: 700 var(--ts-fs-l) / 1 var(--ts-font-ui); color: var(--ts-ink-500); margin-left: 1px; }
+.countLabel {
+  display: block;
+  margin-top: 4px;
+  font: 700 var(--ts-fs-micro) / 1 var(--ts-font-ui);
+  letter-spacing: var(--ts-track-caps);
+  text-transform: var(--ts-caps);
+  color: var(--ts-ink-500);
+  white-space: nowrap;
+}
+:global(:root:lang(zh)) .countLabel { font-family: var(--ts-font-body); }
+
+/* Ops coins + undo */
+.opsRow { display: flex; align-items: center; justify-content: space-between; gap: 6px; margin-top: 6px; }
+/* One row: when coins + tools don't fit, undo drops to its icon (OrdersSlip `useOverflows`), else the coins wrap. */
+.coins { display: flex; align-items: center; gap: 4px; flex: none; }
+.opsRow[data-tight] .coins { flex: 0 1 auto; min-width: 0; flex-wrap: wrap; }
+.coin {
+  position: relative;
+  width: 19px;
+  height: 19px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, var(--ts-brass-100), var(--ts-brass-400) 55%, var(--ts-brass-700));
+  box-shadow: 0 1px 2px color-mix(in srgb, var(--ts-room-950) 40%, transparent), inset 0 0 0 1.5px color-mix(in srgb, var(--ts-brass-700) 70%, transparent);
+}
+.coinSpent { background: transparent; box-shadow: inset 0 0 0 1.5px color-mix(in srgb, var(--ts-ink-900) 35%, transparent); }
+.coinSpent::after {
+  content: "";
+  position: absolute;
+  left: 3px;
+  right: 3px;
+  top: 8.5px;
+  height: 1.5px;
+  background: color-mix(in srgb, var(--ts-ink-900) 45%, transparent);
+  transform: rotate(-35deg);
+}
+.coinPulse {
+  box-shadow: 0 0 0 2px var(--ts-ink-900), 0 0 8px var(--ts-act-glow);
+  animation: coin-pulse var(--ts-dur-l) var(--ts-ease-in-out) infinite alternate;
+  animation-play-state: var(--ts-ambient-state);
+}
+@keyframes coin-pulse { from { transform: scale(1); } to { transform: scale(1.14); } }
+
+/* Hint, warning panel, consequence */
+.hint {
+  margin-top: 5px;
+  font: 500 var(--ts-fs-s) / 1.32 var(--ts-font-body);
+  color: var(--ts-ink-500);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+@media (max-height: 820px) { .desktop .hint, .tablet .hint { -webkit-line-clamp: 1; } }
+/* The lines that fit beside the rest of the slip (OrdersSlip `useFitLines`): never a line cut in half. */
+.hint[data-lines="1"] { -webkit-line-clamp: 1; }
+.hint[data-lines="0"] { display: none; }
+.tablet .hint { display: none; }
+.hintFull { -webkit-line-clamp: unset; display: block; }
+.costChip {
+  display: inline-block;
+  padding: 2px 4px 1px;
+  margin: 0 1px;
+  border-radius: var(--ts-radius-xs);
+  font: 700 var(--ts-fs-micro) / 1 var(--ts-font-ui);
+  letter-spacing: .06em;
+  text-transform: var(--ts-caps);
+  background: var(--ts-brass-400);
+  color: var(--ts-ink-900);
+  box-shadow: inset 0 0 0 1px var(--ts-ink-900);
+  vertical-align: 1px;
+}
+:global(:root:lang(zh)) .costChip { font-family: var(--ts-font-body); letter-spacing: 0; }
+.consequence {
+  margin-top: 5px;
+  font: 600 var(--ts-fs-s) / 1.3 var(--ts-font-body);
+  color: var(--ts-ink-700);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.consequence[data-lines="1"] { -webkit-line-clamp: 1; }
+.consequence[data-lines="0"] { display: none; }
+.compact .consequence { -webkit-line-clamp: unset; display: block; }
+.warn {
+  /* Never squeezed below one whole line by the slip's fixed-height column (it was cut in half); up to 3 lines, then it scrolls. */
+  flex: 0 1 auto;
+  min-height: calc(1.25em + 10px);
+  display: flex;
+  gap: 7px;
+  align-items: flex-start;
+  margin-top: 5px;
+  padding: 5px 7px;
+  border-radius: var(--ts-radius-s);
+  background: var(--ts-warn-bg);
+  color: var(--ts-alert-700);
+  font: 700 var(--ts-fs-s) / 1.25 var(--ts-font-ui);
+  letter-spacing: .02em;
+  max-height: calc(3.75em + 10px);
+  overflow: auto;
+}
+:global(:root:lang(zh)) .warn { font-family: var(--ts-font-body); letter-spacing: 0; }
+.hazard {
+  flex: none;
+  width: 14px;
+  height: 12px;
+  margin-top: 1px;
+  background: var(--ts-hazard-bright);
+  clip-path: polygon(50% 0, 100% 100%, 0 100%);
+}
+
+/* Actions */
+.actions { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin-top: 6px; }
+.listLink { margin-left: auto; }
+.rowTools { display: inline-flex; gap: 6px; flex: none; }
+.rowTools .listLink { margin-left: 0; }
+.ai .actions { margin-top: auto; }
+.aiActions { padding-top: 6px; }
+.compact .actions :global(button) { min-height: 36px; }
+/* A long done label ("Discard nothing — lose West Germany influence") wraps inside the narrow side column / sheet. */
+.compact .actions :global(button) { max-width: 100%; white-space: normal; line-height: 1.2; text-align: left; }
+
+/*
+ * AI mode: "Still thinking · 14 s" (the count in a fixed-width tabular span, so nothing moves as it ticks) and,
+ * once per page session past 20 s, the slow-device sentence after it. `data-lines` (OrdersSlip `useFitLines`)
+ * keeps whole lines only; the sentence is used only where two lines or more fit.
+ */
+.still {
+  margin-top: 5px;
+  min-height: 0;
+  flex: 0 1 auto;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  font: 500 var(--ts-fs-s) / 1.32 var(--ts-font-body);
+  color: var(--ts-ink-500);
+}
+.secs { display: inline-block; min-width: 2ch; text-align: end; font-variant-numeric: tabular-nums; }
+.still[data-lines="2"] { -webkit-line-clamp: 2; }
+.still[data-lines="1"] { -webkit-line-clamp: 1; }
+.still[data-lines="0"] { display: none; }
+
+/* AI mode */
+.caret {
+  display: inline-block;
+  width: 7px;
+  height: .62em;
+  margin-left: 4px;
+  background: currentColor;
+  vertical-align: baseline;
+  animation: caret-blink 1s steps(2, end) infinite;
+}
+@keyframes caret-blink { 50% { opacity: 0; } }
+:global([data-motion="reduce"]) .caret { animation: none; }
+@media (prefers-reduced-motion: reduce) {
+  :global(:root:not([data-motion="full"])) .caret { animation: none; }
+}
+.speedSeg {
+  display: inline-flex;
+  border-radius: var(--ts-radius-s);
+  overflow: hidden;
+  box-shadow: inset 0 0 0 1.5px color-mix(in srgb, var(--ts-ink-900) 35%, transparent);
+}
+.speedSeg button {
+  display: grid;
+  place-items: center;
+  min-width: 30px;
+  min-height: 26px;
+  padding: 6px 9px 5px;
+  border: 0;
+  background: transparent;
+  color: var(--ts-ink-700);
+  font: 700 var(--ts-fs-s) / 1 var(--ts-font-num);
+  letter-spacing: .06em;
+  cursor: pointer;
+}
+.speedSeg button[aria-pressed="true"] { background: var(--ts-ink-900); color: var(--ts-paper-50); }
+.speedSeg button:focus-visible { box-shadow: var(--ts-focus-ring-on-paper); position: relative; }
+.speedSeg button svg { width: 13px; height: 13px; }
+.compact .speedSeg button { min-width: 44px; min-height: 36px; }
+
+/* Region choice (slip rows, §8.11) */
+.regions { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 4px; margin-top: 6px; }
+.regionBtn {
+  min-height: 26px;
+  padding: 4px 6px 3px;
+  border: 0;
+  border-radius: var(--ts-radius-s);
+  background: transparent;
+  color: var(--ts-ink-900);
+  box-shadow: inset 0 0 0 1.5px color-mix(in srgb, var(--ts-ink-900) 35%, transparent);
+  font: 700 var(--ts-fs-xs) / 1.1 var(--ts-font-ui);
+  letter-spacing: var(--ts-track-caps);
+  text-transform: var(--ts-caps);
+  cursor: pointer;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+:global(:root:lang(zh)) .regionBtn { font-family: var(--ts-font-body); }
+.regionBtn:hover:not(:disabled) { background: color-mix(in srgb, var(--ts-brass-400) 30%, transparent); }
+.regionBtn[aria-pressed="true"] { background: var(--ts-brass-400); box-shadow: inset 0 0 0 2px var(--ts-ink-900); }
+.regionBtn:focus-visible { box-shadow: var(--ts-focus-ring-on-paper); }
+.compact .regionBtn { min-height: 44px; }
+/* Compact: short names ("C. America") on up to two lines, never cut (touch has no tooltip). */
+.compact .regionBtn { white-space: normal; text-overflow: clip; padding: 4px 4px 3px; overflow-wrap: break-word; hyphens: manual; }
+.compact .regionName { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+
+/*
+ * Compact landscape: the slip in the 300 px side column (§3.4), which scrolls. The question is shown whole:
+ * the title over the full width on up to 4 lines (it was a 160 px column of 2), the hint up to 4 lines, and the
+ * crumb wraps between its parts (the card name was cut to one character).
+ */
+.side .title { grid-column: 1 / -1; -webkit-line-clamp: 4; }
+.side .bigCount { grid-row: 2; }
+.side .crumb { flex-wrap: wrap; white-space: normal; row-gap: 1px; }
+.side .crumbPart, .side .crumbTarget, .side .crumbOps { white-space: nowrap; }
+.side .crumbPart:first-child { flex: 0 1 auto; min-width: 0; max-width: 100%; }
+.side .crumbTarget { max-width: 100%; }
+.side .hint { -webkit-line-clamp: 4; }
+
+/* Frozen (your own click animating): non-interactive, no flicker */
+.frozen .main { pointer-events: none; }
+
+/* Compact expanded: the target list under the slip */
+.compact .main > * { flex-shrink: 0; }
+.compact .body { flex: none; }
+.expanded { max-height: 70dvh; }
+.listBox { margin-top: 8px; min-height: 0; flex: 1 1 auto; overflow: auto; }
+
+@media (forced-colors: active) {
+  .slip { border: 1px solid CanvasText; }
+  .coin { border: 1px solid CanvasText; }
+}
+
+/* Tight heights (ui-spec §8.1: the slip is the tray height − 4 px): the actions dock to the bottom. */
+.desktop .actions, .tablet .actions { margin-top: auto; padding-top: 6px; flex-wrap: nowrap; }
+.desktop .hint, .tablet .hint, .desktop .consequence, .tablet .consequence { flex: 0 1 auto; min-height: 0; }
+.holdWide { flex: 1 1 auto; min-width: 0; }
+
+/*
+ * Region prompt, dense (desktop / tablet): the 3 × 2 grid with undo beside it, the height of both rows, so title +
+ * grid fit the shortest slips (120 px tablet, 138 px desktop; R-009); the one line under it shows where it fits.
+ */
+.regionRow { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 4px; margin-top: 5px; }
+.regionRow .regions { margin-top: 0; }
+.regionUndo { align-self: stretch; height: auto; }
+.regionsDense { grid-auto-rows: 24px; }
+/* Tighter tracking than the caps labels: "MIDDLE EAST" stays whole in the 69 px columns beside the clip and undo. */
+.regionsDense .regionBtn { min-height: 24px; padding: 3px 4px 2px; display: inline-flex; align-items: center; justify-content: center; gap: 4px; letter-spacing: .05em; }
+.regionName { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+.regionPrimary, .regionBtn.regionPrimary[aria-pressed="true"] { background: var(--ts-ink-900); color: var(--ts-paper-50); box-shadow: 0 2px 0 var(--ts-line-hard); }
+.regionKbd { flex: none; font: 700 var(--ts-fs-micro) / 1 var(--ts-font-ui); padding: 1px 4px; border-radius: var(--ts-radius-xs); background: color-mix(in srgb, currentColor 16%, transparent); }
+.regionLine {
+  flex: none;
+  min-width: 0;
+  margin-top: 3px;
+  font: 600 var(--ts-fs-s) / 1.25 var(--ts-font-body);
+  color: var(--ts-ink-700);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.regionLine[data-lines="0"] { display: none; }
+.picks { margin-right: 6px; color: var(--ts-ink-900); }
+/* A conditional Ops bonus (China Card in Asia, Vietnam Revolts in SE Asia): the run counts it until a point goes elsewhere. */
+.bonus { font-weight: 700; color: var(--ts-ink-700); }
+
+/* Touch screens: 44 px targets on the phone slip -- its actions, Undo play and the speed segment (ui-spec §3.3,
+   §12; Q-048). The tablet / desktop slip keeps its height. */
+@media (pointer: coarse) {
+  .compact .actions :global(button),
+  .compact .rowTools :global(button),
+  .compact .speedSeg button { min-height: 44px; min-width: 44px; }
+}
+
+/*
+ * Touch screens on the desktop / tablet slip (an iPad in landscape; QA R-010): the slip keeps its height and its
+ * buttons their look, and each answers an invisible hit area 44 px tall (`::after`; the gaps between neighbours
+ * split, so no two areas overlap). Icon-only buttons and the speed segment are 44 px wide.
+ */
+@media (pointer: coarse) {
+  .desktop .actions :global(button), .tablet .actions :global(button),
+  .desktop .rowTools :global(button), .tablet .rowTools :global(button),
+  .desktop .regionBtn, .tablet .regionBtn { position: relative; }
+  .desktop .actions :global(button)::after, .tablet .actions :global(button)::after,
+  .desktop .rowTools :global(button)::after, .tablet .rowTools :global(button)::after {
+    content: "";
+    position: absolute;
+    inset: min(0px, calc(50% - 22px)) -3px;
+  }
+  .desktop .iconOnly, .tablet .iconOnly, .desktop .listLink, .tablet .listLink, .desktop .speedSeg button, .tablet .speedSeg button { min-width: 44px; }
+  /* The speed segment's buttons touch each other: their areas grow up and down only (the segment stops clipping
+     them; its end buttons round its corners instead). */
+  .desktop .speedSeg, .tablet .speedSeg { overflow: visible; }
+  .desktop .speedSeg button:first-child, .tablet .speedSeg button:first-child { border-radius: var(--ts-radius-s) 0 0 var(--ts-radius-s); }
+  .desktop .speedSeg button:last-child, .tablet .speedSeg button:last-child { border-radius: 0 var(--ts-radius-s) var(--ts-radius-s) 0; }
+  .desktop .speedSeg button::after, .tablet .speedSeg button::after { inset: min(0px, calc(50% - 22px)) 0; }
+  /* Region grid (3 × 2, 4 px gaps): 2 px into each gap; the top row reaches up over the title's lower part, the
+     bottom row down into the slip's padding; undo beside the grid takes the slip's right padding. */
+  .desktop .regionsDense .regionBtn, .tablet .regionsDense .regionBtn { overflow: visible; }
+  .desktop .regionBtn::after, .tablet .regionBtn::after { content: ""; position: absolute; left: -2px; right: -2px; top: -2px; bottom: -2px; }
+  .desktop .regionBtn:nth-child(-n + 3)::after, .tablet .regionBtn:nth-child(-n + 3)::after { top: -18px; }
+  .desktop .regionBtn:nth-child(n + 4)::after, .tablet .regionBtn:nth-child(n + 4)::after { bottom: -18px; }
+  .desktop .regionRow .regionUndo, .tablet .regionRow .regionUndo { position: relative; min-width: 0; }
+  .desktop .regionRow .regionUndo::after, .tablet .regionRow .regionUndo::after { content: ""; position: absolute; inset: 0 -10px 0 -2px; }
+}

@@ -1,0 +1,95 @@
+/*
+ * Bottom sheet (ui-spec §3.3; final.css `.compact .sheet`): room surface, radius 14, grab 40 × 4.
+ */
+.root {
+  position: fixed;
+  inset: 0;
+  z-index: var(--ts-z-sheet);
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+}
+.scrim {
+  position: absolute;
+  inset: 0;
+  background: var(--ts-scrim);
+  animation: fade-in var(--ts-dur-s) var(--ts-ease-out) both;
+}
+@keyframes fade-in { from { opacity: 0; } to { opacity: 1; } }
+
+.panel {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  max-height: 90dvh;
+  background: var(--ts-room-900);
+  color: var(--ts-text-1);
+  border-top: 1px solid var(--ts-line-hard);
+  border-radius: 14px 14px 0 0;
+  box-shadow: 0 -10px 24px var(--ts-scrim), inset 0 1px 0 var(--ts-line-room);
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+  /* Landscape phones: keep the content out of the notch / rounded corners (Q-042). */
+  padding-left: var(--ts-safe-left, 0px);
+  padding-right: var(--ts-safe-right, 0px);
+  outline: none;
+  transition: transform var(--ts-dur-s) var(--ts-ease-out);
+  animation: sheet-in var(--ts-dur-m) var(--ts-ease-out) both;
+}
+@keyframes sheet-in { from { transform: translateY(100%); } to { transform: none; } }
+.h_auto { height: auto; }
+.h_60 { height: 60dvh; }
+.h_80 { height: 80dvh; }
+.h_full { height: 100dvh; max-height: 100dvh; border-radius: 0; }
+/* Compact landscape (§3.4): over the left column only; the side column stays in view. */
+.side { align-items: flex-start; }
+/* (The side column sits inside the right safe area: the game grid pads it, Q-042.) */
+.side .panel { width: calc(100% - var(--ts-c-side-col-w) - var(--ts-safe-right, 0px)); border-right: 1px solid var(--ts-line-hard); padding-right: 0; }
+.side .h_full { border-radius: 0; }
+
+.leaving .scrim { animation: fade-out var(--ts-dur-s) var(--ts-ease-in) both; }
+.leaving .panel { animation: sheet-out var(--ts-dur-s) var(--ts-ease-in) both; }
+@keyframes fade-out { from { opacity: 1; } to { opacity: 0; } }
+@keyframes sheet-out { from { transform: none; } to { transform: translateY(100%); } }
+
+:global([data-motion="reduce"]) .panel { animation-name: fade-in; }
+@media (prefers-reduced-motion: reduce) {
+  :global(:root:not([data-motion="full"])) .panel { animation-name: fade-in; }
+}
+
+.grabRow {
+  flex: none;
+  display: grid;
+  grid-template-columns: 1fr;
+  justify-items: center;
+  padding: 4px 12px 2px;
+  touch-action: none;
+  cursor: grab;
+}
+.grab {
+  width: 88px;
+  height: 24px;
+  display: grid;
+  place-items: center;
+  padding: 0;
+  border: 0;
+  border-radius: var(--ts-radius-s);
+  background: transparent;
+}
+.grabBar { width: 40px; height: 4px; border-radius: 2px; background: var(--ts-room-500); }
+.grab:hover .grabBar { background: var(--ts-steel-400); }
+.header { width: 100%; padding: 2px 4px 6px; }
+.content {
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+  overscroll-behavior: contain;
+  padding: 0 12px 12px;
+}
+
+/* Touch screens: a 44 px tall grab (ui-spec §3.3, §12; Q-048): the visible handle stays, its hit area reaches 12 px
+   above the sheet's edge (over the scrim, which closes the sheet too). */
+@media (pointer: coarse) {
+  .grabRow { padding-top: 0; padding-bottom: 0; }
+  .grab { position: relative; height: 32px; }
+  .grab::after { content: ""; position: absolute; left: 0; right: 0; top: -12px; height: 44px; }
+}

@@ -1,0 +1,98 @@
+/*
+ * Buttons (ui-spec §8.1; docs/design/mockup-final-assets/final.css `.btn*`). Tokens only.
+ */
+.btn {
+  border: 0;
+  border-radius: var(--ts-radius-s);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  white-space: nowrap;
+  cursor: pointer;
+  font-family: var(--ts-font-ui);
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: var(--ts-track-caps);
+  text-transform: var(--ts-caps);
+  transition: background-color var(--ts-dur-xs) var(--ts-ease-out), box-shadow var(--ts-dur-xs) var(--ts-ease-out),
+    transform var(--ts-dur-xs) var(--ts-ease-out), filter var(--ts-dur-xs) var(--ts-ease-out);
+  -webkit-user-select: none;
+  user-select: none;
+}
+:global(:root:lang(zh)) .btn { font-family: var(--ts-font-body); letter-spacing: .04em; }
+.label { display: inline-block; }
+.icon { width: 13px; height: 13px; flex: none; }
+
+/* Sizes */
+.size_s { min-height: 26px; padding: 5px 8px 4px; gap: 5px; font-size: var(--ts-fs-xs); }
+.size_m { min-height: var(--ts-btn-h); padding: 7px 11px 6px; font-size: var(--ts-fs-s); }
+.size_touch { min-height: var(--ts-btn-h-touch); padding: 0 16px; font-size: var(--ts-fs-body); gap: 8px; }
+.size_touch .icon { width: 17px; height: 17px; }
+:global(:root:lang(zh)) .size_m { font-size: var(--ts-fs-m); }
+
+/* Key cap inside a button */
+.kbd {
+  font: 700 var(--ts-fs-xs) / 1 var(--ts-font-ui);
+  letter-spacing: 0;
+  text-transform: none;
+  padding: 2px 5px;
+  border-radius: var(--ts-radius-s);
+  background: color-mix(in srgb, currentColor 16%, transparent);
+  color: inherit;
+  box-shadow: none;
+}
+
+/* ── Variants ─────────────────────────────────────────────────────────────────────────── */
+/* primary: ink on paper; inverse (paper) on room */
+.primary.onPaper { background: var(--ts-ink-900); color: var(--ts-paper-50); box-shadow: 0 2px 0 var(--ts-line-hard); }
+.primary.onPaper:hover:not(:disabled) { background: var(--ts-ink-700); }
+.primary.onRoom { background: var(--ts-paper-100); color: var(--ts-ink-900); box-shadow: 0 2px 0 var(--ts-line-hard), inset 0 1px 0 var(--ts-paper-50); }
+.primary.onRoom:hover:not(:disabled) { background: var(--ts-paper-50); }
+
+/* ghost: outline only */
+.ghost { background: transparent; }
+.ghost.onPaper { color: var(--ts-ink-700); box-shadow: inset 0 0 0 1.5px color-mix(in srgb, var(--ts-ink-900) 35%, transparent); }
+.ghost.onPaper:hover:not(:disabled) { background: color-mix(in srgb, var(--ts-ink-900) 7%, transparent); color: var(--ts-ink-900); }
+.ghost.onRoom { color: var(--ts-steel-200); box-shadow: inset 0 0 0 1px var(--ts-room-500); }
+.ghost.onRoom:hover:not(:disabled) { background: var(--ts-room-750); color: var(--ts-paper-50); }
+.ghost.onPaper[aria-pressed="true"] { background: var(--ts-ink-900); color: var(--ts-paper-50); box-shadow: none; }
+.ghost.onRoom[aria-pressed="true"] { background: var(--ts-brass-500); color: var(--ts-ink-900); box-shadow: none; }
+
+/* brass: the "act here" colour (neither side) */
+.brass {
+  background: linear-gradient(180deg, var(--ts-brass-300), var(--ts-brass-500));
+  color: var(--ts-ink-900);
+  box-shadow: 0 2px 0 var(--ts-brass-700), inset 0 1px 0 color-mix(in srgb, var(--ts-paper-50) 50%, transparent);
+}
+.brass:hover:not(:disabled) { filter: brightness(1.06); }
+.brass[aria-pressed="true"] { background: var(--ts-brass-500); box-shadow: inset 0 2px 3px color-mix(in srgb, var(--ts-ink-900) 35%, transparent); }
+
+/* dark: on room surfaces, brass hairline */
+.dark {
+  background: color-mix(in srgb, var(--ts-room-850) 90%, transparent);
+  color: var(--ts-paper-100);
+  box-shadow: 0 0 0 1px var(--ts-line-brass);
+}
+.dark:hover:not(:disabled) { background: var(--ts-room-750); }
+.dark[aria-pressed="true"] { color: var(--ts-brass-300); box-shadow: 0 0 0 1px var(--ts-brass-400), inset 0 0 0 1px var(--ts-brass-400); }
+
+/* danger: hazard stripes, alert text (never red: red is the USSR) */
+.danger {
+  background: var(--ts-hazard);
+  color: var(--ts-alert-500);
+  box-shadow: inset 0 0 0 1.5px var(--ts-alert-500);
+}
+.danger:hover:not(:disabled) { filter: brightness(1.15); }
+
+.btn:active:not(:disabled) { transform: translateY(1px); }
+.btn:disabled { opacity: .45; cursor: not-allowed; }
+
+/* Focus: brass ring on room, ink ring on paper */
+.btn:focus-visible { box-shadow: var(--ts-focus-ring); }
+.onPaper:focus-visible { box-shadow: var(--ts-focus-ring-on-paper); }
+
+@media (forced-colors: active) {
+  .btn { border: 1px solid ButtonText; }
+  .btn:focus-visible { outline: 2px solid CanvasText; outline-offset: 2px; }
+}

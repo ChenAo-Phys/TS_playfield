@@ -1,0 +1,131 @@
+{
+  "slip": {
+    "label": "指令",
+    "ordersEnd": "指令 · 第 {{turn}} 回合结束"
+  },
+  "title": {
+    "coupTarget": "政变 → {{country}}"
+  },
+  "crumb": {
+    "label": "本次出牌",
+    "chooseHow": "选择用法",
+    "scoring": "计分"
+  },
+  "ops_other": "{{count}} 行动点",
+  "hint": {
+    "keys": "快捷键：{{keys}}",
+    "seAsiaBonus": "若全部点数用于东南亚，{{card}}额外 +1 行动点。",
+    "asiaBonusRealign": "仅当每次调整掷骰都在亚洲时，中国牌才多给一次掷骰。",
+    "seAsiaBonusRealign": "仅当每次调整掷骰都在东南亚时，{{card}}才多给一次掷骰。",
+    "asiaBonusCoup": "仅当在亚洲进行政变时，中国牌才额外 +1 行动点。",
+    "seAsiaBonusCoup": "仅当在东南亚进行政变时，{{card}}才额外 +1 行动点。"
+  },
+  "confirm": {
+    "place": "在{{country}}放置",
+    "remove": "从{{country}}移除",
+    "target": "选择{{country}}",
+    "region": "选择{{region}}",
+    "event": "结算事件",
+    "space": "尝试发射"
+  },
+  "consequence": {
+    "ifScored": "若现在为{{region}}计分：{{net}}",
+    "realign": "每次掷骰后仍选中此国家。"
+  },
+  "mode": {
+    "meta": {
+      "own_other": "你的卡牌 · {{count}} 行动点",
+      "opponent_other": "对手的卡牌 · {{count}} 行动点",
+      "neutral_other": "中立卡牌 · {{count}} 行动点"
+    },
+    "spaceDesc": "弃牌尝试发射：第 {{from}} → {{to}} 格，掷出 1–{{roll}}。不触发事件。",
+    "spaceDescPlain": "弃牌尝试发射。不触发事件。"
+  },
+  "tip": {
+    "coupHead": "政变 · {{country}}",
+    "add": "+{{n}} → {{side}} {{from}} → {{to}}",
+    "remove": "−{{n}} → {{side}} {{from}} → {{to}}",
+    "coupFormula_other": "{{count}} 行动点 + ⚀ − 2×{{stab}}",
+    "coupFormulaMod_other": "{{count}} 行动点 + ⚀ {{mod}} − 2×{{stab}}",
+    "oddsLabel": "各骰点的政变结果",
+    "realignOdds": "调整掷骰结果",
+    "realignOutcome": "{{side}} −{{n}}",
+    "realignNone": "无变化",
+    "adjacentControlled": "相邻控制国：美国 {{us}} · 苏联 {{ussr}}",
+    "superpower": "与{{side}}相邻",
+    "capped": "本事件已在此放置：{{placed}}/{{max}}",
+    "keys": {
+      "choose": "点击选择 · 右键详情",
+      "select": "点击选中 · 再次点击确认",
+      "hold": "点击选中 · 长按确认"
+    }
+  },
+  "list": {
+    "title": "目标列表",
+    "empty": "没有可选目标",
+    "influence": "{{side}} {{n}}",
+    "action": {
+      "add": "+1",
+      "remove": "−1",
+      "roll": "掷骰",
+      "select": "选择"
+    },
+    "row": "{{country}}，稳定度 {{stability}}，{{us}}，{{ussr}}——{{action}}",
+    "rowBg": "{{country}}，战场国，稳定度 {{stability}}，{{us}}，{{ussr}}——{{action}}",
+    "say": {
+      "add": "放置 1 点影响力",
+      "add2": "放置 1 点影响力，需 2 行动点",
+      "remove": "移除 1 点影响力",
+      "coup": "政变",
+      "realign": "调整",
+      "select": "选择"
+    }
+  },
+  "region": {
+    "label": "区域"
+  },
+  "dialog": {
+    "hint": "再次点击或按回车确认"
+  },
+  "branch": {
+    "tab": "事件",
+    "option": "选项 {{n}}"
+  },
+  "defcon": {
+    "current": "当前",
+    "improve": "提升",
+    "degrade": "降低",
+    "ends": "游戏结束——你输了",
+    "endsWin": "游戏结束——你赢了"
+  },
+  "picker": {
+    "tab": "卡牌",
+    "hint": "双击卡牌或按回车",
+    "count_other": "已弃掉 {{count}} 张",
+    "drawn": "抽出",
+    "filter": {
+      "side": "阵营",
+      "era": "时期",
+      "ops": "行动点数",
+      "all": "全部",
+      "neutral": "中立"
+    }
+  },
+  "touch": {
+    "place": "轻触放置 · 长按查看详情",
+    "choose": "轻触选择 · 长按查看详情",
+    "select": "轻触选中 · 再次轻触确认",
+    "coup": "轻触选中 · 再次轻触发动",
+    "hold": "轻触选中 · 长按按钮确认",
+    "inspect": "轻触别处关闭",
+    "influence": "轻触带圈的国家：+1 影响力。标有 {{cost}} 的国家由对手控制，每点需 2 行动点。",
+    "coupFinal": "政变一经掷骰便无法撤销。再次轻触{{country}}发动。",
+    "dialog": "再次轻触确认",
+    "picker": "轻触卡牌两次以选择"
+  },
+  "ai": {
+    "stillThinking": "仍在思考 · {{seconds}} 秒",
+    "stillThinkingSlow": "仍在思考 · {{seconds}} 秒。在这台设备上，全力以赴的 AI 每步最多可能需要一分钟。",
+    "slowHint": "在这台设备上，全力以赴的 AI 每步最多可能需要一分钟。"
+  }
+}

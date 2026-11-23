@@ -1,0 +1,248 @@
+/*
+ * The play-mode stage (ui-spec §8.7; final.css `.stage`, `.playmode`, `.modes`, `.mode*`, `.ops-group`, §7.7).
+ */
+.stage {
+  position: absolute;
+  inset: 0;
+  z-index: var(--ts-z-stage);
+  display: grid;
+  place-items: center;
+  padding: var(--ts-space-4);
+  background: var(--ts-scrim-stage);
+  overflow: auto;
+  animation: stage-in var(--ts-dur-s) var(--ts-ease-out) both;
+}
+@keyframes stage-in { from { opacity: 0; } to { opacity: 1; } }
+.playmode { display: flex; align-items: center; gap: 26px; }
+.bigWrap { flex: none; transform: rotate(-2deg); animation: card-in var(--ts-dur-m) var(--ts-ease-out) both; }
+@keyframes card-in { from { opacity: 0; transform: translateY(18px) rotate(-5deg); } to { opacity: 1; transform: rotate(-2deg); } }
+:global([data-motion="reduce"]) .bigWrap { animation-name: stage-in; }
+@media (prefers-reduced-motion: reduce) { :global(:root:not([data-motion="full"])) .bigWrap { animation-name: stage-in; } }
+.big { box-shadow: 0 0 0 2px var(--ts-brass-400), var(--ts-shadow-stage); border-radius: var(--ts-radius-card-big); }
+
+.modes {
+  width: 392px;
+  max-width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 16px 16px 14px;
+  border-radius: var(--ts-radius-m);
+  background: var(--ts-surface-panel);
+  box-shadow: 0 0 0 1px var(--ts-line-hard), inset 0 1px 0 var(--ts-line-brass), var(--ts-shadow-stage);
+}
+.kicker {
+  margin: 0 0 4px;
+  font: 700 var(--ts-fs-m) / 1.15 var(--ts-font-ui);
+  letter-spacing: .24em;
+  text-transform: var(--ts-caps);
+  color: var(--ts-brass-300);
+}
+:global(:root:lang(zh)) .kicker { font-family: var(--ts-font-body); letter-spacing: .1em; font-size: var(--ts-fs-body); }
+.cardName {
+  font: 800 var(--ts-fs-3xl) / 1 var(--ts-font-stencil);
+  letter-spacing: .04em;
+  text-transform: var(--ts-caps);
+  color: var(--ts-paper-50);
+  margin-bottom: 4px;
+}
+:global(:root:lang(zh)) .cardName { font-family: var(--ts-font-serif-zh); font-weight: 900; }
+.meta {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: -2px 0 6px;
+  font: 600 var(--ts-fs-s) / 1 var(--ts-font-ui);
+  letter-spacing: .14em;
+  text-transform: var(--ts-caps);
+  color: var(--ts-steel-200);
+}
+:global(:root:lang(zh)) .meta { font-family: var(--ts-font-body); letter-spacing: .04em; }
+.meta svg { width: 13px; height: 13px; }
+.headDetail { margin: 0 0 6px; font: 500 var(--ts-fs-s) / 1.35 var(--ts-font-body); color: var(--ts-paper-200); }
+.metaUs { color: var(--ts-us-300); }
+.metaUssr { color: var(--ts-ussr-300); }
+
+.rows { display: flex; flex-direction: column; gap: 8px; }
+
+/* Mode buttons (paper rows) */
+.mode {
+  position: relative;
+  display: grid;
+  grid-template-columns: 34px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 4px 12px;
+  width: 100%;
+  padding: 10px 12px 10px 10px;
+  border: 0;
+  border-radius: var(--ts-radius-s);
+  background: var(--ts-paper-50);
+  color: var(--ts-ink-900);
+  text-align: left;
+  cursor: pointer;
+  box-shadow: 0 3px 0 color-mix(in srgb, var(--ts-room-950) 50%, transparent), inset 0 0 0 1px color-mix(in srgb, var(--ts-ink-900) 25%, transparent);
+  transition: box-shadow var(--ts-dur-xs) var(--ts-ease-out), transform var(--ts-dur-xs) var(--ts-ease-out);
+}
+.mode:hover:not([aria-disabled="true"]) { box-shadow: 0 0 0 2px var(--ts-brass-300), 0 3px 0 color-mix(in srgb, var(--ts-room-950) 50%, transparent); }
+.mode:focus-visible { outline: none; box-shadow: 0 0 0 3px var(--ts-brass-400), 0 3px 0 color-mix(in srgb, var(--ts-room-950) 50%, transparent); }
+.mode:active:not([aria-disabled="true"]) { transform: translateY(1px); }
+.mode[aria-disabled="true"] { opacity: .4; cursor: not-allowed; }
+.staged { box-shadow: 0 0 0 3px var(--ts-brass-400), inset 0 0 0 2px var(--ts-ink-900); background: var(--ts-brass-100); }
+.danger { box-shadow: inset 0 0 0 2px var(--ts-alert-500), 0 3px 0 color-mix(in srgb, var(--ts-room-950) 50%, transparent); }
+.wide { grid-template-columns: 34px minmax(0, 1fr) auto; }
+.narrow { grid-template-columns: minmax(0, 1fr) auto; padding: 9px 10px; gap: 4px; }
+.ico {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  border-radius: var(--ts-radius-s);
+  background: var(--ts-ink-900);
+  color: var(--ts-paper-50);
+}
+.ico svg { width: 20px; height: 20px; }
+.text { display: flex; flex-direction: column; min-width: 0; }
+.t {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font: 700 var(--ts-fs-l) / 1.05 var(--ts-font-ui);
+  letter-spacing: .05em;
+  text-transform: var(--ts-caps);
+}
+:global(:root:lang(zh)) .t { font-family: var(--ts-font-body); letter-spacing: 0; }
+.inlineIco { width: 20px; height: 20px; flex: none; }
+.d { margin-top: 2px; font: 500 var(--ts-fs-s) / 1.3 var(--ts-font-body); color: var(--ts-ink-700); }
+.k {
+  align-self: center;
+  padding: 2px 5px;
+  border-radius: var(--ts-radius-s);
+  background: var(--ts-paper-200);
+  box-shadow: inset 0 -1px 0 color-mix(in srgb, var(--ts-room-950) 25%, transparent);
+  font: 700 var(--ts-fs-xs) / 1 var(--ts-font-ui);
+  color: var(--ts-ink-900);
+}
+.narrow .k { justify-self: start; grid-column: 1; }
+/* Touch screens show no key chip (R-011): its column and gap go, so the words keep the width. */
+.wide.noKey, .noKey .holdBody { grid-template-columns: 34px minmax(0, 1fr); }
+.narrow.noKey, .narrow.noKey .holdBody { grid-template-columns: minmax(0, 1fr); }
+.warn {
+  grid-column: 1 / -1;
+  display: flex;
+  gap: 6px;
+  align-items: flex-start;
+  margin-top: 2px;
+  font: 700 var(--ts-fs-xs) / 1.25 var(--ts-font-ui);
+  letter-spacing: .04em;
+  color: var(--ts-alert-700);
+}
+:global(:root:lang(zh)) .warn { font-family: var(--ts-font-body); letter-spacing: 0; }
+.warn::before { content: ""; flex: none; width: 14px; height: 12px; background: var(--ts-hazard-bright); clip-path: polygon(50% 0, 100% 100%, 0 100%); }
+.holdMode { display: block; width: 100%; padding: 0; text-align: left; }
+.holdBody { display: grid; grid-template-columns: 34px minmax(0, 1fr) auto; align-items: center; gap: 4px 12px; padding: 4px 2px; color: var(--ts-alert-500); }
+
+/* Operations group */
+.opsGroup {
+  padding: 8px;
+  border-radius: var(--ts-radius-m);
+  background: color-mix(in srgb, var(--ts-paper-50) 6%, transparent);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--ts-paper-50) 18%, transparent);
+}
+.gh {
+  display: flex;
+  justify-content: space-between;
+  margin: 2px 2px 8px;
+  font: 700 var(--ts-fs-xs) / 1 var(--ts-font-ui);
+  letter-spacing: .18em;
+  text-transform: var(--ts-caps);
+  color: var(--ts-paper-200);
+}
+:global(:root:lang(zh)) .gh { font-family: var(--ts-font-body); letter-spacing: .06em; }
+.modeRow { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; }
+.gwarn {
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+  margin-top: 8px;
+  padding: 7px 9px;
+  border-radius: var(--ts-radius-s);
+  background: var(--ts-warn-bg);
+  color: var(--ts-alert-700);
+  font: 700 var(--ts-fs-s) / 1.25 var(--ts-font-ui);
+  letter-spacing: .03em;
+}
+:global(:root:lang(zh)) .gwarn { font-family: var(--ts-font-body); letter-spacing: 0; }
+.hz { flex: none; width: 16px; height: 14px; background: var(--ts-hazard-bright); clip-path: polygon(50% 0, 100% 100%, 0 100%); }
+.unRow .ico { background: var(--ts-us-600); }
+.doneBtn { align-self: flex-start; }
+
+.foot {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  margin-top: 6px;
+  color: var(--ts-steel-300);
+  font: 600 var(--ts-fs-s) / 1.2 var(--ts-font-ui);
+  letter-spacing: .06em;
+}
+:global(:root:lang(zh)) .foot { font-family: var(--ts-font-body); letter-spacing: 0; }
+
+/* Tablet and short tables: a smaller card */
+@media (max-width: 1199px), (max-height: 760px) {
+  .playmode { gap: 18px; }
+  .bigWrap { display: none; }
+}
+
+/* Compact sheet (MC phone-card layout): card at 46 %, rows ≥ 56 px */
+.sheet { display: flex; flex-direction: column; gap: 10px; padding: 0 var(--ts-space-4) var(--ts-space-4); }
+.sheetTop { display: flex; gap: 12px; align-items: flex-start; }
+.sheetCard { flex: none; width: 46% !important; height: auto !important; aspect-ratio: 5 / 7; }
+.sheetHead { min-width: 0; }
+.compactRows .mode { min-height: 56px; }
+.compactRows .narrow { min-height: 56px; }
+
+/*
+ * Narrow phones: the Operations buttons are a third of the sheet (92–102 px): the icon goes above the word and
+ * the key chip to the corner, so "Influence" is never cut (en, en-XA; zh fits anyway).
+ */
+@media (max-width: 480px) {
+  .compactRows .narrow { position: relative; padding: 8px 8px 8px 9px; }
+  .compactRows .narrow .t { flex-direction: column; align-items: flex-start; gap: 4px; font-size: var(--ts-fs-body); letter-spacing: .02em; }
+  .compactRows .narrow .k { position: absolute; top: 6px; right: 6px; }
+}
+
+/*
+ * Short viewports (phones held sideways, 200 % zoom; the sheet is the full height of the map column): the
+ * options first. The card shrinks to a thumbnail beside its name and the rows to the 44 px touch minimum, so
+ * Event · Operations · Space race · Back to hand fit without scrolling.
+ */
+@media (max-height: 560px) {
+  .sheet { gap: 6px; padding: 0 12px 10px; }
+  .sheetTop { align-items: center; gap: 10px; }
+  .sheetCard { width: 52px !important; }
+  .sheetHead .kicker { margin-bottom: 2px; font-size: var(--ts-fs-s); }
+  .sheetHead .cardName { margin-bottom: 2px; font-size: var(--ts-fs-xl); }
+  .sheetHead .meta { margin: 0; }
+  .compactRows { gap: 6px; }
+  .compactRows .mode, .compactRows .narrow { min-height: 44px; padding-top: 6px; padding-bottom: 6px; }
+  .compactRows .opsGroup { padding: 6px; }
+  .compactRows .gh { margin-bottom: 6px; }
+  .compactRows .gwarn { margin-top: 6px; padding: 5px 8px; }
+  .sheet .foot { margin-top: 0; }
+}
+
+/*
+ * Touch screens (QA R-010): Back to hand keeps its 26 px look and answers a 44 px tall hit area (`::after`), on the
+ * stage (tablet) and in the compact sheet; above it only the gap to the rows, which have 44 px of their own.
+ */
+@media (pointer: coarse) {
+  .foot :global(button) { position: relative; }
+  .foot :global(button)::after { content: ""; position: absolute; inset: -9px -4px; }
+  /* The Operations buttons lose their key chip's line on touch (R-011): they stay 44 px tall. */
+  .narrow { min-height: 44px; }
+}
+@media (pointer: coarse) and (max-height: 560px) {
+  /* The short sheet: 6 px to the rows above, so the area takes that gap and reaches further down. */
+  .sheet .foot :global(button)::after { top: -6px; bottom: -12px; }
+}

@@ -1,0 +1,62 @@
+{
+  "warsawPact": {
+    "remove": {
+      "title": "移除美国影响力",
+      "desc": "移除 4 个东欧国家的全部美国影响力（若有美国影响力的东欧国家不足 4 个，则全部移除）。",
+      "verb": "从东欧移除美国影响力"
+    },
+    "add": {
+      "title": "增加苏联影响力",
+      "desc": "在东欧增加 5 点苏联影响力（每个国家最多 2 点）。",
+      "verb": "在东欧增加苏联影响力"
+    }
+  },
+  "olympics": {
+    "participate": {
+      "title": "参加",
+      "desc": "双方各掷一枚骰子，主办方加 2；结果较高者获得 2 VP。",
+      "verb": "参加奥运会"
+    },
+    "boycott": {
+      "title": "抵制",
+      "desc": "DEFCON 降低 1 级，主办方如同打出一张 4 行动点的卡牌一样执行行动。",
+      "verb": "抵制奥运会"
+    }
+  },
+  "wargames": {
+    "end": {
+      "title": "结束游戏",
+      "desc": "给予对手 6 VP，随后立即结束游戏，由 VP 领先的一方获胜（不进行最终计分）。",
+      "verb": "给予对手 6 VP 并结束游戏"
+    },
+    "continue": {
+      "title": "继续",
+      "desc": "不结束游戏。",
+      "verb": "选择不结束游戏"
+    }
+  },
+  "chernobyl": {
+    "title": "{{region}}",
+    "desc": "本回合余下时间，苏联不能使用行动点数在{{region}}放置影响力。",
+    "verb": "指定{{region}}",
+    "regionNumber": "区域 {{n}}"
+  },
+  "defcon": {
+    "unchanged": {
+      "title": "将 DEFCON 设为 {{level}}（保持不变）",
+      "desc": "DEFCON 保持为 {{current}}。",
+      "verb": "将 DEFCON 设为 {{level}}（保持不变）"
+    },
+    "improve": {
+      "title": "将 DEFCON 设为 {{level}}（提升）",
+      "desc": "将 DEFCON 从 {{current}} 提升到 {{level}}。",
+      "verb": "将 DEFCON 设为 {{level}}（提升）"
+    },
+    "degrade": {
+      "title": "将 DEFCON 设为 {{level}}（降低）",
+      "desc": "将 DEFCON 从 {{current}} 降低到 {{level}}。",
+      "verb": "将 DEFCON 设为 {{level}}（降低）"
+    },
+    "endsGame": "DEFCON 降至 1，游戏结束：行动玩家输掉游戏（头条阶段则为打出该头条牌的玩家）。"
+  }
+}

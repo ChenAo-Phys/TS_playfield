@@ -1,0 +1,201 @@
+/* Stage demo (dev only). Tokens only. */
+.demo {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 300px;
+  grid-template-rows: var(--ts-console-h) minmax(0, 1fr);
+  grid-template-areas: "console panel" "table panel";
+  height: 100vh;
+  height: 100dvh;
+  background: var(--ts-bg-app-gradient);
+  color: var(--ts-text-1);
+}
+
+.bare {
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-areas: "console" "table";
+}
+
+.compact {
+  grid-template-rows: var(--ts-c-console-h) minmax(0, 1fr);
+}
+
+.compact:not(.bare) {
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-rows: var(--ts-c-console-h) minmax(0, 1fr) 40%;
+  grid-template-areas: "console" "table" "panel";
+}
+
+.console {
+  grid-area: console;
+  display: flex;
+  align-items: center;
+  gap: var(--ts-space-4);
+  padding: 0 var(--ts-space-3);
+  background: var(--ts-surface-console);
+  box-shadow: var(--ts-shadow-console);
+  font: 700 var(--ts-fs-s) / 1 var(--ts-font-num);
+  color: var(--ts-phosphor);
+  z-index: var(--ts-z-console);
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.brand {
+  font: 800 var(--ts-fs-l) / 1 var(--ts-font-stencil);
+  color: var(--ts-paper-100);
+  text-transform: uppercase;
+}
+
+.space {
+  margin-left: auto;
+}
+
+.space + .space {
+  margin-left: 0;
+}
+
+.table {
+  grid-area: table;
+  position: relative;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.table[aria-busy="true"] {
+  cursor: progress;
+}
+
+.table > :first-child {
+  position: absolute;
+  inset: 0;
+}
+
+.tray {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  align-items: flex-end;
+  gap: var(--ts-space-3);
+  padding: var(--ts-space-2) var(--ts-space-3);
+  background: linear-gradient(transparent, var(--ts-room-900) 45%);
+  z-index: var(--ts-z-tray);
+  overflow-x: auto;
+}
+
+.compact .tray {
+  gap: var(--ts-space-2);
+  padding: var(--ts-space-1) var(--ts-space-2);
+}
+
+.slip {
+  flex: none;
+  width: 220px;
+  min-height: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--ts-space-2);
+  border-radius: var(--ts-radius-s);
+  background: var(--ts-surface-slip);
+  color: var(--ts-ink-900);
+  font: 700 var(--ts-fs-s) / 1.2 var(--ts-font-ui);
+}
+
+.compact .slip {
+  width: 120px;
+}
+
+.hand {
+  display: flex;
+  gap: var(--ts-space-1);
+  flex: 1 1 auto;
+  min-width: 40px;
+}
+
+.pile,
+.slot,
+.aiHand {
+  position: relative;
+  flex: none;
+  display: flex;
+  align-items: flex-end;
+  gap: var(--ts-space-1);
+  min-width: 40px;
+  min-height: 56px;
+  font: 700 var(--ts-fs-xs) / 1 var(--ts-font-num);
+  color: var(--ts-text-2);
+}
+
+.slot {
+  justify-content: center;
+  align-items: center;
+  border: 1px dashed var(--ts-room-500);
+  border-radius: var(--ts-radius-s);
+}
+
+.pile b,
+.aiHand b {
+  position: absolute;
+  right: var(--ts-space-0);
+  bottom: var(--ts-space-0);
+  padding: 0 var(--ts-space-0);
+  border-radius: var(--ts-radius-xs);
+  background: var(--ts-room-900);
+  color: var(--ts-phosphor);
+}
+
+.panel {
+  grid-area: panel;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  overflow: auto;
+  padding: var(--ts-space-3);
+  gap: var(--ts-space-2);
+  background: var(--ts-surface-rail);
+  box-shadow: inset 1px 0 0 var(--ts-line-room);
+  z-index: var(--ts-z-rail);
+}
+
+.title {
+  margin: 0;
+  font: 700 var(--ts-fs-l) / 1.1 var(--ts-font-stencil);
+  color: var(--ts-text-hi);
+}
+
+.desc {
+  margin: 0;
+  font-size: var(--ts-fs-s);
+  color: var(--ts-text-2);
+}
+
+.group h2 {
+  margin: var(--ts-space-2) 0 var(--ts-space-1);
+  font: 700 var(--ts-fs-micro) / 1 var(--ts-font-ui);
+  text-transform: uppercase;
+  letter-spacing: var(--ts-track-wide);
+  color: var(--ts-text-3);
+}
+
+.buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--ts-space-1);
+}
+
+.buttons button {
+  font: 700 var(--ts-fs-xs) / 1 var(--ts-font-ui);
+  color: var(--ts-ink-900);
+  background: var(--ts-brass-400);
+  border: 0;
+  border-radius: var(--ts-radius-s);
+  padding: 6px 8px;
+}
+
+.loading {
+  padding: var(--ts-space-6);
+  color: var(--ts-text-2);
+}

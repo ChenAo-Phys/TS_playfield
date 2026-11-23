@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Twilight Struggle Playfield · start screen mockup</title>
+<!-- Static design mockup (docs/design/proposal-modern-board.md §6). Query: ?lang=en|zh -->
+<link rel="stylesheet" href="mockup-modern-board-assets/mockup.css">
+<style>
+  body { overflow: hidden; }
+  .start { position: relative; height: 100vh; overflow: hidden; background: radial-gradient(ellipse at 75% 40%, #12202f 0, var(--ink-0) 65%); }
+  .start .table { position: absolute; right: -14%; top: -6%; width: 92%; height: 112%; transform: perspective(1600px) rotateX(30deg) rotateZ(-6deg) scale(1.05); transform-origin: 60% 60%; opacity: .62; filter: saturate(.85); pointer-events: none; }
+  .start .table svg { width: 100%; height: 100%; }
+  .start .fade { position: absolute; inset: 0; background: linear-gradient(90deg, var(--ink-0) 0, rgba(7,12,18,.94) 34%, rgba(7,12,18,.35) 62%, rgba(7,12,18,.55) 100%), linear-gradient(0deg, var(--ink-0) 0, transparent 30%); pointer-events: none; }
+  .s-top { position: absolute; top: 0; left: 0; right: 0; display: flex; align-items: center; gap: 12px; padding: 20px 40px; z-index: 3; }
+  .s-top .brand .mark { width: 30px; height: 30px; }
+  .s-top a { color: var(--text-2); text-decoration: none; font-size: 13.5px; font-weight: 600; display: inline-flex; align-items: center; gap: 6px; padding: 8px 10px; border-radius: 8px; }
+  .s-top a:hover { background: var(--ink-3); color: var(--text-1); }
+  .hero { position: absolute; left: 72px; top: 50%; transform: translateY(-48%); width: 640px; z-index: 2; }
+  .kicker { font: 700 12px/1 var(--font-ui); letter-spacing: .24em; color: var(--text-3); text-transform: uppercase; display: flex; align-items: center; gap: 12px; }
+  .kicker::before { content: ""; width: 34px; height: 2px; background: linear-gradient(90deg, var(--us), var(--ussr)); }
+  :lang(zh) .kicker { letter-spacing: .1em; font-size: 13px; }
+  h1 { font: 800 76px/0.95 var(--font-display); letter-spacing: -.01em; margin: 18px 0 0; font-stretch: condensed; }
+  h1 span { display: block; background: linear-gradient(90deg, #8fb2ff, #f0f3f8 45%, #ff9a93); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  :lang(zh) h1 { font-size: 72px; letter-spacing: .06em; line-height: 1.05; }
+  .lede { font-size: 16.5px; line-height: 1.55; color: var(--text-2); margin: 18px 0 30px; max-width: 560px; }
+  .lede b { color: var(--text-1); font-weight: 600; }
+  .pick-label { font: 700 11px/1 var(--font-ui); letter-spacing: .14em; color: var(--text-3); text-transform: uppercase; margin-bottom: 12px; }
+  :lang(zh) .pick-label { letter-spacing: .06em; font-size: 12.5px; }
+  .sides { display: grid; grid-template-columns: 1fr 0.78fr 1fr; gap: 12px; }
+  .sidecard { position: relative; border-radius: 16px; padding: 18px 18px 16px; border: 1px solid var(--line-2); background: var(--ink-1); cursor: pointer; overflow: hidden; transition: transform .2s var(--ease-out), border-color .2s; min-height: 152px; display: flex; flex-direction: column; }
+  .sidecard:hover { transform: translateY(-3px); border-color: var(--line-3); }
+  .sidecard .em { width: 46px; height: 46px; border-radius: 13px; display: grid; place-items: center; color: #fff; }
+  .sidecard .em svg { width: 26px; height: 26px; }
+  .sidecard.us .em { background: linear-gradient(135deg, #3a78ff, #1b43a8); }
+  .sidecard.ussr .em { background: linear-gradient(135deg, #ee4a4f, #9a1922); }
+  .sidecard.rnd .em { background: linear-gradient(90deg, var(--us) 50%, var(--ussr) 50%); font: 800 24px/1 var(--font-display); }
+  .sidecard .nm { font: 800 22px/1 var(--font-display); margin-top: 14px; letter-spacing: .02em; }
+  .sidecard .ds { font-size: 12.5px; color: var(--text-2); margin-top: 6px; line-height: 1.4; }
+  .sidecard.sel { border-color: transparent; box-shadow: 0 0 0 2px #fff, 0 16px 40px rgba(47,107,240,.25); background: linear-gradient(160deg, color-mix(in srgb, var(--us) 22%, var(--ink-1)), var(--ink-1) 70%); }
+  .sidecard .tick { position: absolute; top: 14px; right: 14px; width: 24px; height: 24px; border-radius: 50%; background: #fff; color: #0d141d; display: grid; place-items: center; }
+  .sidecard .tick svg { width: 15px; height: 15px; }
+  .cta-row { display: flex; gap: 12px; align-items: center; margin-top: 26px; }
+  .cta { height: 54px; padding: 0 30px; font-size: 17px; border-radius: 12px; }
+  .cont { height: 54px; border-radius: 12px; padding: 0 18px; display: flex; flex-direction: column; align-items: flex-start; justify-content: center; gap: 3px; text-align: left; }
+  .cont small { font-weight: 500; color: var(--text-3); font-size: 12px; }
+  .load { margin-top: 22px; display: flex; align-items: center; gap: 14px; font-size: 12.5px; color: var(--text-2); }
+  .load .bar { flex: 0 0 220px; height: 5px; border-radius: 3px; background: var(--ink-3); overflow: hidden; }
+  .load .bar i { display: block; height: 100%; width: 62%; background: linear-gradient(90deg, var(--us), #8fb2ff); border-radius: 3px; }
+  .load .stage { display: inline-flex; align-items: center; gap: 5px; white-space: nowrap; }
+  .load > span:first-child { white-space: nowrap; }
+  .load .stage .ok { color: var(--ok); }
+  .rules { position: absolute; left: 72px; right: 40px; bottom: 26px; display: flex; flex-wrap: wrap; gap: 8px 10px; align-items: center; z-index: 2; }
+  .rules .chip { background: rgba(13,20,29,.7); color: var(--text-2); font-weight: 500; padding: 0 10px; }
+  .rules .chip b { color: var(--text-1); font-weight: 600; }
+  .disc { flex-basis: 100%; font-size: 11.5px; color: var(--text-3); margin-top: 6px; }
+  @media (max-width: 760px) {
+    body { overflow: auto; }
+    .start { height: auto; min-height: 100vh; padding-bottom: 28px; }
+    .start .table { right: -60%; top: -4%; width: 220%; height: 60%; opacity: .45; }
+    .start .fade { background: linear-gradient(180deg, rgba(7,12,18,.2) 0, rgba(7,12,18,.85) 30%, var(--ink-0) 48%); }
+    .s-top { position: relative; padding: 14px 16px; }
+    .s-top .word { font-size: 11px; }
+    .s-top .hide-m { display: none; }
+    .hero { position: relative; left: auto; top: auto; transform: none; width: auto; padding: 60px 16px 0; }
+    h1 { font-size: 48px; }
+    :lang(zh) h1 { font-size: 46px; }
+    .lede { font-size: 14.5px; margin: 14px 0 22px; }
+    .sides { grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
+    .sidecard { padding: 12px 10px; min-height: 0; border-radius: 13px; }
+    .sidecard .em { width: 36px; height: 36px; border-radius: 10px; }
+    .sidecard .em svg { width: 20px; height: 20px; }
+    .sidecard .nm { font-size: 17px; margin-top: 10px; }
+    .sidecard .ds { font-size: 11px; }
+    .sidecard .tick { top: 10px; right: 10px; width: 20px; height: 20px; }
+    .cta-row { flex-direction: column; align-items: stretch; }
+    .cta, .cont { width: 100%; }
+    .load { flex-wrap: wrap; gap: 8px 12px; }
+    .load .bar { flex: 1 1 100%; }
+    .rules { position: relative; left: auto; right: auto; bottom: auto; padding: 22px 16px 0; }
+  }
+</style>
+<script src="mockup-modern-board-assets/layout.js"></script>
+<script>window.TSM_NO_AUTORENDER = true;</script>
+<script src="mockup-modern-board-assets/mockup.js"></script>
+</head>
+<body>
+<div class="start" id="start"></div>
+<script>
+(function () {
+  const M = window.TSM, zh = M.LANG === "zh";
+  const t = zh ? {
+    rules: "规则（GMT 官方在线规则）", about: "关于", kicker: "1945 – 1989 · 冷战",
+    title1: "冷战热斗", title2: "PLAYFIELD",
+    lede: "在浏览器中与 <b>DeepStruggle</b> 神经网络 AI 进行完整对局，AI 始终以全力应战。规则为标准版并加入可选卡牌，支持中英文切换。",
+    pick: "选择你的阵营",
+    us: ["美国", "后手行动 · 开局获得 +2 点竞价影响力"], ussr: ["苏联", "先手行动 · 每个行动轮先出牌"], rnd: ["随机", "由系统抽签决定"],
+    start: "开始对局", cont: "继续对局", contSub: "第 6 回合 · 第 2 行动轮 · 执美国 · 2 小时前",
+    load: "正在准备 AI", engine: "规则引擎", model: "模型 3.6 / 5.8 MB", worker: "AI 线程",
+    chips: [["标准规则", "+ 可选卡牌 #104–110"], ["美国竞价", "+2 影响力"], ["锦标赛规则", "回合结束时持有计分牌即判负"], ["AI", "全强度 · 无难度分级"]],
+    disc: "非官方爱好者项目，与 GMT Games 无关。《冷战热斗》（Twilight Struggle）是 GMT Games 的商标。规则引擎与 AI 来自 DeepStruggle（MIT 许可）。",
+  } : {
+    rules: "Rules (GMT living rules)", about: "About", kicker: "1945 – 1989 · The Cold War",
+    title1: "Twilight", title2: "Struggle",
+    lede: "Play the full game in your browser against <b>DeepStruggle</b>, a neural-network AI that always plays at full strength. Standard rules with the optional cards, in English or Chinese.",
+    pick: "Choose your side",
+    us: ["United States", "Moves second · starts with the +2 influence bid"], ussr: ["Soviet Union", "Moves first in every action round"], rnd: ["Random", "Let the toss decide"],
+    start: "Start game", cont: "Continue game", contSub: "Turn 6 · AR 2 · as the US · 2 h ago",
+    load: "Preparing the AI", engine: "Rules engine", model: "Model 3.6 / 5.8 MB", worker: "AI worker",
+    chips: [["Standard rules", "+ optional cards #104–110"], ["US bid", "+2 influence"], ["Tournament rule", "holding a scoring card at turn end loses"], ["AI", "full strength · no difficulty levels"]],
+    disc: "Unofficial fan project, not affiliated with GMT Games. Twilight Struggle is a trademark of GMT Games. Rules engine and AI: DeepStruggle (MIT licence).",
+  };
+  const ext = '<svg class="ico" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/></svg>';
+  const card = (cls, em, [nm, ds], sel) => `<div class="sidecard ${cls} ${sel ? "sel" : ""}" role="radio" aria-checked="${sel}">${sel ? `<span class="tick">${M.ico("check")}</span>` : ""}<div class="em">${em}</div><div class="nm">${nm}</div><div class="ds">${ds}</div></div>`;
+  document.getElementById("start").innerHTML = `
+    <div class="table">${M.mapSVG({ scorecards: false })}</div><div class="fade"></div>
+    <div class="s-top"><div class="brand">${M.brandMark}<div class="word">${M.T.brand}<small>${M.T.brandSub}</small></div></div><span style="flex:1"></span>
+      <a class="hide-m" href="https://www.gmtgames.com/living_rules/TS_Rules_Deluxe.pdf">${t.rules} ${ext}</a><a class="hide-m" href="#">${t.about}</a>
+      <div class="lang"><button class="${zh ? "" : "on"}">EN</button><button class="${zh ? "on" : ""}">中文</button></div></div>
+    <div class="hero"><div class="kicker">${t.kicker}</div><h1><span>${t.title1}</span>${t.title2}</h1><p class="lede">${t.lede}</p>
+      <div class="pick-label">${t.pick}</div>
+      <div class="sides" role="radiogroup">${card("us", `<svg viewBox="0 0 24 24" fill="#fff">${M.I.star}</svg>`, t.us, true)}${card("rnd", "?", t.rnd, false)}${card("ussr", `<svg viewBox="0 0 24 24" fill="#fff" color="#fff">${M.I.sickle}</svg>`, t.ussr, false)}</div>
+      <div class="cta-row"><button class="btn primary cta">${t.start} <span class="kbd">↵</span></button><button class="btn cont">${t.cont}<small>${t.contSub}</small></button></div>
+      <div class="load"><span>${t.load}</span><span class="bar"><i></i></span><span class="stage"><span class="ok">${M.ico("check")}</span>${t.engine}</span><span class="stage faint">${t.model}</span><span class="stage faint">${t.worker}</span></div></div>
+    <div class="rules">${t.chips.map(([a, b]) => `<span class="chip"><b>${a}</b>${b}</span>`).join("")}<div class="disc">${t.disc}</div></div>`;
+  M.fitNames(document);
+})();
+</script>
+</body>
+</html>

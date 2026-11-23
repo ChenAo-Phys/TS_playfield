@@ -1,0 +1,622 @@
+{
+  "app": {
+    "title": "Twilight Struggle Playfield",
+    "documentTitle": "Twilight Struggle Playfield",
+    "tagline": "Play Twilight Struggle against the DeepStruggle AI"
+  },
+  "links": {
+    "rules": "https://www.gmtgames.com/living_rules/TS_Rules_Deluxe.pdf",
+    "deepstruggle": "https://github.com/mihaild/DeepStruggle",
+    "leaderboard": "https://mihaild.github.io/DeepStruggle/leaderboard.html",
+    "model": "https://huggingface.co/mihaild/deepstruggle"
+  },
+  "action": {
+    "ok": "OK",
+    "cancel": "Cancel",
+    "close": "Close",
+    "confirm": "Confirm",
+    "back": "Back",
+    "continue": "Continue",
+    "yes": "Yes",
+    "no": "No"
+  },
+  "menu": {
+    "newGame": "New game",
+    "resume": "Resume game",
+    "resumeDetail": "Turn {{turn}} · you play the {{side}}",
+    "noSavedGame": "No saved game",
+    "chooseSide": "Choose your side",
+    "side": {
+      "USSR": "USSR",
+      "US": "US",
+      "random": "Random"
+    },
+    "sideDesc": {
+      "USSR": "Takes the first action round of each turn and starts with the China Card.",
+      "US": "Receives the +2 influence bid (tournament standard).",
+      "random": "Let a coin flip decide."
+    },
+    "start": "Start",
+    "overwriteWarning": "Starting a new game replaces your saved game.",
+    "opponent": "Your opponent is DeepStruggle's top-rated AI, always at full strength.",
+    "rules": "Rules",
+    "rulesTitle": "GMT Games' official living rules (PDF, English)",
+    "about": "About",
+    "settings": "Settings"
+  },
+  "language": {
+    "label": "Language",
+    "en": "English",
+    "zh-CN": "简体中文"
+  },
+  "about": {
+    "title": "About",
+    "body": "Play Twilight Struggle (Deluxe Edition, optional cards included) against the DeepStruggle AI. Everything runs in your browser: no account and no server.",
+    "rulesVariant": "Tournament rules: the US receives a +2 influence bid, and a player holding a scoring card at the end of a turn loses.",
+    "engine": "Rules engine and AI: DeepStruggle by Mikhail Dektyarev (MIT License).",
+    "model": "AI model: the #1 player on the DeepStruggle leaderboard ({{model}}), from Hugging Face mihaild/deepstruggle (MIT License).",
+    "rulebook": "The rulebook is not hosted here; read GMT Games' official living rules.",
+    "trademark": "Unofficial fan project, not affiliated with or endorsed by GMT Games. Twilight Struggle® is a registered trademark of GMT Games, LLC. Card and map artwork belong to their respective owners.",
+    "licenses": "Third-party licenses",
+    "source": "DeepStruggle on GitHub"
+  },
+  "loading": {
+    "title": "Loading…",
+    "engine": "Loading the rules engine…",
+    "model-download": "Downloading the AI model…",
+    "model-verify": "Verifying the AI model…",
+    "ai-worker": "Starting the AI…",
+    "percent": "{{percent}}%",
+    "megabytes": "{{done}} / {{total}} MB",
+    "firstTime": "The first visit downloads about 10 MB (the AI model is {{mb}} MB of it); your browser keeps it for next time."
+  },
+  "game": {
+    "menu": "Menu",
+    "you": "You",
+    "ai": "AI",
+    "youPlay": "You play the {{side}}",
+    "yourTurn": "Your turn",
+    "waitingFor": "Waiting for the {{side}}…",
+    "autoPlayed": "Played automatically (the only legal choice)",
+    "undo": "Undo play",
+    "undoTitle": "Take back your current play (before any die roll or AI decision)",
+    "undoUnavailable": "Nothing to undo",
+    "resign": "Resign",
+    "resignConfirm": {
+      "title": "Resign this game?",
+      "text": "The AI wins, and your saved game is deleted.",
+      "confirm": "Resign",
+      "cancel": "Keep playing"
+    },
+    "newGameConfirm": {
+      "title": "Abandon this game?",
+      "text": "Your current game will be lost.",
+      "confirm": "New game",
+      "cancel": "Keep playing"
+    }
+  },
+  "ai": {
+    "name": "DeepStruggle",
+    "label": "DeepStruggle AI",
+    "thinking": "{{side}} is thinking…",
+    "thinkingShort": "AI is thinking…"
+  },
+  "track": {
+    "defcon": "DEFCON",
+    "defconLevel": "DEFCON {{level}}",
+    "vp": "VP",
+    "vpLong": "Victory Points",
+    "vpLead": "{{side}} +{{vp}}",
+    "vpEven": "Even",
+    "turn": "Turn",
+    "turnN": "Turn {{turn}}",
+    "turnOfTen": "Turn {{turn}} of 10",
+    "actionRound": "Action Round",
+    "actionRoundN": "Action Round {{ar}}",
+    "arShort": "AR {{ar}}",
+    "milops": "Military Ops",
+    "milopsLong": "Military Operations",
+    "milopsRequired": "Required: {{n}}",
+    "spaceRace": "Space Race",
+    "headline": "Headline",
+    "headlinePhase": "Headline Phase",
+    "setup": "Setup",
+    "era": {
+      "early": "Early War",
+      "mid": "Mid War",
+      "late": "Late War"
+    },
+    "defconRule": {
+      "1": "Nuclear war",
+      "2": "No coups or realignments in Europe, Asia, Middle East",
+      "3": "No coups or realignments in Europe, Asia",
+      "4": "No coups or realignments in Europe",
+      "5": "No restrictions"
+    },
+    "milopsNeed": "Mil ops · need {{n}}",
+    "short": "{{side}} short by {{n}}",
+    "defconRuleShort": {
+      "1": "Nuclear war",
+      "2": "No coups/realigns: Europe, Asia, M. East",
+      "3": "No coups/realigns: Europe, Asia",
+      "4": "No coups/realigns: Europe",
+      "5": "No restrictions"
+    }
+  },
+  "pile": {
+    "hand": "Hand",
+    "yourHand": "Your hand",
+    "opponentHand": "{{side}} hand",
+    "cards_one": "{{count}} card",
+    "cards_other": "{{count}} cards",
+    "deck": "Draw pile",
+    "discard": "Discard pile",
+    "removed": "Removed from play",
+    "empty": "Empty",
+    "unknownCard": "Unknown card"
+  },
+  "china": {
+    "name": "The China Card",
+    "faceUp": "Face up",
+    "faceDown": "Face down",
+    "faceUpHint": "Playable",
+    "faceDownHint": "Cannot be played until next turn",
+    "heldBy": "Held by the {{side}}"
+  },
+  "headline": {
+    "title": "Headline",
+    "choose": "Choose your headline card",
+    "waiting": "Waiting for the {{side}} headline…",
+    "faceDown": "Face-down headline card",
+    "reveal": "Headlines revealed",
+    "first": "The {{side}} headline resolves first",
+    "papers": {
+      "us": "The Washington Dispatch",
+      "ussr": "ПРАВДА"
+    },
+    "order": "{{a}} vs {{b}} Ops · {{side}} resolves first",
+    "dateline": "{{side}} headline · Turn {{turn}} · Ops {{ops}}"
+  },
+  "card": {
+    "number": "#{{id}}",
+    "ops": "{{ops}} Ops",
+    "era": {
+      "early": "EARLY WAR",
+      "mid": "MID WAR",
+      "late": "LATE WAR"
+    },
+    "optional": "OPTIONAL",
+    "removeAfterEvent": "Remove from play if used as an event.",
+    "removeAfterScoring": "Remove from play after scoring.",
+    "mayNotBeHeld": "MAY NOT BE HELD",
+    "bothSidesScore": "Both sides score:",
+    "side": {
+      "US": "US Event",
+      "USSR": "USSR Event",
+      "NEUTRAL": "Event for both sides"
+    },
+    "scoring": "Scoring card",
+    "war": "War card",
+    "enlarge": "Enlarge card"
+  },
+  "region": {
+    "EUROPE": "Europe",
+    "ASIA": "Asia",
+    "MIDDLE_EAST": "Middle East",
+    "AFRICA": "Africa",
+    "CENTRAL_AMERICA": "Central America",
+    "SOUTH_AMERICA": "South America",
+    "WESTERN_EUROPE": "Western Europe",
+    "EASTERN_EUROPE": "Eastern Europe",
+    "SOUTHEAST_ASIA": "Southeast Asia"
+  },
+  "settings": {
+    "title": "Settings",
+    "animationSpeed": "Animation speed",
+    "speed": {
+      "slow": "Slow",
+      "normal": "Normal",
+      "fast": "Fast",
+      "instant": "Instant"
+    },
+    "sound": "Sound",
+    "on": "On",
+    "off": "Off",
+    "volume": "Volume",
+    "language": "Language",
+    "cardImages": "Card images",
+    "cardImagesOption": {
+      "follow": "Follow the language",
+      "en": "English",
+      "zh": "中文"
+    },
+    "motion": {
+      "label": "Motion",
+      "system": "Follow system",
+      "reduce": "Reduced",
+      "full": "Full"
+    },
+    "confirmFinal": "Confirm the action that ends your play",
+    "confirmFinalHint": "Dice rolls and game-ending choices always ask first.",
+    "pauseOnReveals": "Pause on headlines and scoring",
+    "mapLabels": "Map labels",
+    "mapLabelsValue": "{{percent}}%",
+    "patterns": "Side patterns (for monochrome viewing)",
+    "followAction": "Follow the action with the camera (desktop)"
+  },
+  "ending": {
+    "title": {
+      "won": "Victory",
+      "lost": "Defeat",
+      "draw": "Draw"
+    },
+    "winner": "{{side}} wins",
+    "reason": {
+      "vp20": "The {{winner}} reached 20 VP.",
+      "europe-control": "The {{winner}} controlled Europe when Europe was scored.",
+      "defcon": "DEFCON fell to 1 on the {{loser}}'s action: nuclear war, and the {{loser}} loses.",
+      "cmc-suicide": "The {{loser}} staged a coup during the Cuban Missile Crisis: nuclear war, and the {{loser}} loses.",
+      "held-scoring": "The {{loser}} held a scoring card at the end of turn {{turn}} ({{cards}}) and loses.",
+      "held-scoring-both": "Both sides held a scoring card at the end of turn {{turn}}: the game is a draw.",
+      "milops-vp20": "Military Operations penalties at the end of turn {{turn}} brought the {{winner}} to 20 VP.",
+      "final-scoring": "The {{winner}} leads by {{vp}} VP after Final Scoring.",
+      "wargames": "Wargames ended the game: after its 6 VP award to the opponent, the {{winner}} was ahead.",
+      "resign": "The {{loser}} resigned."
+    },
+    "drawReason": {
+      "final-scoring": "VP are level after Final Scoring: the game is a draw.",
+      "wargames": "Wargames ended the game with VP level: the game is a draw.",
+      "other": "The game is a draw."
+    },
+    "finalVp": "Final VP: {{vp}}",
+    "turn": "Turn {{turn}}",
+    "newGame": "New game",
+    "viewBoard": "View the board"
+  },
+  "error": {
+    "title": "Something went wrong",
+    "engine": "The rules engine could not be loaded.",
+    "modelDownload": "The AI model could not be downloaded. Check your connection and try again.",
+    "modelVerify": "The downloaded AI model is damaged (checksum mismatch).",
+    "worker": "The AI stopped responding.",
+    "webassembly": "This browser cannot run WebAssembly, which the game needs.",
+    "storage": "This browser blocks local storage, so the game cannot be saved.",
+    "saveIncompatible": "Your saved game was made with another version of the engine or AI and cannot be resumed.",
+    "offline": "You are offline. The AI model needs a connection the first time.",
+    "reconnecting": "Connection lost, retrying…",
+    "aiRestarting": "Restarting the AI…",
+    "unexpected": "Unexpected error: {{message}}",
+    "retry": "Retry",
+    "reload": "Reload page",
+    "details": "Details"
+  },
+  "list": {
+    "pair": "{{a}}, {{b}}"
+  },
+  "side": {
+    "US": "US",
+    "USSR": "USSR",
+    "long": {
+      "US": "United States",
+      "USSR": "Soviet Union"
+    }
+  },
+  "a11y": {
+    "skipToMap": "Skip to map"
+  },
+  "slip": {
+    "orders": "Orders · Turn {{turn}} · AR {{ar}}",
+    "ordersHeadline": "Orders · Turn {{turn}} · Headline",
+    "ordersSetup": "Orders · Setup",
+    "stamp": {
+      "you": "Your move",
+      "ai": "{{side}} · AI"
+    },
+    "verb": {
+      "influence": "Place influence",
+      "coup-target": "Coup",
+      "realign-target": "Realign"
+    },
+    "counter": {
+      "ops": "Ops left",
+      "left": "Left",
+      "rolls": "Rolls left",
+      "setup-place": "Left",
+      "bid-place": "Left",
+      "influence": "Ops left",
+      "realign-target": "Rolls left",
+      "event-target": "Left"
+    },
+    "hint": {
+      "influence": "Click a ringed country: +1 influence. {{cost}} marks opponent control: a point there costs 2.",
+      "headline": "The AI chooses at the same time. Higher Ops resolves first; the US on a tie.",
+      "coupFinal": "A coup is final once the die is rolled. Click {{country}} again or press Enter.",
+      "coup-target": "A coup is final once the die is rolled.",
+      "asiaBonus": "The China Card gives +1 Op if every point goes to Asia."
+    },
+    "confirm": {
+      "coup": "Launch coup",
+      "realign": "Roll in {{country}}",
+      "headline": "Commit headline",
+      "play": "Play {{card}}",
+      "score": "Score {{region}} now",
+      "take": "Take {{card}}",
+      "discard": "Discard {{card}}",
+      "give": "Give {{card}}"
+    },
+    "ai": {
+      "waiting": "Waiting for the {{side}}…",
+      "plays": "{{side}} plays {{card}}",
+      "preparing": "Getting the AI ready… {{percent}}%"
+    },
+    "skip": "Skip",
+    "skipAll": "Skip to my turn",
+    "continue": "Continue",
+    "list": "List",
+    "speed": "Speed"
+  },
+  "stamp": {
+    "headline": "Headline",
+    "discard": "Discard",
+    "give": "Give",
+    "play": "Play",
+    "committed": "Committed",
+    "revealed": "Revealed",
+    "cancelled": "Cancelled",
+    "pass": "Pass"
+  },
+  "mode": {
+    "howTitle": "How will you play it?",
+    "event": "Event",
+    "eventFirst": "Event first",
+    "eventDesc": "Resolve the event",
+    "operations": "Operations",
+    "influence": "Influence",
+    "coup": "Coup",
+    "realign": "Realign",
+    "space": "Space race",
+    "un": "Play {{card}} on it",
+    "back": "Back to hand",
+    "undoFree": "Undo is free until a die is rolled"
+  },
+  "plate": {
+    "ifScored": "If scored",
+    "even": "Even",
+    "net": "{{side}} +{{vp}}",
+    "wins": "{{side}} wins",
+    "pres": "Pres",
+    "dom": "Dom",
+    "ctrl": "Ctrl",
+    "none": "—",
+    "values": {
+      "0": "3·7·★",
+      "1": "3·7·9",
+      "2": "3·5·7",
+      "3": "1·4·6",
+      "4": "1·3·5",
+      "5": "2·5·6",
+      "6": "1 VP each · Thailand 2"
+    },
+    "name": {
+      "0": "Europe",
+      "1": "Asia",
+      "2": "Middle East",
+      "3": "Africa",
+      "4": "C. America",
+      "5": "S. America",
+      "6": "SE Asia"
+    },
+    "table": {
+      "status": "Status",
+      "countries": "Countries",
+      "battlegrounds": "Battlegrounds",
+      "adjacent": "Adjacent to enemy superpower",
+      "base": "Status VP",
+      "total": "Total"
+    }
+  },
+  "map": {
+    "ariaMap": "Map",
+    "countryLabel": "{{name}}, {{region}}{{bg}}, stability {{stab}}, US {{us}}{{usCtrl}}, USSR {{ussr}}{{ussrCtrl}}{{target}}",
+    "aria": {
+      "bg": ", battleground",
+      "controlled": " controlled",
+      "target": ", legal target",
+      "targetCost2": ", legal target: costs 2 Ops"
+    },
+    "plateLabel": "{{region}}: if scored now, {{net}}",
+    "cost2": "2 Ops",
+    "toUSA": "To USA",
+    "toJapan": "To Japan",
+    "toControl": "→ control",
+    "control": "Control",
+    "lost": "Lost",
+    "zoomIn": "Zoom in",
+    "zoomOut": "Zoom out",
+    "world": "World"
+  },
+  "tip": {
+    "stabilityRegion": "Stability · {{region}}",
+    "you": "(you)",
+    "control": "control",
+    "battleground": "Battleground",
+    "battlegroundDefcon": "Battleground: DEFCON {{from}} → {{to}}",
+    "costs2": "Costs 2 Ops ({{side}}-controlled)",
+    "success": "Success {{k}}/6",
+    "milops": "Mil ops +{{n}}",
+    "keys": {
+      "place": "Click place · Right-click details",
+      "coup": "Click select · Click again to launch",
+      "inspect": "Right-click or Space: keep this open",
+      "inspectTouch": "Tap elsewhere to close"
+    }
+  },
+  "adversary": {
+    "title": "Adversary",
+    "sub": "DeepStruggle AI · full strength",
+    "waiting": "Waiting",
+    "thinking": "Thinking",
+    "playing": "Playing",
+    "hand_one": "{{count}} card in hand",
+    "hand_other": "{{count}} cards in hand",
+    "known": "{{count}} known",
+    "knownTag": "Known",
+    "china": "China Card: {{where}}",
+    "chinaWhere": {
+      "mine": "yours",
+      "theirs": "theirs",
+      "mineFaceDown": "yours · face down",
+      "theirsFaceDown": "theirs · face down"
+    }
+  },
+  "effects": {
+    "title": "In effect",
+    "duration": {
+      "PERMANENT": "Permanent",
+      "TURN": "This turn",
+      "CONDITIONAL": "Conditional",
+      "SPACE_PERK": "Space perk"
+    }
+  },
+  "log": {
+    "title": "Dispatches",
+    "filter": {
+      "all": "All",
+      "plays": "Plays",
+      "dice": "Dice"
+    },
+    "jump": "Jump to latest",
+    "turnSep": "Turn {{turn}} · {{era}}"
+  },
+  "banner": {
+    "turn": "Turn {{turn}} · {{era}}",
+    "era": {
+      "mid": "Mid War: new cards shuffled in",
+      "late": "Late War: new cards shuffled in"
+    },
+    "headlinePhase": "Headline phase"
+  },
+  "toast": {
+    "reshuffle": "Deck exhausted: discards reshuffled. Cards still in hands are now known to both sides.",
+    "defcon2": "DEFCON 2: a battleground coup now ends the game.",
+    "china": "The China Card passes to the {{side}}, face down until next turn."
+  },
+  "scoring": {
+    "kickerYou": "You played {{card}}",
+    "kickerAi": "The {{side}} played {{card}}",
+    "cardNumber": "Card #{{id}}",
+    "status": "Status",
+    "statusName": {
+      "NONE": "—",
+      "PRESENCE": "Presence",
+      "DOMINATION": "Domination",
+      "CONTROL": "Control"
+    },
+    "countries": "Countries",
+    "battlegrounds": "Battlegrounds",
+    "adjacent": "Adjacent to enemy superpower",
+    "base": "Status VP",
+    "total": "Total",
+    "scores": "{{side}} scores",
+    "net": "Net {{side}} +{{n}}",
+    "europeControl": "Europe control: game over",
+    "final": "Final scoring"
+  },
+  "over": {
+    "flash": "Flash · Flash · Flash",
+    "verdict": "{{side}} victory",
+    "youWin": "You win",
+    "youLose": "You lose",
+    "draw": "Draw",
+    "vpBefore": "VP before the ruling",
+    "chart": "Victory points by turn",
+    "review": "Review board",
+    "fullLog": "Full log",
+    "gameOver": "Game over"
+  },
+  "start": {
+    "classified": "Top secret · Eyes only",
+    "kicker": "The Cold War, 1945–1989",
+    "titleLine1": "Twilight",
+    "titleLine2": "Struggle",
+    "titleZh": "冷战热斗",
+    "tagline": "You command one superpower. DeepStruggle commands the other.",
+    "pick": {
+      "US": "United States",
+      "USSR": "Soviet Union",
+      "random": "Toss a coin"
+    },
+    "pickDesc": {
+      "US": "Moves second each action round. Sets up 7 in Western Europe, then the +2 bid.",
+      "USSR": "Moves first each action round. Starts with the China Card and 6 in Eastern Europe.",
+      "random": "Let history decide."
+    },
+    "stamp": {
+      "US": "US",
+      "USSR": "CCCP"
+    },
+    "take": "Take command",
+    "resume": "Resume game",
+    "resumeDetail": "Turn {{turn}} · AR {{ar}} · you are the {{side}} · {{ago}}",
+    "resumeDetailHeadline": "Turn {{turn}} · Headline · you are the {{side}} · {{ago}}",
+    "replaces": "This replaces your saved game.",
+    "startNew": "Start new",
+    "rules": "Rules (GMT living rules)",
+    "chips": {
+      "standard": "Standard rules + optional cards #104–110",
+      "bid": "US bid +2",
+      "tournament": "Tournament rule: holding a scoring card at turn end loses",
+      "ai": "AI at full strength · no difficulty levels"
+    },
+    "boot": {
+      "link": "Linking with DeepStruggle",
+      "engine": "Rules engine",
+      "model": "AI model",
+      "verify": "Verify",
+      "start": "Start AI",
+      "ready": "Ready"
+    },
+    "fine": "Fan-made, free, no ads. Twilight Struggle © GMT Games.",
+    "fineEngine": "AI & rules engine: DeepStruggle (MIT).",
+    "credits": "Credits & licenses"
+  },
+  "shortcuts": {
+    "title": "Keyboard shortcuts",
+    "row": {
+      "focus": "Move between console, map, orders, hand and rail",
+      "mapArrows": "Map: move between countries, targets first",
+      "cycleTargets": "Map: previous / next target",
+      "regions": "Map: jump to a region",
+      "enter": "Activate · confirm a staged choice",
+      "holdEnter": "Hold to confirm",
+      "space": "Inspect a country · zoom a card · skip the animation",
+      "shiftSpace": "Skip to my turn",
+      "esc": "Cancel the selection · close · back to hand",
+      "undo": "Undo play",
+      "done": "Done / pass",
+      "modes": "Play mode: Event, Influence, Coup, Realign, Space race",
+      "targets": "Target list",
+      "log": "Show or hide the rail · open the log",
+      "camera": "Zoom in · zoom out · whole map",
+      "help": "This list"
+    },
+    "key": {
+      "focus": "Tab / Shift+Tab",
+      "mapArrows": "Arrow keys",
+      "cycleTargets": "[ ]",
+      "regions": "1–7",
+      "enter": "Enter",
+      "holdEnter": "Hold Enter",
+      "space": "Space",
+      "shiftSpace": "Shift+Space",
+      "esc": "Esc",
+      "undo": "Z · Ctrl/⌘+Z",
+      "done": "D",
+      "modes": "E I C R S",
+      "targets": "T",
+      "log": "L",
+      "camera": "+ − 0",
+      "help": "?"
+    }
+  }
+}

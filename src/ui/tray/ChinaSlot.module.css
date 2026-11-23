@@ -1,0 +1,124 @@
+/*
+ * China Card slot (ui-spec §7.3; final.css `.china-slot`): felt 118 × 128, card 92 × 129 at −3°.
+ */
+.slot {
+  position: relative;
+  flex: none;
+  width: var(--ts-china-slot-w);
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  padding-bottom: 6px;
+  pointer-events: none;
+}
+.felt {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 4px;
+  height: 128px;
+  border-radius: var(--ts-radius-m);
+  background: var(--ts-surface-felt);
+  box-shadow: inset 0 2px 8px color-mix(in srgb, var(--ts-room-950) 60%, transparent), 0 0 0 1px var(--ts-line-hard);
+}
+.card {
+  position: relative;
+  z-index: 1; /* above the piles while it slides to the adversary */
+  flex: none;
+  display: block;
+  margin: 0 0 18px;
+  padding: 0;
+  border: 0;
+  border-radius: var(--ts-radius-card);
+  background: none;
+  font: inherit;
+  rotate: -3deg;
+  cursor: pointer;
+  pointer-events: auto;
+  transform-origin: 50% 100%;
+  transition: transform var(--ts-dur-s) var(--ts-ease-out);
+  outline: none;
+  -webkit-tap-highlight-color: transparent;
+}
+.face { transition: box-shadow var(--ts-dur-s) var(--ts-ease-out), filter var(--ts-dur-s) var(--ts-ease-out); }
+.card:focus-visible .face { box-shadow: var(--ts-focus-ring), var(--ts-shadow-card); }
+.card:not(.st_lifted):hover, .card:not(.st_lifted):focus-visible { transform: translateY(-8px) scale(1.04); }
+
+.st_playable { transform: translateY(-6px); }
+.st_playable .face { box-shadow: var(--ts-glow-act), var(--ts-shadow-card); }
+.st_staged { transform: translateY(-10px); }
+.st_staged .face { box-shadow: 0 0 0 3px var(--ts-brass-400), 0 0 22px var(--ts-act-glow), var(--ts-shadow-card); }
+.st_faceDown { cursor: help; }
+.st_faceDown .face { filter: saturate(.55) brightness(.82); }
+.st_lifted { cursor: default; }
+.st_lifted .face { visibility: hidden; }
+.st_lifted::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: var(--ts-radius-card);
+  border: 1.5px dashed color-mix(in srgb, var(--ts-brass-500) 60%, transparent);
+  background: color-mix(in srgb, var(--ts-brass-500) 5%, transparent);
+}
+.inert.st_playable, .inert.st_staged { cursor: progress; }
+
+.stamp {
+  position: absolute;
+  left: 50%;
+  top: 30%;
+  translate: -50% -50%;
+  pointer-events: none;
+}
+.stampInner.stampInner {
+  font-size: var(--ts-fs-m);
+  background: var(--ts-paper-50);
+  box-shadow: 0 2px 6px color-mix(in srgb, var(--ts-room-950) 45%, transparent);
+}
+
+/* Held by the AI: a dashed outline where the card would lie */
+.outline {
+  position: relative;
+  flex: none;
+  margin: 0 0 18px;
+  rotate: -3deg;
+  display: grid;
+  place-items: center;
+  padding: 8px;
+  border-radius: var(--ts-radius-card);
+  border: 1.5px dashed color-mix(in srgb, var(--ts-ok-500) 55%, transparent);
+  background: color-mix(in srgb, var(--ts-room-950) 18%, transparent);
+  text-align: center;
+}
+.outlineText {
+  font: 700 var(--ts-fs-xs) / 1.25 var(--ts-font-ui);
+  letter-spacing: var(--ts-track-caps);
+  text-transform: var(--ts-caps);
+  color: color-mix(in srgb, var(--ts-ok-500) 55%, var(--ts-paper-50));
+}
+:global(:root:lang(zh)) .outlineText { font-family: var(--ts-font-body); }
+
+.lbl {
+  position: absolute;
+  left: 50%;
+  bottom: 9px;
+  translate: -50% 0;
+  font: 700 var(--ts-fs-micro) / 1 var(--ts-font-ui);
+  letter-spacing: var(--ts-track-caps);
+  color: color-mix(in srgb, var(--ts-ok-500) 55%, var(--ts-paper-50));
+  text-transform: var(--ts-caps);
+  white-space: nowrap;
+  pointer-events: none;
+}
+:global(:root:lang(zh)) .lbl { font-family: var(--ts-font-body); }
+
+/* Tablet: slot 96, card 78 × 109 */
+.tablet { width: 96px; }
+.tablet .felt { height: 112px; }
+.tablet .lbl { letter-spacing: .04em; }
+
+:global([data-motion="reduce"]) .card, :global([data-motion="reduce"]) .face { transition: none; }
+@media (prefers-reduced-motion: reduce) {
+  :global(:root:not([data-motion="full"])) .card, :global(:root:not([data-motion="full"])) .face { transition: none; }
+}

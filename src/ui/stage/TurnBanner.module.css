@@ -1,0 +1,124 @@
+/* Turn banner (ui-spec §10.3). Tokens only. */
+.banner {
+  position: absolute;
+  left: 20%;
+  width: 60%;
+  top: 28%;
+  translate: 0 -50%;
+  padding: 18px 28px 16px;
+  background: var(--ts-surface-slip);
+  color: var(--ts-ink-900);
+  box-shadow: var(--ts-shadow-stage), inset 0 0 0 1px var(--ts-line-ink-soft);
+  text-align: center;
+  pointer-events: none;
+  animation: bannerIn var(--in, 350ms) var(--ts-ease-out) both;
+}
+
+.banner[data-phase="out"] {
+  animation: bannerOut var(--out, 350ms) var(--ts-ease-in) both;
+}
+
+.banner[data-kind="phase"] {
+  left: 30%;
+  width: 40%;
+  padding: 14px 20px 12px;
+}
+
+@keyframes bannerIn {
+  from { opacity: 0; transform: translateY(-14px) scaleX(.96); }
+  to { opacity: 1; transform: none; }
+}
+
+@keyframes bannerOut {
+  from { opacity: 1; transform: none; }
+  to { opacity: 0; transform: translateY(-10px); }
+}
+
+.line {
+  position: relative;
+  margin: 0;
+  font-family: var(--ts-font-type);
+  font-weight: 700;
+  font-size: var(--ts-fs-3xl);
+  line-height: 1.1;
+  letter-spacing: var(--ts-track-wide);
+  text-transform: var(--ts-caps);
+}
+
+.banner[data-kind="phase"] .line {
+  font-size: var(--ts-fs-2xl);
+}
+
+.ghost {
+  visibility: hidden;
+}
+
+.typed {
+  position: absolute;
+  inset: 0;
+  white-space: pre-wrap;
+}
+
+.rule {
+  display: block;
+  height: 0;
+  margin: 10px auto 0;
+  width: 70%;
+  border-top: 2px solid var(--ts-ink-900);
+  border-bottom: 1px solid var(--ts-ink-900);
+  padding-top: 2px;
+}
+
+.stamp {
+  display: inline-block;
+  margin-top: 12px;
+}
+
+.pulse {
+  position: fixed;
+  border-radius: var(--ts-radius-m);
+  box-shadow: 0 0 0 2px var(--ts-brass-300), 0 0 18px var(--ts-act-glow);
+  pointer-events: none;
+  animation: deckPulse 900ms var(--ts-ease-out) 2;
+}
+
+@keyframes deckPulse {
+  0% { opacity: 0; transform: scale(1.25); }
+  40% { opacity: 1; transform: none; }
+  100% { opacity: 0; transform: none; }
+}
+
+.banner[data-reduced] {
+  animation-name: fadeIn;
+}
+
+.banner[data-reduced][data-phase="out"] {
+  animation-name: fadeOut;
+}
+
+.pulse[data-reduced] {
+  animation: none;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes fadeOut {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
+
+@media (max-width: 699px) {
+  .banner,
+  .banner[data-kind="phase"] {
+    left: 5%;
+    width: 90%;
+    padding: 14px 14px 12px;
+  }
+
+  .line {
+    font-size: var(--ts-fs-xl);
+  }
+}

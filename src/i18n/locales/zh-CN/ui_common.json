@@ -1,0 +1,47 @@
+{
+  "die": {
+    "label": "骰子：{{face}}",
+    "labelSide": "{{side}}骰子：{{face}}",
+    "withResult": "{{die}}，{{result}}",
+    "result": {
+      "ok": "成功",
+      "fail": "失败",
+      "boom": "结束游戏"
+    }
+  },
+  "hold": {
+    "hint": "按住以确认"
+  },
+  "sheet": {
+    "grab": "向下拖动或点按以关闭"
+  },
+  "toast": {
+    "region": "通知"
+  },
+  "china": {
+    "faceDownLabel": "{{card}}，正面朝下"
+  },
+  "tag": {
+    "scoring": "计分牌",
+    "strands": "会滞留计分牌",
+    "opponentEvent": "{{side}}事件",
+    "known": "AI 已知"
+  },
+  "zoom": {
+    "label": "{{card}}：卡牌详情",
+    "neutral": "双方",
+    "errata": "所示文字为最新勘误",
+    "notes": {
+      "title": "若现在打出",
+      "event": "事件",
+      "eventOwn": "为你结算",
+      "eventOpponent": "为{{side}}结算",
+      "eventNeutral": "为出牌玩家结算",
+      "ops": "实际行动点数",
+      "space": "太空竞赛",
+      "spaceValue": "第 {{from}} → {{to}} 格 · 掷出 1–{{roll}}",
+      "spaceOps": "需 {{ops}} 行动点",
+      "asiaBonus": "若全部点数用于亚洲，+1 行动点"
+    }
+  }
+}

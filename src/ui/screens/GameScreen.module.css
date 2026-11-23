@@ -1,0 +1,195 @@
+/* The game screen grid per arrangement (ui-spec §3; final.css 3 + 7.1 + 7.10). Tokens only. */
+.game {
+  position: relative;
+  height: 100vh;
+  height: 100dvh;
+  overflow: hidden;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) var(--ts-rail-w);
+  grid-template-rows: var(--ts-console-h) minmax(0, 1fr) var(--ts-tray-h);
+  background: var(--ts-bg-app-gradient);
+  color: var(--ts-text-1);
+}
+
+/* ── Desktop ── */
+@media (min-width: 1600px) { .desktop { --ts-rail-w: 336px; } }
+.desktop.railCollapsed { grid-template-columns: minmax(0, 1fr) var(--ts-rail-strip-w); }
+.console { grid-column: 1 / -1; grid-row: 1; min-width: 0; }
+.table {
+  grid-column: 1;
+  grid-row: 2 / 4;
+  position: relative;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+}
+.table[aria-busy="true"] { cursor: progress; }
+/* Focusable by script only (skip link, lost-focus rescue): a quiet inset ring, never an outline box. */
+.table:focus { outline: none; }
+.table:focus-visible { box-shadow: inset var(--ts-focus-ring); }
+.mapFrame {
+  position: absolute;
+  left: var(--ts-table-pad);
+  right: var(--ts-table-pad);
+  top: var(--ts-table-pad);
+  bottom: 6px;
+}
+.rail { grid-column: 2; grid-row: 2 / 4; min-height: 0; }
+.trayArea {
+  grid-column: 1;
+  grid-row: 3;
+  min-width: 0;
+  min-height: 0;
+  position: relative;
+  z-index: var(--ts-z-tray);
+  pointer-events: none;
+}
+.trayArea > * { pointer-events: auto; }
+
+/* ── Tablet (§3.2) ── */
+.tablet {
+  --ts-tray-h: clamp(132px, 18vh, 150px);
+  --ts-table-pad: 8px;
+  grid-template-columns: minmax(0, 1fr) var(--ts-rail-strip-w);
+  grid-template-rows: calc(var(--ts-console-h) - 4px) minmax(0, 1fr) var(--ts-tray-h);
+}
+.stripCol {
+  grid-column: 2;
+  grid-row: 2 / 4;
+  min-height: 0;
+  position: relative;
+  z-index: var(--ts-z-rail);
+  background: var(--ts-surface-rail);
+  border-left: 1px solid var(--ts-line-hard);
+}
+/* The flyouts sit over the map's right edge and end above the tray row (R-017): the hand's right end, the
+   China Card and the piles stay visible and tappable under an open flyout. */
+.flyoutHost {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: var(--ts-tray-h);
+  width: 336px;
+  max-width: 100%;
+  z-index: var(--ts-z-sheet);
+  pointer-events: none;
+  display: flex;
+  justify-content: flex-end;
+}
+.flyoutHost > * { pointer-events: auto; }
+/* A box-less wrapper (the toasts keep their containing block) so a press on a toast keeps a flyout open. */
+.toastHost { display: contents; }
+
+/* ── Compact (§3.3) ── */
+.compact {
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-rows:
+    var(--ts-c-console-h) var(--ts-c-theatre-h) minmax(0, 1fr) auto
+    calc(var(--ts-c-dock-h) + env(safe-area-inset-bottom, 0px));
+}
+.compact .console { grid-row: 1; }
+.theatre { grid-row: 2; min-width: 0; }
+.compact .table { grid-row: 3; grid-column: 1; }
+.compact .mapFrame { inset: 0; }
+/* The orders sheet overlaps the map by 14 px: the stage's waiting overlays (papers, scoring sheet) stop above it. */
+.compact .stage { --stage-bottom: 14px; }
+.sheet {
+  grid-row: 4;
+  grid-column: 1;
+  position: relative;
+  z-index: var(--ts-z-tray);
+  min-height: 0;
+  margin-top: -14px;
+  padding: 0 8px 8px;
+  display: flex;
+  flex-direction: column;
+  background: var(--ts-room-900);
+  border-top: 1px solid var(--ts-line-hard);
+  border-radius: 14px 14px 0 0;
+  box-shadow: 0 -10px 24px color-mix(in srgb, var(--ts-room-950) 45%, transparent);
+}
+.sheetExpanded { height: 60vh; height: 60dvh; }
+/* The grab: a 40×4 handle drawn in a full-width strip, so a tap or a swipe anywhere along the sheet's top
+   edge works (Q-048); on touch screens the strip reaches 44 px over the slip's (non-interactive) heading. */
+.grab {
+  flex: none;
+  align-self: stretch;
+  height: 18px;
+  margin: 0 -8px 2px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  position: relative;
+  z-index: 1;
+  touch-action: none;
+}
+.grab::before {
+  content: "";
+  position: absolute;
+  left: calc(50% - 20px);
+  width: 40px;
+  top: 7px;
+  height: 4px;
+  border-radius: 2px;
+  background: var(--ts-room-500);
+}
+@media (pointer: coarse) {
+  .grab::after { content: ""; position: absolute; left: 0; right: 0; top: 0; height: 44px; }
+}
+.grab:focus-visible { box-shadow: inset var(--ts-focus-ring); border-radius: 14px 14px 0 0; }
+.sheetSlip { flex: 1 1 auto; min-height: 0; display: flex; flex-direction: column; }
+.sheetSlip > * { flex: 1 1 auto; min-height: 0; }
+.dock { grid-row: 5; grid-column: 1; }
+
+/* ── Safe areas (Q-042): a notched phone held sideways reports left / right insets (viewport-fit=cover).
+   Every arrangement keeps its columns inside them; compact landscape keeps the map full-bleed on the left
+   (sea under the notch) and insets what sits on it, and pads the side column on the right. ── */
+.game {
+  padding-left: var(--ts-safe-left);
+  padding-right: var(--ts-safe-right);
+}
+
+/* ── Compact landscape (§3.4) ── */
+.landscape {
+  --ts-c-console-h: 44px;
+  padding-left: 0;
+  grid-template-columns: minmax(0, 1fr) var(--ts-c-side-col-w);
+  grid-template-rows: var(--ts-c-console-h) minmax(0, 1fr) calc(52px + env(safe-area-inset-bottom, 0px));
+}
+.landscape .console { grid-column: 2; grid-row: 1; }
+.landscape .table { grid-column: 1; grid-row: 1 / -1; }
+.landscape .mapFrame { inset: 0; }
+.landscape .stage { --stage-bottom: 0px; }
+.landscape .sheet {
+  grid-column: 2;
+  grid-row: 2;
+  margin-top: 0;
+  border-radius: 0;
+  overflow-y: auto;
+  padding-top: 6px;
+  box-shadow: none;
+  border-left: 1px solid var(--ts-line-hard);
+}
+.landscape .sheetExpanded { height: auto; }
+.landscape .grab { display: none; }
+.landscape .dock { grid-column: 2; grid-row: 3; border-left: 1px solid var(--ts-line-hard); }
+.theatreOverlay { position: absolute; left: 0; right: 0; top: 0; padding-left: max(8px, var(--ts-safe-left)); }
+.tickerLandscape { top: calc(var(--ts-c-theatre-h) + 4px); left: max(8px, var(--ts-safe-left)); }
+/* Touch: the chips' hit areas reach 8 px below the bar (compact.module.css); the ticker starts below them. */
+@media (pointer: coarse) { .tickerLandscape { top: calc(var(--ts-c-theatre-h) + 10px); } }
+
+/* ── Skip link: visible only when focused ── */
+.skipLink {
+  position: absolute;
+  left: max(8px, var(--ts-safe-left));
+  top: 8px;
+  z-index: var(--ts-z-toast);
+  padding: 8px 12px;
+  border-radius: var(--ts-radius-s);
+  background: var(--ts-brass-400);
+  color: var(--ts-ink-900);
+  font: 700 var(--ts-fs-m) / 1 var(--ts-font-ui);
+  text-decoration: none;
+  transform: translateY(-200%);
+}
+.skipLink:focus { transform: none; }

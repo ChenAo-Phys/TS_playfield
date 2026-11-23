@@ -1,0 +1,155 @@
+/* Dice tray (ui-spec §9.4 roll, final.css .dice-tray). Tokens only. */
+.place {
+  position: absolute;
+  pointer-events: none;
+  transition: opacity var(--ts-dur-s) var(--ts-ease-out);
+}
+
+.place[data-phase="lock"] {
+  animation: trayIn var(--ts-dur-s) var(--ts-ease-out) both;
+}
+
+.place[data-phase="out"] {
+  opacity: 0;
+}
+
+@keyframes trayIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: none; }
+}
+
+.reticle {
+  position: absolute;
+  pointer-events: none;
+  border: 2px solid var(--ts-brass-300);
+  border-radius: var(--ts-radius-s);
+  box-shadow: 0 0 0 1px var(--ts-map-ring-edge), 0 0 14px var(--ts-act-glow);
+  animation: lockOn var(--ms, 250ms) var(--ts-ease-out) both;
+}
+
+@keyframes lockOn {
+  from { opacity: 0; transform: scale(1.35); }
+  to { opacity: 1; transform: none; }
+}
+
+.tray {
+  display: flex;
+  align-items: center;
+  gap: var(--ts-space-3);
+  max-width: 340px;
+  padding: 10px 14px;
+  border-radius: var(--ts-radius-m);
+  background: var(--ts-surface-felt);
+  box-shadow: inset 0 2px 10px color-mix(in srgb, var(--ts-room-950) 70%, transparent), 0 0 0 2px var(--ts-walnut-600), 0 14px 30px color-mix(in srgb, var(--ts-room-950) 55%, transparent);
+  color: var(--ts-paper-50);
+}
+
+.dice {
+  display: flex;
+  gap: var(--ts-space-2);
+  flex: none;
+}
+
+.dieCol {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+}
+
+.tumble {
+  display: inline-block;
+  animation: tumble var(--ms, 700ms) var(--ts-ease-out) both;
+}
+
+@keyframes tumble {
+  from { transform: translate(-18px, -10px) rotate(-1080deg) scale(.85); }
+  to { transform: none; }
+}
+
+.land {
+  display: inline-block;
+  animation: settle var(--ts-dur-s) var(--ts-ease-thunk) both;
+}
+
+@keyframes settle {
+  from { transform: scale(1.12); }
+  to { transform: none; }
+}
+
+.mod {
+  font-weight: 700;
+  font-size: var(--ts-fs-s);
+  line-height: 1;
+  color: var(--ts-paper-200);
+}
+
+.text {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.title {
+  font-family: var(--ts-font-ui);
+  font-weight: 700;
+  font-size: var(--ts-fs-xs);
+  line-height: 1.15;
+  letter-spacing: var(--ts-track-caps);
+  text-transform: var(--ts-caps);
+  color: var(--ts-paper-200);
+}
+
+.math {
+  font-weight: 700;
+  font-size: var(--ts-fs-body);
+  line-height: 1.25;
+  letter-spacing: .04em;
+  /* One line where the table has room; wraps (at its spaces) on a table narrower than the tray. */
+  white-space: normal;
+  animation: typeIn var(--ms, 200ms) steps(8, end) both;
+}
+
+:root:lang(zh) .math {
+  font-family: var(--ts-font-ui);
+}
+
+@keyframes typeIn {
+  from { clip-path: inset(0 100% 0 0); }
+  to { clip-path: inset(0 0 0 0); }
+}
+
+.result {
+  font-family: var(--ts-font-stencil);
+  font-weight: 800;
+  font-size: var(--ts-fs-l);
+  line-height: 1.1;
+  letter-spacing: .05em;
+  text-transform: var(--ts-caps);
+  color: var(--ts-steel-200);
+  animation: fadeIn var(--ms, 200ms) linear both;
+}
+
+:root:lang(zh) .result {
+  font-family: var(--ts-font-body);
+  letter-spacing: .02em;
+}
+
+.tray[data-ok="true"] .result {
+  color: var(--ts-ok-500);
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* Reduced motion (setting or system): the face and the maths at once. */
+.place[data-reduced],
+.place[data-reduced] .tumble,
+.place[data-reduced] .land,
+.place[data-reduced] .math,
+.reticle[data-reduced] {
+  animation: none;
+}

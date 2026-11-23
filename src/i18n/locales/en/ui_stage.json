@@ -1,0 +1,82 @@
+{
+  "dock": {
+    "label": "Card played by the {{side}}",
+    "kicker": "{{side}} plays",
+    "kickerHeadline": "{{side}} headline",
+    "how": {
+      "event": "Event",
+      "space": "Space race",
+      "influence": "Operations · Influence",
+      "coup": "Operations · Coup",
+      "realign": "Operations · Realign",
+      "headline": "Headline",
+      "scoring": "Scoring",
+      "discard": "Discard",
+      "give": "Give",
+      "pass": "Pass"
+    },
+    "target": "{{how}} → {{country}}",
+    "ops_one": "{{count}} Op",
+    "ops_other": "{{count}} Ops",
+    "opponentNote": "{{owner}} card: its event also happens, for the {{owner}}."
+  },
+  "dice": {
+    "title": "{{kind}} · {{where}}",
+    "card": "{{card}}",
+    "coupMath_one": "{{roll}} + {{count}} Op − {{defense}} = {{net}}",
+    "coupMath_other": "{{roll}} + {{count}} Ops − {{defense}} = {{net}}",
+    "versus": "{{us}} vs {{ussr}}",
+    "needAtMost": "Roll {{roll}} · needs {{need}} or less",
+    "needAtLeast": "{{roll}} {{mod}} = {{total}} · needs {{need}}+",
+    "delta": "{{side}} {{delta}}",
+    "vp": "{{side}} +{{n}} VP",
+    "success": "Success",
+    "fail": "Fails",
+    "noChange": "No change",
+    "tie": "Tie",
+    "wins": "{{side}} wins",
+    "advances": "{{side}} reaches box {{box}}",
+    "escapes": "Escapes",
+    "trapped": "Stays trapped"
+  },
+  "headline": {
+    "first": "1st",
+    "second": "2nd"
+  },
+  "scoring": {
+    "each": "+1 each",
+    "region": "Region",
+    "label": "{{region}} scoring",
+    "chinaBonus": "+1 VP for its holder",
+    "capped": "The VP track stops at 20: {{vp}} applied",
+    "shuttle": "{{card}}: one USSR battleground is not counted"
+  },
+  "over": {
+    "stats": {
+      "finalVp": "Final VP",
+      "ended": "Ended",
+      "turnAr": "Turn {{turn}} · AR {{ar}}",
+      "coups": "Coups",
+      "coupsValue": "US {{us}} · USSR {{ussr}}",
+      "time": "Playing time",
+      "ai": "AI thinking",
+      "aiValue_one": "{{time}} · {{count}} decision",
+      "aiValue_other": "{{time}} · {{count}} decisions",
+      "vpBeforeFinal": "VP before final scoring"
+    },
+    "duration": {
+      "hm": "{{h}} h {{m}} min",
+      "m": "{{m}} min",
+      "lt1": "Under 1 min"
+    },
+    "held": "Held at the end of the turn"
+  },
+  "chart": {
+    "usUp": "US ↑",
+    "ussrDown": "USSR ↓",
+    "point": "Turn {{turn}}: {{vp}}",
+    "start": "Start: {{vp}}",
+    "label": "{{title}}: {{points}}",
+    "sep": ", "
+  }
+}

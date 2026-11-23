@@ -1,0 +1,46 @@
+/* The flight layer (ui-spec §9.6): cards in flight above everything but sheets, never interactive. */
+.layer {
+  position: fixed;
+  inset: 0;
+  z-index: var(--ts-z-flight);
+  pointer-events: none;
+  overflow: hidden;
+  contain: strict;
+}
+
+.flight {
+  position: absolute;
+  top: 0;
+  left: 0;
+  transform-origin: 50% 50%;
+  will-change: transform, opacity;
+  perspective: 600px;
+}
+
+.inner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  transform-style: preserve-3d;
+}
+
+.inner[data-flip] {
+  transform: rotateY(180deg);
+}
+
+.face {
+  position: absolute;
+  inset: 0;
+  border-radius: var(--ts-radius-card);
+  overflow: hidden;
+  box-shadow: var(--ts-shadow-card);
+  backface-visibility: hidden;
+}
+
+.face > * {
+  display: block;
+}
+
+.backFace {
+  transform: rotateY(180deg);
+}

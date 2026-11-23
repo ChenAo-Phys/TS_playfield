@@ -1,0 +1,115 @@
+/*
+ * Compact hand drawer (ui-spec §3.3, §7.6): header + a scroll-snapping strip of 112 × 157 cards.
+ * The sheet itself (z sheet, grab, scrim) is common/Sheet.
+ */
+.drawer { min-height: var(--ts-c-drawer-h); }
+.header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 0 4px;
+}
+.title {
+  font: 700 var(--ts-fs-xs) / 1.2 var(--ts-font-ui);
+  letter-spacing: var(--ts-track-wide);
+  text-transform: var(--ts-caps);
+  color: var(--ts-brass-400);
+  white-space: nowrap;
+}
+.china {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font: 600 var(--ts-fs-xs) / 1.2 var(--ts-font-ui);
+  letter-spacing: var(--ts-track-caps);
+  text-transform: var(--ts-caps);
+  color: var(--ts-text-2);
+}
+:global(:root:lang(zh)) .title, :global(:root:lang(zh)) .china { font-family: var(--ts-font-body); }
+
+.strip {
+  display: flex;
+  align-items: flex-end;
+  gap: 10px;
+  margin: 0 -12px;
+  padding: 18px 16px 4px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scroll-snap-type: x mandatory;
+  scroll-padding-inline: 16px;
+  overscroll-behavior-x: contain;
+  scrollbar-width: none;
+  isolation: isolate;
+}
+.strip::-webkit-scrollbar { display: none; }
+.empty {
+  padding: 40px 8px;
+  font: 600 var(--ts-fs-s) / 1.2 var(--ts-font-ui);
+  letter-spacing: var(--ts-track-caps);
+  text-transform: var(--ts-caps);
+  color: var(--ts-text-3);
+}
+
+.card {
+  position: relative;
+  flex: none;
+  display: block;
+  padding: 0;
+  border: 0;
+  border-radius: var(--ts-radius-card);
+  background: none;
+  color: inherit;
+  font: inherit;
+  scroll-snap-align: start;
+  cursor: pointer;
+  transition: transform var(--ts-dur-s) var(--ts-ease-out);
+  outline: none;
+  -webkit-tap-highlight-color: transparent;
+}
+.face { transition: box-shadow var(--ts-dur-s) var(--ts-ease-out); }
+.card:focus-visible .face { box-shadow: var(--ts-focus-ring), var(--ts-shadow-card); }
+.st_playable { transform: translateY(-8px); }
+.st_playable .face { box-shadow: var(--ts-glow-act), var(--ts-shadow-card); }
+.st_staged { transform: translateY(-8px); z-index: 1; }
+.st_staged .face { box-shadow: 0 0 0 3px var(--ts-brass-400), 0 0 22px var(--ts-act-glow), var(--ts-shadow-card); }
+.faceDown { filter: saturate(.55) brightness(.82); }
+.st_lifted { cursor: default; }
+.st_lifted .face { visibility: hidden; }
+.st_lifted::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: var(--ts-radius-card);
+  border: 1.5px dashed color-mix(in srgb, var(--ts-brass-500) 60%, transparent);
+  background: color-mix(in srgb, var(--ts-brass-500) 5%, transparent);
+}
+.stamp {
+  position: absolute;
+  left: 50%;
+  top: 30%;
+  translate: -50% -50%;
+  pointer-events: none;
+}
+.stampInner.stampInner {
+  font-size: var(--ts-fs-m);
+  background: var(--ts-paper-50);
+  box-shadow: 0 2px 6px color-mix(in srgb, var(--ts-room-950) 45%, transparent);
+}
+.blink :global([data-tone="known"]) {
+  animation: known-blink var(--blink-ms, 350ms) var(--ts-ease-in-out) var(--blink-delay, 0ms) both;
+}
+@keyframes known-blink {
+  0% { opacity: 0; }
+  30% { opacity: 1; }
+  50% { opacity: .2; }
+  100% { opacity: 1; }
+}
+
+:global([data-motion="reduce"]) .card { transition: none; }
+:global([data-motion="reduce"]) .blink :global([data-tone="known"]) { animation: none; }
+@media (prefers-reduced-motion: reduce) {
+  :global(:root:not([data-motion="full"])) .card { transition: none; }
+  :global(:root:not([data-motion="full"])) .blink :global([data-tone="known"]) { animation: none; }
+}

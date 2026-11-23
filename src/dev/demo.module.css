@@ -1,0 +1,57 @@
+/* Dev-only demo chrome (DemoHarness). Tokens only. */
+.toolbar {
+  position: fixed;
+  top: var(--ts-space-1);
+  right: var(--ts-space-1);
+  z-index: var(--ts-z-toast);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--ts-space-1);
+  max-width: calc(100vw - 2 * var(--ts-space-1));
+  padding: var(--ts-space-1) var(--ts-space-2);
+  border-radius: var(--ts-radius-m);
+  background: var(--ts-surface-panel);
+  box-shadow: var(--ts-shadow-pop);
+  font: 600 var(--ts-fs-xs) / 1.2 var(--ts-font-ui);
+  color: var(--ts-text-2);
+  opacity: .9;
+}
+
+.inline {
+  position: static;
+  max-width: none;
+  opacity: 1;
+}
+
+.toolbar select,
+.toolbar button {
+  font: inherit;
+  color: var(--ts-text-1);
+  background: var(--ts-room-700);
+  border: 1px solid var(--ts-room-500);
+  border-radius: var(--ts-radius-s);
+  padding: var(--ts-space-0) var(--ts-space-1);
+}
+
+.toolbar button[aria-pressed="true"] {
+  background: var(--ts-brass-500);
+  color: var(--ts-ink-900);
+}
+
+.group {
+  display: inline-flex;
+  gap: var(--ts-space-0);
+}
+
+.pos {
+  font-family: var(--ts-font-num);
+  font-variant-numeric: tabular-nums;
+  color: var(--ts-phosphor);
+}
+
+.error {
+  margin: var(--ts-space-4);
+  color: var(--ts-alert-500);
+  white-space: pre-wrap;
+}

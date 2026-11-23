@@ -1,0 +1,58 @@
+{
+  "hand": {
+    "label": "Your hand · {{count}}",
+    "empty": "No cards in hand",
+    "region_one": "Your hand: {{count}} card. Arrow keys move, Enter plays, Space shows the card",
+    "region_other": "Your hand: {{count}} cards. Arrow keys move, Enter plays, Space shows the card"
+  },
+  "card": {
+    "ops_one": "{{count}} Op",
+    "ops_other": "{{count}} Ops",
+    "aria": "{{card}}, {{ops}}. {{state}}",
+    "state": {
+      "neutral": "In your hand",
+      "playable": "Playable",
+      "unplayable": "Can't be played now",
+      "passive": "In your hand",
+      "lifted": "Being played",
+      "staged": "Selected: activate again or press Enter to confirm",
+      "stagedTouch": "Selected: tap again to confirm"
+    },
+    "ariaKnown": "{{card}}, {{ops}}. {{state}}. Known to the AI"
+  },
+  "china": {
+    "label": {
+      "faceUp": "China Card · face up",
+      "faceDown": "China Card · face down"
+    },
+    "withSide": "With the {{side}}",
+    "aria": {
+      "faceUp": "{{card}}, face up. {{state}}",
+      "faceDown": "{{card}}, face down. Cannot be played until next turn",
+      "withAiUp": "{{card}} is with the {{side}}, face up",
+      "withAiDown": "{{card}} is with the {{side}}, face down"
+    }
+  },
+  "pile": {
+    "short": {
+      "deck": "Deck",
+      "discard": "Discard",
+      "removed": "Removed"
+    },
+    "count_one": "{{pile}}: {{count}} card",
+    "count_other": "{{pile}}: {{count}} cards",
+    "group": "Piles",
+    "open_one": "{{pile}}: {{count}} card. Show it",
+    "open_other": "{{pile}}: {{count}} cards. Show them"
+  },
+  "headline": {
+    "aria": {
+      "committed": "Your headline: {{card}} (committed, face down)",
+      "revealed": "Your headline: {{card}} (revealed)"
+    }
+  },
+  "drawer": {
+    "label": "Your hand",
+    "title": "Your hand · {{count}}"
+  }
+}

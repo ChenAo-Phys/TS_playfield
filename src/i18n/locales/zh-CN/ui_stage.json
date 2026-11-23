@@ -1,0 +1,79 @@
+{
+  "dock": {
+    "label": "{{side}}打出的卡牌",
+    "kicker": "{{side}}打出",
+    "kickerHeadline": "{{side}}头条",
+    "how": {
+      "event": "事件",
+      "space": "太空竞赛",
+      "influence": "行动 · 影响力",
+      "coup": "行动 · 政变",
+      "realign": "行动 · 调整",
+      "headline": "头条",
+      "scoring": "计分",
+      "discard": "弃掉",
+      "give": "给出",
+      "pass": "放弃"
+    },
+    "target": "{{how}} → {{country}}",
+    "ops_other": "{{count}} 行动点",
+    "opponentNote": "{{owner}}卡牌：其事件同样发生，由{{owner}}执行。"
+  },
+  "dice": {
+    "title": "{{kind}} · {{where}}",
+    "card": "{{card}}",
+    "coupMath_other": "{{roll}} + {{count}} 行动点 − {{defense}} = {{net}}",
+    "versus": "{{us}} 对 {{ussr}}",
+    "needAtMost": "骰点 {{roll}} · 需 ≤ {{need}}",
+    "needAtLeast": "{{roll}} {{mod}} = {{total}} · 需 ≥ {{need}}",
+    "delta": "{{side}} {{delta}}",
+    "vp": "{{side}} +{{n}} VP",
+    "success": "成功",
+    "fail": "失败",
+    "noChange": "无变化",
+    "tie": "平局",
+    "wins": "{{side}}获胜",
+    "advances": "{{side}}到达第 {{box}} 格",
+    "escapes": "脱困",
+    "trapped": "仍被困住"
+  },
+  "headline": {
+    "first": "第一",
+    "second": "第二"
+  },
+  "scoring": {
+    "each": "每个 +1",
+    "region": "地区",
+    "label": "{{region}}计分",
+    "chinaBonus": "持有者 +1 VP",
+    "capped": "VP 上限为 20：实际计入 {{vp}}",
+    "shuttle": "{{card}}：少计苏联一个战场国"
+  },
+  "over": {
+    "stats": {
+      "finalVp": "最终 VP",
+      "ended": "结束于",
+      "turnAr": "第 {{turn}} 回合 · 第 {{ar}} 行动轮",
+      "coups": "政变",
+      "coupsValue": "美国 {{us}} · 苏联 {{ussr}}",
+      "time": "对局时长",
+      "ai": "AI 思考",
+      "aiValue_other": "{{time}} · {{count}} 次决策",
+      "vpBeforeFinal": "最终计分前 VP"
+    },
+    "duration": {
+      "hm": "{{h}} 小时 {{m}} 分钟",
+      "m": "{{m}} 分钟",
+      "lt1": "不到 1 分钟"
+    },
+    "held": "回合结束时仍持有"
+  },
+  "chart": {
+    "usUp": "美国 ↑",
+    "ussrDown": "苏联 ↓",
+    "point": "第 {{turn}} 回合：{{vp}}",
+    "start": "开局：{{vp}}",
+    "label": "{{title}}：{{points}}",
+    "sep": "；"
+  }
+}

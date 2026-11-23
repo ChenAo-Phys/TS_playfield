@@ -1,0 +1,119 @@
+/*
+ * Small shared pieces: glyphs, icons, seals, stamps, dice, rolling numbers, card / country refs.
+ * Colours from tokens.css only (ui-spec §2).
+ */
+
+/* ── Glyphs and icons (1em unless sized) ──────────────────────────────────────────────── */
+.glyph, .icon { width: 1em; height: 1em; flex: none; vertical-align: -0.14em; overflow: visible; }
+.glyph[width], .icon[width] { width: auto; height: auto; }
+
+/* ── Seals ────────────────────────────────────────────────────────────────────────────── */
+.seal { flex: none; display: inline-block; }
+.sealUs .sealDisc { fill: var(--ts-us-600); stroke: var(--ts-us-800); }
+.sealUs .sealRing { stroke: var(--ts-us-100); }
+.sealUs .sealMark { fill: var(--ts-side-us-solid-text); }
+.sealUssr .sealDisc { fill: var(--ts-ussr-600); stroke: var(--ts-ussr-800); }
+.sealUssr .sealRing { stroke: var(--ts-ussr-gold); }
+.sealUssr .sealMark { fill: var(--ts-ussr-gold); }
+
+/* ── Stamps ───────────────────────────────────────────────────────────────────────────── */
+.stamp {
+  display: inline-flex;
+  align-items: center;
+  gap: .3em;
+  border: 1.5px solid currentColor;
+  border-radius: var(--ts-radius-xs);
+  padding: 2px 5px 1px;
+  font-family: var(--ts-font-stencil);
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: .14em;
+  text-transform: var(--ts-caps);
+  white-space: nowrap;
+  transform: rotate(var(--stamp-tilt, -3deg));
+  transform-origin: 50% 60%;
+}
+:global(:root:lang(zh)) .stamp { font-family: var(--ts-font-ui); font-weight: 900; letter-spacing: .1em; }
+.stamp_s { font-size: var(--ts-fs-xs); }
+.stamp_m { font-size: var(--ts-fs-l); padding: 3px 8px 2px; border-width: 2px; }
+.stamp_l { font-size: var(--ts-fs-3xl); padding: 5px 14px 3px; border-width: 3px; }
+.stampUs { color: var(--ts-us-600); }
+.stampUssr { color: var(--ts-ussr-600); }
+.stampInk { color: var(--ts-ink-900); }
+.stampAlert { color: var(--ts-alert-700); }
+.stampGlyph { width: .95em; height: .95em; }
+.stampIn { animation: stamp-in var(--ts-dur-s) var(--ts-ease-thunk) both; }
+@keyframes stamp-in {
+  from { opacity: 0; transform: rotate(var(--stamp-tilt, -3deg)) scale(1.6); }
+  to { opacity: 1; transform: rotate(var(--stamp-tilt, -3deg)) scale(1); }
+}
+@keyframes stamp-fade { from { opacity: 0; } to { opacity: 1; } }
+:global([data-motion="reduce"]) .stampIn { animation-name: stamp-fade; }
+@media (prefers-reduced-motion: reduce) {
+  :global(:root:not([data-motion="full"])) .stampIn { animation-name: stamp-fade; }
+}
+
+/* ── Dice (final.css `.die3d`, `.odds .die`) ──────────────────────────────────────────── */
+.die {
+  --die: 44px;
+  position: relative;
+  flex: none;
+  width: var(--die);
+  height: var(--die);
+  display: inline-grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(3, 1fr);
+  padding: calc(var(--die) * .16);
+  border-radius: calc(var(--die) * .18);
+  box-shadow: inset 0 calc(var(--die) * -.07) 0 color-mix(in srgb, var(--ts-ink-900) 18%, transparent), 0 4px 8px color-mix(in srgb, var(--ts-room-950) 45%, transparent);
+  vertical-align: middle;
+}
+.pip, .pipOn { width: calc(var(--die) * .18); height: calc(var(--die) * .18); border-radius: 50%; place-self: center; }
+.pip { visibility: hidden; }
+.dieNeutral { background: var(--ts-die-neutral); }
+.dieNeutral .pipOn { background: var(--ts-ink-900); }
+.dieUs { background: var(--ts-die-us); }
+.dieUs .pipOn { background: var(--ts-side-us-solid-text); }
+.dieUssr { background: var(--ts-die-ussr); }
+.dieUssr .pipOn { background: var(--ts-ussr-gold); }
+.die_ok { box-shadow: 0 0 0 2px var(--ts-ok-500), 0 4px 8px color-mix(in srgb, var(--ts-room-950) 45%, transparent); }
+.die_fail { filter: saturate(.35) brightness(.85); }
+.die_boom { box-shadow: 0 0 0 2px var(--ts-alert-500), 0 0 0 4px var(--ts-room-950), 0 4px 8px color-mix(in srgb, var(--ts-room-950) 45%, transparent); }
+
+/* Flat numbered face (odds strip) */
+.dieNumeral {
+  display: inline-grid;
+  place-items: center;
+  grid-template-columns: 1fr;
+  grid-template-rows: 1fr;
+  padding: 0;
+  border-radius: var(--ts-radius-s);
+  background: var(--ts-die-fail);
+  color: var(--ts-paper-50);
+  box-shadow: none;
+}
+.dieNumeral.die_ok { background: var(--ts-die-ok); box-shadow: none; filter: none; }
+.dieNumeral.die_fail { background: var(--ts-die-fail); filter: none; }
+.dieNumeral.die_boom { background: var(--ts-hazard-bright); box-shadow: inset 0 0 0 1px var(--ts-alert-500); }
+.dieNum { font-weight: 700; font-size: var(--ts-fs-body); line-height: 1; }
+.dieNumeral.die_boom .dieNum { color: var(--ts-paper-50); text-shadow: 0 0 3px var(--ts-room-950), 0 0 2px var(--ts-room-950); }
+
+/* ── Rolling number ───────────────────────────────────────────────────────────────────── */
+.roll { display: inline-block; position: relative; line-height: 1.15; }
+.rollWindow { position: relative; display: inline-block; height: 1.15em; overflow: hidden; vertical-align: bottom; }
+.rollStrip { position: absolute; left: 0; right: 0; top: 0; display: flex; flex-direction: column; }
+.rollRow { display: block; height: 1.15em; line-height: 1.15; text-align: right; }
+.rollSizer { display: block; visibility: hidden; height: 1.15em; line-height: 1.15; }
+
+/* ── Card / country references in running text ────────────────────────────────────────── */
+.ref { font-weight: 700; }
+.ref[role="button"] {
+  cursor: help;
+  text-decoration: underline dotted color-mix(in srgb, currentColor 55%, transparent);
+  text-underline-offset: 2px;
+  border-radius: var(--ts-radius-xs);
+}
+.ref[role="button"]:hover { text-decoration-style: solid; }
+.ref[role="button"]:focus-visible { box-shadow: var(--ts-focus-ring); }
+:global(.ts-on-paper) .ref[role="button"]:focus-visible { box-shadow: var(--ts-focus-ring-on-paper); }
+.countryRef[role="button"] { cursor: pointer; }

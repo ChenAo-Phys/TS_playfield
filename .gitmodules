@@ -1,0 +1,4 @@
+[submodule "vendor/DeepStruggle"]
+	path = vendor/DeepStruggle
+	url = https://github.com/mihaild/DeepStruggle.git
+	shallow = true

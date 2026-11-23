@@ -1,0 +1,106 @@
+{
+  "label": "对局状态",
+  "listSep": "、",
+  "wordmark": {
+    "title": "Twilight Struggle",
+    "sub": "对战 DeepStruggle",
+    "label": "冷战热斗 · AI 对战：打开菜单"
+  },
+  "turn": {
+    "aria": "第 {{turn}} 回合（共 10 回合），{{era}}",
+    "readout": "{{turn}}/{{max}} 回合 · {{era}}",
+    "compact": "第 {{turn}} 回合 · {{era}}",
+    "eraShort": {
+      "early": "早期",
+      "mid": "中期",
+      "late": "晚期"
+    },
+    "tip": {
+      "shuffled": "{{era}}卡牌已于第 {{turn}} 回合洗入抽牌堆",
+      "upcoming": "{{era}}卡牌将于第 {{turn}} 回合洗入抽牌堆",
+      "handSize": "每回合补牌至 {{n}} 张"
+    }
+  },
+  "ar": {
+    "aria": "第 {{ar}} 行动轮，轮到{{side}}",
+    "readout": "第 {{ar}} 行动轮 · {{side}}",
+    "readoutYou": "第 {{ar}} 行动轮 · {{side}}{{you}}",
+    "tip": {
+      "title": "第 {{ar}} 行动轮（本回合共 {{max}} 轮）",
+      "count": "本回合共 {{max}} 个行动轮",
+      "ar8": "{{side}}可进行第 8 行动轮（{{reason}}）"
+    }
+  },
+  "defcon": {
+    "aria": "DEFCON {{level}}：{{rule}}"
+  },
+  "vp": {
+    "title": "VP",
+    "aria": "VP：{{lead}}",
+    "end": "{{side}} 20",
+    "tip": {
+      "turn": "T{{turn}}：{{lead}}",
+      "none": "尚无回合结束",
+      "now": "当前：{{lead}}"
+    }
+  },
+  "milops": {
+    "aria": "军事行动：需 {{need}}，美国 {{us}}，苏联 {{ussr}}",
+    "tip": {
+      "status": "{{side}}：{{n}}/{{need}}"
+    }
+  },
+  "space": {
+    "aria": "太空竞赛：美国第 {{us}} 格，苏联第 {{ussr}} 格",
+    "perk": "{{side}}获得特权：{{perk}}",
+    "tip": {
+      "side": "{{side}}：第 {{box}} 格 · {{name}}",
+      "next": "下一格（第 {{box}} 格）：{{ops}}+ 行动点，掷出 1–{{roll}}，VP {{first}} / {{second}}",
+      "perks": "已到达的特权格：{{list}}"
+    }
+  },
+  "lang": {
+    "en": "EN",
+    "zh": "中文",
+    "zhSingle": "中",
+    "switchTo": "切换到{{lang}}"
+  },
+  "status": {
+    "title": "状态"
+  },
+  "rail": {
+    "label": "对手、生效中的效果与电报",
+    "hide": "收起侧栏",
+    "show": "展开侧栏"
+  },
+  "adversary": {
+    "headlineCommitted": "头条 · 已提交",
+    "phase": {
+      "setup": "初始设置",
+      "headline": "头条"
+    },
+    "knownCard": "{{card}}（你已知晓）"
+  },
+  "effects": {
+    "empty": "暂无持续效果",
+    "chip": "{{name}}：{{duration}}"
+  },
+  "log": {
+    "filters": "显示",
+    "showEarlier": "显示更早的电报",
+    "empty": "暂无电报",
+    "unread": "有新电报",
+    "code": {
+      "setup": "设置",
+      "headline": "T{{turn}} 头条",
+      "turn": "T{{turn}}",
+      "ar": "AR{{ar}}"
+    },
+    "keysHint": "方向键：在电报中提到的卡牌与国家之间移动。回车打开，Esc 返回。",
+    "announcer": "对手的行动",
+    "announceStop": "。"
+  },
+  "flyout": {
+    "label": "{{panel}}面板"
+  }
+}

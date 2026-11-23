@@ -1,0 +1,735 @@
+[
+ {
+  "name": "prompt-setup-place-ussr",
+  "kind": "scene",
+  "description": "Setup: the USSR (you) places 6 influence in Eastern Europe; 2 placed already.",
+  "tags": [
+   "human:USSR",
+   "prompt:setup-place",
+   "turn:1"
+  ],
+  "frames": 1,
+  "bytes": 21131
+ },
+ {
+  "name": "prompt-setup-place-us",
+  "kind": "scene",
+  "description": "Setup: the US (you) places 7 influence in Western Europe, after the USSR's setup.",
+  "tags": [
+   "human:US",
+   "prompt:setup-place",
+   "turn:1"
+  ],
+  "frames": 1,
+  "bytes": 22744
+ },
+ {
+  "name": "prompt-bid-place",
+  "kind": "scene",
+  "description": "The US bid: +2 influence where the US already has influence.",
+  "tags": [
+   "human:US",
+   "prompt:bid-place",
+   "turn:1"
+  ],
+  "frames": 1,
+  "bytes": 24819
+ },
+ {
+  "name": "prompt-headline-t1",
+  "kind": "scene",
+  "description": "Turn 1 headline: choose a card from the opening hand.",
+  "tags": [
+   "human:USSR",
+   "prompt:headline",
+   "turn:1"
+  ],
+  "frames": 1,
+  "bytes": 25019
+ },
+ {
+  "name": "prompt-headline",
+  "kind": "scene",
+  "description": "A later headline (turn 4+: Mid War cards in hand).",
+  "tags": [
+   "human:USSR",
+   "prompt:headline",
+   "turn:4"
+  ],
+  "frames": 1,
+  "bytes": 33434
+ },
+ {
+  "name": "prompt-action-card",
+  "kind": "scene",
+  "description": "Choose the card for an action round (turn 2+).",
+  "tags": [
+   "human:USSR",
+   "prompt:action-card",
+   "turn:3"
+  ],
+  "frames": 1,
+  "bytes": 35728
+ },
+ {
+  "name": "prompt-action-card-china",
+  "kind": "scene",
+  "description": "Choose a card while holding the playable China Card.",
+  "tags": [
+   "china-offered",
+   "human:USSR",
+   "prompt:action-card",
+   "turn:3"
+  ],
+  "frames": 1,
+  "bytes": 36240
+ },
+ {
+  "name": "prompt-action-card-warning",
+  "kind": "scene",
+  "description": "Choose a card where some options carry warnings (scoring stranded / opponent event).",
+  "tags": [
+   "human:US",
+   "prompt:action-card",
+   "turn:1",
+   "warning:scoring-stranded"
+  ],
+  "frames": 1,
+  "bytes": 31984
+ },
+ {
+  "name": "prompt-play-mode",
+  "kind": "scene",
+  "description": "How to play your own card: Event / Space / Influence / Coup / Realign.",
+  "tags": [
+   "human:USSR",
+   "prompt:play-mode",
+   "turn:3"
+  ],
+  "frames": 1,
+  "bytes": 35507
+ },
+ {
+  "name": "prompt-play-mode-opponent",
+  "kind": "scene",
+  "description": "How to play an opponent's card (its event fires for the opponent if played for Ops).",
+  "tags": [
+   "human:USSR",
+   "prompt:play-mode",
+   "turn:3",
+   "warning:opponent-event"
+  ],
+  "frames": 1,
+  "bytes": 35463
+ },
+ {
+  "name": "prompt-op-mode",
+  "kind": "scene",
+  "description": "Deferred Ops: Influence / Coup / Realign.",
+  "tags": [
+   "human:USSR",
+   "prompt:op-mode",
+   "turn:3"
+  ],
+  "frames": 1,
+  "bytes": 35138
+ },
+ {
+  "name": "prompt-influence",
+  "kind": "scene",
+  "description": "Placing Ops influence mid-run (some points placed already), turn 2+.",
+  "tags": [
+   "human:USSR",
+   "prompt:influence",
+   "turn:6"
+  ],
+  "frames": 1,
+  "bytes": 40429
+ },
+ {
+  "name": "prompt-influence-start",
+  "kind": "scene",
+  "description": "Placing Ops influence: the first point of the run.",
+  "tags": [
+   "human:USSR",
+   "prompt:influence",
+   "turn:6"
+  ],
+  "frames": 1,
+  "bytes": 40333
+ },
+ {
+  "name": "prompt-coup-target",
+  "kind": "scene",
+  "description": "Pick the coup target (coup odds per target in previews).",
+  "tags": [
+   "human:USSR",
+   "prompt:coup-target",
+   "turn:5"
+  ],
+  "frames": 1,
+  "bytes": 43374
+ },
+ {
+  "name": "prompt-realign-target",
+  "kind": "scene",
+  "description": "Pick a realignment target (one roll per click).",
+  "tags": [
+   "human:USSR",
+   "prompt:realign-target",
+   "turn:4"
+  ],
+  "frames": 1,
+  "bytes": 33764
+ },
+ {
+  "name": "prompt-event-target-add",
+  "kind": "scene",
+  "description": "An event places influence (a click adds a point).",
+  "tags": [
+   "human:USSR",
+   "prompt:event-target",
+   "turn:4"
+  ],
+  "frames": 1,
+  "bytes": 35363
+ },
+ {
+  "name": "prompt-event-target-remove",
+  "kind": "scene",
+  "description": "An event removes influence (a click removes a point).",
+  "tags": [
+   "human:USSR",
+   "prompt:event-target",
+   "turn:5"
+  ],
+  "frames": 1,
+  "bytes": 33972
+ },
+ {
+  "name": "prompt-event-target-other",
+  "kind": "scene",
+  "description": "An event targets a country without placing or removing (e.g. an event coup).",
+  "tags": [
+   "human:USSR",
+   "prompt:event-target",
+   "turn:4"
+  ],
+  "frames": 1,
+  "bytes": 34974
+ },
+ {
+  "name": "prompt-event-card",
+  "kind": "scene",
+  "description": "An event asks for a card (discard, give, retrieve...).",
+  "tags": [
+   "human:USSR",
+   "prompt:event-card",
+   "turn:4"
+  ],
+  "frames": 1,
+  "bytes": 36003
+ },
+ {
+  "name": "prompt-branch",
+  "kind": "scene",
+  "description": "An event branch choice (Warsaw Pact, Olympic Games, Wargames...).",
+  "tags": [
+   "human:USSR",
+   "prompt:branch",
+   "turn:2"
+  ],
+  "frames": 1,
+  "bytes": 34556
+ },
+ {
+  "name": "prompt-defcon-level",
+  "kind": "scene",
+  "description": "Choose a DEFCON level (Summit / How I Learned to Stop Worrying).",
+  "tags": [
+   "human:USSR",
+   "prompt:defcon-level",
+   "turn:4",
+   "warning:defcon-suicide"
+  ],
+  "frames": 1,
+  "bytes": 34608
+ },
+ {
+  "name": "prompt-region",
+  "kind": "scene",
+  "description": "Chernobyl: choose a region.",
+  "tags": [
+   "human:US",
+   "prompt:region",
+   "turn:8"
+  ],
+  "frames": 1,
+  "bytes": 35694
+ },
+ {
+  "name": "prompt-action-card-us",
+  "kind": "scene",
+  "description": "Choose the card for an action round, you are the US (turn 3+).",
+  "tags": [
+   "china-offered",
+   "human:US",
+   "prompt:action-card",
+   "turn:5"
+  ],
+  "frames": 1,
+  "bytes": 36110
+ },
+ {
+  "name": "prompt-influence-us",
+  "kind": "scene",
+  "description": "Placing Ops influence mid-run, you are the US.",
+  "tags": [
+   "human:US",
+   "prompt:influence",
+   "turn:5"
+  ],
+  "frames": 1,
+  "bytes": 39807
+ },
+ {
+  "name": "prompt-coup-target-us",
+  "kind": "scene",
+  "description": "Pick the coup target, you are the US (coup odds in previews).",
+  "tags": [
+   "human:US",
+   "prompt:coup-target",
+   "turn:5"
+  ],
+  "frames": 1,
+  "bytes": 34867
+ },
+ {
+  "name": "prompt-midgame",
+  "kind": "scene",
+  "description": "Mid-game board (turn 5-7) at an action-card prompt, with the whole log.",
+  "tags": [
+   "human:USSR",
+   "prompt:action-card",
+   "turn:6"
+  ],
+  "frames": 1,
+  "bytes": 124655
+ },
+ {
+  "name": "seq-opening-ussr",
+  "kind": "sequence",
+  "description": "Game start to the first headline prompt, you are the USSR: setup placements of both sides and the US bid.",
+  "tags": [
+   "event:control",
+   "event:headline-chosen",
+   "event:influence",
+   "event:phase",
+   "human:USSR",
+   "phase:HEADLINE",
+   "prompt:headline",
+   "turn:1"
+  ],
+  "frames": 17,
+  "bytes": 38893
+ },
+ {
+  "name": "seq-opening-us",
+  "kind": "sequence",
+  "description": "Game start to the first headline prompt, you are the US: setup placements of both sides and the US bid.",
+  "tags": [
+   "event:control",
+   "event:influence",
+   "event:phase",
+   "human:US",
+   "phase:HEADLINE",
+   "prompt:headline",
+   "turn:1"
+  ],
+  "frames": 16,
+  "bytes": 38764
+ },
+ {
+  "name": "seq-headline",
+  "kind": "sequence",
+  "description": "Turn 1 headline: both choose, the papers reveal, both events resolve, AR 1 begins.",
+  "tags": [
+   "event:action-round",
+   "event:card-moved",
+   "event:card-played",
+   "event:headline-chosen",
+   "event:headline-reveal",
+   "event:milops",
+   "event:phase",
+   "event:roll",
+   "event:space",
+   "event:vp",
+   "how:headline",
+   "human:USSR",
+   "phase:ACTION_ROUND",
+   "prompt:action-card",
+   "turn:1"
+  ],
+  "frames": 4,
+  "bytes": 30776
+ },
+ {
+  "name": "seq-ai-turn",
+  "kind": "sequence",
+  "description": "An AI action round: the AI plays a card for influence, then your next prompt.",
+  "tags": [
+   "actor:none",
+   "event:action-round",
+   "event:card-moved",
+   "event:card-played",
+   "event:china-card",
+   "event:control",
+   "event:deal",
+   "event:defcon",
+   "event:hand-revealed",
+   "event:headline-chosen",
+   "event:influence",
+   "event:milops",
+   "event:phase",
+   "event:reshuffle",
+   "event:turn-start",
+   "event:vp",
+   "how:influence",
+   "human:USSR",
+   "phase:HEADLINE",
+   "prompt:headline",
+   "turn:2"
+  ],
+  "frames": 9,
+  "bytes": 48388
+ },
+ {
+  "name": "seq-ai-coup",
+  "kind": "sequence",
+  "description": "An AI action round: the AI coups (die roll), then your next prompt.",
+  "tags": [
+   "auto",
+   "event:action-round",
+   "event:card-moved",
+   "event:card-played",
+   "event:defcon",
+   "event:influence",
+   "event:milops",
+   "event:roll",
+   "how:coup",
+   "human:USSR",
+   "prompt:action-card",
+   "turn:2"
+  ],
+  "frames": 7,
+  "bytes": 39655
+ },
+ {
+  "name": "seq-ai-event",
+  "kind": "sequence",
+  "description": "An AI action round: the AI plays a card for its event, then your next prompt.",
+  "tags": [
+   "actor:none",
+   "auto",
+   "ending:held-scoring",
+   "event:action-round",
+   "event:card-moved",
+   "event:card-played",
+   "event:control",
+   "event:defcon",
+   "event:effect-on",
+   "event:game-over",
+   "event:influence",
+   "event:milops",
+   "event:phase",
+   "event:roll",
+   "event:scoring",
+   "event:vp",
+   "how:event",
+   "how:give",
+   "how:influence",
+   "how:scoring",
+   "human:USSR",
+   "phase:GAME_OVER",
+   "turn:7"
+  ],
+  "frames": 12,
+  "bytes": 54232
+ },
+ {
+  "name": "seq-turn-end",
+  "kind": "sequence",
+  "description": "The end of turn 3: mil-ops, turn start, the deal, the next headline.",
+  "tags": [
+   "actor:none",
+   "event:card-moved",
+   "event:china-card",
+   "event:deal",
+   "event:defcon",
+   "event:effect-off",
+   "event:headline-chosen",
+   "event:milops",
+   "event:phase",
+   "event:turn-start",
+   "event:vp",
+   "human:USSR",
+   "phase:HEADLINE",
+   "prompt:headline",
+   "turn:3"
+  ],
+  "frames": 3,
+  "bytes": 41134
+ },
+ {
+  "name": "seq-undo",
+  "kind": "sequence",
+  "description": "You place influence, then undo the play: the undo frame takes the points back.",
+  "tags": [
+   "actor:none",
+   "event:card-moved",
+   "event:card-played",
+   "event:effect-off",
+   "event:effect-on",
+   "event:influence",
+   "how:event",
+   "human:USSR",
+   "prompt:action-card",
+   "turn:3"
+  ],
+  "frames": 6,
+  "bytes": 41541
+ },
+ {
+  "name": "seq-event-scoring",
+  "kind": "sequence",
+  "description": "A scoring card played with a non-zero net (card 1, +3 VP, turn 1).",
+  "tags": [
+   "event:action-round",
+   "event:card-moved",
+   "event:card-played",
+   "event:scoring",
+   "event:vp",
+   "how:scoring",
+   "human:USSR",
+   "prompt:action-card",
+   "turn:1"
+  ],
+  "frames": 2,
+  "bytes": 35294
+ },
+ {
+  "name": "seq-play-space",
+  "kind": "sequence",
+  "description": "Frames around the first card played as \"space\" (turn 2).",
+  "tags": [
+   "event:action-round",
+   "event:card-moved",
+   "event:card-played",
+   "event:influence",
+   "event:roll",
+   "how:influence",
+   "how:space",
+   "human:USSR",
+   "prompt:action-card",
+   "turn:2"
+  ],
+  "frames": 7,
+  "bytes": 40933
+ },
+ {
+  "name": "seq-play-realign",
+  "kind": "sequence",
+  "description": "Frames around the first card played as \"realign\" (turn 2).",
+  "tags": [
+   "event:card-played",
+   "how:realign",
+   "human:USSR",
+   "prompt:realign-target",
+   "turn:2"
+  ],
+  "frames": 3,
+  "bytes": 37048
+ },
+ {
+  "name": "seq-play-discard",
+  "kind": "sequence",
+  "description": "Frames around the first card played as \"discard\" (turn 4).",
+  "tags": [
+   "event:action-round",
+   "event:card-moved",
+   "event:card-played",
+   "event:effect-off",
+   "event:roll",
+   "how:discard",
+   "human:USSR",
+   "prompt:action-card",
+   "turn:4"
+  ],
+  "frames": 2,
+  "bytes": 36706
+ },
+ {
+  "name": "seq-over-defcon",
+  "kind": "sequence",
+  "description": "The last frames of a game that ends by \"defcon\" (turn 4, US).",
+  "tags": [
+   "ending:defcon",
+   "event:card-moved",
+   "event:card-played",
+   "event:control",
+   "event:defcon",
+   "event:game-over",
+   "event:influence",
+   "event:phase",
+   "event:vp",
+   "how:influence",
+   "human:USSR",
+   "phase:GAME_OVER",
+   "turn:4"
+  ],
+  "frames": 5,
+  "bytes": 41717
+ },
+ {
+  "name": "seq-over-held-scoring",
+  "kind": "sequence",
+  "description": "The last frames of a game that ends by \"held-scoring\" (turn 7, USSR).",
+  "tags": [
+   "actor:none",
+   "ending:held-scoring",
+   "event:action-round",
+   "event:card-moved",
+   "event:card-played",
+   "event:game-over",
+   "event:influence",
+   "event:milops",
+   "event:phase",
+   "event:vp",
+   "how:influence",
+   "human:USSR",
+   "phase:GAME_OVER",
+   "turn:7"
+  ],
+  "frames": 5,
+  "bytes": 38754
+ },
+ {
+  "name": "seq-over-milops-vp20",
+  "kind": "sequence",
+  "description": "The last frames of a game that ends by \"milops-vp20\" (turn 8, USSR).",
+  "tags": [
+   "actor:none",
+   "ending:milops-vp20",
+   "event:action-round",
+   "event:card-moved",
+   "event:card-played",
+   "event:game-over",
+   "event:milops",
+   "event:phase",
+   "event:roll",
+   "event:vp",
+   "how:realign",
+   "human:US",
+   "phase:GAME_OVER",
+   "turn:8"
+  ],
+  "frames": 5,
+  "bytes": 38863
+ },
+ {
+  "name": "seq-over-resign",
+  "kind": "sequence",
+  "description": "The last frames of a game that ends by \"resign\" (turn 2, USSR).",
+  "tags": [
+   "ending:resign",
+   "event:action-round",
+   "event:card-moved",
+   "event:card-played",
+   "event:defcon",
+   "event:game-over",
+   "event:milops",
+   "event:roll",
+   "how:coup",
+   "human:US",
+   "turn:2"
+  ],
+  "frames": 5,
+  "bytes": 39211
+ },
+ {
+  "name": "seq-over-vp20",
+  "kind": "sequence",
+  "description": "The last frames of a game that ends by \"vp20\" (turn 5, US).",
+  "tags": [
+   "ending:vp20",
+   "event:action-round",
+   "event:card-moved",
+   "event:card-played",
+   "event:china-card",
+   "event:control",
+   "event:effect-off",
+   "event:effect-on",
+   "event:game-over",
+   "event:influence",
+   "event:phase",
+   "event:roll",
+   "event:space",
+   "event:vp",
+   "how:event",
+   "how:space",
+   "human:US",
+   "phase:GAME_OVER",
+   "turn:5"
+  ],
+  "frames": 5,
+  "bytes": 43432
+ },
+ {
+  "name": "game-full",
+  "kind": "sequence",
+  "description": "A whole game, you are the USSR: 569 frames, ending \"held-scoring\" in turn 9.",
+  "tags": [
+   "actor:none",
+   "auto",
+   "ending:held-scoring",
+   "event:action-round",
+   "event:card-moved",
+   "event:card-played",
+   "event:china-card",
+   "event:control",
+   "event:deal",
+   "event:defcon",
+   "event:effect-off",
+   "event:effect-on",
+   "event:game-over",
+   "event:hand-revealed",
+   "event:headline-chosen",
+   "event:headline-reveal",
+   "event:influence",
+   "event:milops",
+   "event:phase",
+   "event:reshuffle",
+   "event:roll",
+   "event:scoring",
+   "event:space",
+   "event:turn-start",
+   "event:vp",
+   "how:coup",
+   "how:discard",
+   "how:event",
+   "how:give",
+   "how:headline",
+   "how:influence",
+   "how:realign",
+   "how:scoring",
+   "how:space",
+   "human:USSR",
+   "phase:ACTION_ROUND",
+   "phase:GAME_OVER",
+   "phase:HEADLINE",
+   "turn:1"
+  ],
+  "frames": 569,
+  "bytes": 910918
+ }
+]

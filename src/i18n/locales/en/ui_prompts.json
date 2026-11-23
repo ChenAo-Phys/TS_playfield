@@ -1,0 +1,138 @@
+{
+  "slip": {
+    "label": "Orders",
+    "ordersEnd": "Orders · End of turn {{turn}}"
+  },
+  "title": {
+    "coupTarget": "Coup → {{country}}"
+  },
+  "crumb": {
+    "label": "This play so far",
+    "chooseHow": "Choose how",
+    "scoring": "Scoring"
+  },
+  "ops_one": "{{count}} Op",
+  "ops_other": "{{count}} Ops",
+  "hint": {
+    "keys": "Keys: {{keys}}",
+    "seAsiaBonus": "{{card}} gives +1 Op if every point goes to Southeast Asia.",
+    "asiaBonusRealign": "The China Card gives one more roll only if every roll is in Asia.",
+    "seAsiaBonusRealign": "{{card}} gives one more roll only if every roll is in Southeast Asia.",
+    "asiaBonusCoup": "The China Card gives +1 Op only to a coup in Asia.",
+    "seAsiaBonusCoup": "{{card}} gives +1 Op only to a coup in Southeast Asia."
+  },
+  "confirm": {
+    "place": "Place in {{country}}",
+    "remove": "Remove from {{country}}",
+    "target": "Choose {{country}}",
+    "region": "Choose {{region}}",
+    "event": "Play the event",
+    "space": "Attempt the launch"
+  },
+  "consequence": {
+    "ifScored": "{{region}} if scored now: {{net}}",
+    "realign": "The selection stays on this country after each roll."
+  },
+  "mode": {
+    "meta": {
+      "own_one": "Your card · {{count}} Op",
+      "own_other": "Your card · {{count}} Ops",
+      "opponent_one": "Opponent's card · {{count}} Op",
+      "opponent_other": "Opponent's card · {{count}} Ops",
+      "neutral_one": "Neutral · {{count}} Op",
+      "neutral_other": "Neutral · {{count}} Ops"
+    },
+    "spaceDesc": "Discard for a launch: box {{from}} → {{to}}, roll 1–{{roll}}. No event.",
+    "spaceDescPlain": "Discard for a launch. No event."
+  },
+  "tip": {
+    "coupHead": "Coup · {{country}}",
+    "add": "+{{n}} → {{side}} {{from}} → {{to}}",
+    "remove": "−{{n}} → {{side}} {{from}} → {{to}}",
+    "coupFormula_one": "{{count}} Op + ⚀ − 2×{{stab}}",
+    "coupFormula_other": "{{count}} Ops + ⚀ − 2×{{stab}}",
+    "coupFormulaMod_one": "{{count}} Op + ⚀ {{mod}} − 2×{{stab}}",
+    "coupFormulaMod_other": "{{count}} Ops + ⚀ {{mod}} − 2×{{stab}}",
+    "oddsLabel": "Coup result for each die roll",
+    "realignOdds": "Realignment results",
+    "realignOutcome": "{{side}} −{{n}}",
+    "realignNone": "No change",
+    "adjacentControlled": "Adjacent controlled: US {{us}} · USSR {{ussr}}",
+    "superpower": "Next to the {{side}}",
+    "capped": "Placed here by this event: {{placed}}/{{max}}",
+    "keys": {
+      "choose": "Click choose · Right-click details",
+      "select": "Click select · Click again to confirm",
+      "hold": "Click select · Hold to confirm"
+    }
+  },
+  "list": {
+    "title": "Targets",
+    "empty": "No targets",
+    "influence": "{{side}} {{n}}",
+    "action": {
+      "add": "+1",
+      "remove": "−1",
+      "roll": "Roll",
+      "select": "Select"
+    },
+    "row": "{{country}}, stability {{stability}}, {{us}}, {{ussr}} — {{action}}",
+    "rowBg": "{{country}}, battleground, stability {{stability}}, {{us}}, {{ussr}} — {{action}}",
+    "say": {
+      "add": "place 1 influence",
+      "add2": "place 1 influence, costs 2 Ops",
+      "remove": "remove 1 influence",
+      "coup": "coup",
+      "realign": "realign",
+      "select": "select"
+    }
+  },
+  "region": {
+    "label": "Regions"
+  },
+  "dialog": {
+    "hint": "Click again or press Enter to confirm"
+  },
+  "branch": {
+    "tab": "Event",
+    "option": "Option {{n}}"
+  },
+  "defcon": {
+    "current": "Current",
+    "improve": "Improve",
+    "degrade": "Degrade",
+    "ends": "Ends the game — you lose",
+    "endsWin": "Ends the game — you win"
+  },
+  "picker": {
+    "tab": "Cards",
+    "hint": "Double-click a card or press Enter",
+    "count_one": "Discarded {{count}}",
+    "count_other": "Discarded {{count}}",
+    "drawn": "Drawn",
+    "filter": {
+      "side": "Side",
+      "era": "Era",
+      "ops": "Ops",
+      "all": "All",
+      "neutral": "Neutral"
+    }
+  },
+  "touch": {
+    "place": "Tap to place · Hold for details",
+    "choose": "Tap to choose · Hold for details",
+    "select": "Tap to select · Tap again to confirm",
+    "coup": "Tap to select · Tap again to launch",
+    "hold": "Tap to select · Hold the button to confirm",
+    "inspect": "Tap elsewhere to close",
+    "influence": "Tap a ringed country: +1 influence. {{cost}} marks opponent control: a point there costs 2.",
+    "coupFinal": "A coup is final once the die is rolled. Tap {{country}} again to launch.",
+    "dialog": "Tap again to confirm",
+    "picker": "Tap a card twice to choose it"
+  },
+  "ai": {
+    "stillThinking": "Still thinking · {{seconds}} s",
+    "stillThinkingSlow": "Still thinking · {{seconds}} s. At full strength the AI can take up to a minute per move on this device.",
+    "slowHint": "At full strength the AI can take up to a minute per move on this device."
+  }
+}

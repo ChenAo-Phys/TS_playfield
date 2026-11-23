@@ -1,0 +1,77 @@
+/* VP-by-turn chart (ui-spec §10.4, final.css .spark). Tokens only. */
+.chart {
+  display: block;
+  width: 300px;
+  max-width: 100%;
+  height: auto;
+  overflow: visible;
+}
+
+.bandUs {
+  fill: color-mix(in srgb, var(--ts-side-us-tint) 35%, transparent);
+}
+
+.bandUssr {
+  fill: color-mix(in srgb, var(--ts-side-ussr-tint) 35%, transparent);
+}
+
+.washUs {
+  fill: color-mix(in srgb, var(--ts-us-300) 55%, transparent);
+}
+
+.washUssr {
+  fill: color-mix(in srgb, var(--ts-ussr-300) 55%, transparent);
+}
+
+.zero {
+  stroke: var(--ts-ink-500);
+  stroke-width: 1;
+  stroke-dasharray: 3 3;
+}
+
+.tick {
+  stroke: var(--ts-ink-500);
+  stroke-width: 1;
+}
+
+.turn,
+.axis {
+  font-family: var(--ts-font-ui);
+  font-weight: 600;
+  font-size: var(--ts-fs-xs);
+  letter-spacing: .06em;
+  fill: var(--ts-ink-500);
+}
+
+.value {
+  font-family: var(--ts-font-ui);
+  font-weight: 700;
+  font-size: var(--ts-fs-s);
+  fill: var(--ts-ink-900);
+}
+
+.line {
+  fill: none;
+  stroke: var(--ts-ink-900);
+  stroke-width: 2;
+  stroke-linejoin: round;
+  stroke-linecap: round;
+}
+
+.chart[data-draw] .line {
+  stroke-dasharray: 1;
+  animation: draw var(--draw, 900ms) var(--ts-ease-in-out) both;
+}
+
+@keyframes draw {
+  from { stroke-dashoffset: 1; }
+  to { stroke-dashoffset: 0; }
+}
+
+.dot {
+  fill: var(--ts-ink-900);
+}
+
+.chart[data-reduced] .line {
+  animation: none;
+}

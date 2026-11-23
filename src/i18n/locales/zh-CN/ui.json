@@ -1,0 +1,620 @@
+{
+  "app": {
+    "title": "冷战热斗 · AI 对战",
+    "documentTitle": "冷战热斗 · AI 对战",
+    "tagline": "与 DeepStruggle AI 对弈冷战热斗"
+  },
+  "links": {
+    "rules": "https://www.gmtgames.com/living_rules/TS_Rules_Deluxe.pdf",
+    "deepstruggle": "https://github.com/mihaild/DeepStruggle",
+    "leaderboard": "https://mihaild.github.io/DeepStruggle/leaderboard.html",
+    "model": "https://huggingface.co/mihaild/deepstruggle"
+  },
+  "action": {
+    "ok": "确定",
+    "cancel": "取消",
+    "close": "关闭",
+    "confirm": "确认",
+    "back": "返回",
+    "continue": "继续",
+    "yes": "是",
+    "no": "否"
+  },
+  "menu": {
+    "newGame": "新游戏",
+    "resume": "继续游戏",
+    "resumeDetail": "第 {{turn}} 回合 · 你扮演{{side}}",
+    "noSavedGame": "没有已保存的对局",
+    "chooseSide": "选择你的阵营",
+    "side": {
+      "USSR": "苏联",
+      "US": "美国",
+      "random": "随机"
+    },
+    "sideDesc": {
+      "USSR": "每回合第一个行动轮先行动，开局持有中国牌。",
+      "US": "获得 +2 影响力的竞价补偿（锦标赛标准）。",
+      "random": "抛硬币决定。"
+    },
+    "start": "开始",
+    "overwriteWarning": "开始新游戏会覆盖已保存的对局。",
+    "opponent": "你的对手是 DeepStruggle 排名第一的 AI，始终全力对弈。",
+    "rules": "规则",
+    "rulesTitle": "GMT Games 官方最新规则（PDF，英文）",
+    "about": "关于",
+    "settings": "设置"
+  },
+  "language": {
+    "label": "语言",
+    "en": "English",
+    "zh-CN": "简体中文"
+  },
+  "about": {
+    "title": "关于",
+    "body": "与 DeepStruggle AI 对弈冷战热斗（豪华版，含可选卡牌）。一切都在你的浏览器中运行：无需账号，也没有服务器。",
+    "rulesVariant": "锦标赛规则：美国获得 +2 影响力的竞价补偿；回合结束时仍持有计分牌的玩家输掉游戏。",
+    "engine": "规则引擎与 AI：DeepStruggle，作者 Mikhail Dektyarev（MIT 许可证）。",
+    "model": "AI 模型：DeepStruggle 排行榜第一名（{{model}}），来自 Hugging Face mihaild/deepstruggle（MIT 许可证）。",
+    "rulebook": "本站不提供规则书，请阅读 GMT Games 官方最新规则。",
+    "trademark": "非官方爱好者项目，与 GMT Games 无关联，亦未获其背书。Twilight Struggle® 是 GMT Games, LLC 的注册商标。卡牌与地图美术归其各自所有者所有。",
+    "licenses": "第三方许可证",
+    "source": "GitHub 上的 DeepStruggle"
+  },
+  "loading": {
+    "title": "加载中……",
+    "engine": "正在加载规则引擎……",
+    "model-download": "正在下载 AI 模型……",
+    "model-verify": "正在校验 AI 模型……",
+    "ai-worker": "正在启动 AI……",
+    "percent": "{{percent}}%",
+    "megabytes": "{{done}} / {{total}} MB",
+    "firstTime": "首次访问约需下载 10 MB（其中 AI 模型 {{mb}} MB），之后由浏览器缓存。"
+  },
+  "game": {
+    "menu": "菜单",
+    "you": "你",
+    "ai": "AI",
+    "youPlay": "你扮演{{side}}",
+    "yourTurn": "轮到你了",
+    "waitingFor": "等待{{side}}……",
+    "autoPlayed": "已自动执行（唯一合法选择）",
+    "undo": "撤销本次出牌",
+    "undoTitle": "撤回你当前的操作（须在掷骰和 AI 决策之前）",
+    "undoUnavailable": "没有可撤销的操作",
+    "resign": "认输",
+    "resignConfirm": {
+      "title": "确定认输？",
+      "text": "AI 将获胜，已保存的对局会被删除。",
+      "confirm": "认输",
+      "cancel": "继续对局"
+    },
+    "newGameConfirm": {
+      "title": "放弃本局？",
+      "text": "当前对局将会丢失。",
+      "confirm": "新游戏",
+      "cancel": "继续对局"
+    }
+  },
+  "ai": {
+    "name": "DeepStruggle",
+    "label": "DeepStruggle AI",
+    "thinking": "{{side}}正在思考……",
+    "thinkingShort": "AI 思考中……"
+  },
+  "track": {
+    "defcon": "DEFCON",
+    "defconLevel": "DEFCON {{level}}",
+    "vp": "VP",
+    "vpLong": "胜利点数",
+    "vpLead": "{{side}} +{{vp}}",
+    "vpEven": "持平",
+    "turn": "回合",
+    "turnN": "第 {{turn}} 回合",
+    "turnOfTen": "第 {{turn}} 回合（共 10 回合）",
+    "actionRound": "行动轮",
+    "actionRoundN": "第 {{ar}} 行动轮",
+    "arShort": "行动轮 {{ar}}",
+    "milops": "军事行动",
+    "milopsLong": "军事行动",
+    "milopsRequired": "需要：{{n}}",
+    "spaceRace": "太空竞赛",
+    "headline": "头条",
+    "headlinePhase": "头条阶段",
+    "setup": "初始设置",
+    "era": {
+      "early": "战争早期",
+      "mid": "战争中期",
+      "late": "战争晚期"
+    },
+    "defconRule": {
+      "1": "核战争",
+      "2": "欧洲、亚洲、中东禁止政变与调整",
+      "3": "欧洲、亚洲禁止政变与调整",
+      "4": "欧洲禁止政变与调整",
+      "5": "无限制"
+    },
+    "milopsNeed": "军事行动 · 需 {{n}}",
+    "short": "{{side}}还差 {{n}}",
+    "defconRuleShort": {
+      "1": "核战争",
+      "2": "欧洲、亚洲、中东禁止政变与调整",
+      "3": "欧洲、亚洲禁止政变与调整",
+      "4": "欧洲禁止政变与调整",
+      "5": "无限制"
+    }
+  },
+  "pile": {
+    "hand": "手牌",
+    "yourHand": "你的手牌",
+    "opponentHand": "{{side}}手牌",
+    "cards_other": "{{count}} 张牌",
+    "deck": "抽牌堆",
+    "discard": "弃牌堆",
+    "removed": "移出游戏",
+    "empty": "空",
+    "unknownCard": "未知卡牌"
+  },
+  "china": {
+    "name": "中国牌",
+    "faceUp": "正面朝上",
+    "faceDown": "正面朝下",
+    "faceUpHint": "可以打出",
+    "faceDownHint": "下回合才能打出",
+    "heldBy": "由{{side}}持有"
+  },
+  "headline": {
+    "title": "头条",
+    "choose": "选择你的头条牌",
+    "waiting": "等待{{side}}选择头条牌……",
+    "faceDown": "正面朝下的头条牌",
+    "reveal": "揭晓头条",
+    "first": "{{side}}的头条先结算",
+    "papers": {
+      "us": "华盛顿快讯",
+      "ussr": "真理报"
+    },
+    "order": "{{a}} 对 {{b}} 行动点 · {{side}}先结算",
+    "dateline": "{{side}}头条 · 第 {{turn}} 回合 · {{ops}} 行动点"
+  },
+  "card": {
+    "number": "#{{id}}",
+    "ops": "{{ops}} 行动点",
+    "era": {
+      "early": "战争早期",
+      "mid": "战争中期",
+      "late": "战争晚期"
+    },
+    "optional": "可选",
+    "removeAfterEvent": "若作为事件使用，则移出游戏。",
+    "removeAfterScoring": "计分后移出游戏。",
+    "mayNotBeHeld": "不得持有",
+    "bothSidesScore": "双方计分：",
+    "side": {
+      "US": "美国事件",
+      "USSR": "苏联事件",
+      "NEUTRAL": "双方事件"
+    },
+    "scoring": "计分牌",
+    "war": "战争牌",
+    "enlarge": "放大卡牌"
+  },
+  "region": {
+    "EUROPE": "欧洲",
+    "ASIA": "亚洲",
+    "MIDDLE_EAST": "中东",
+    "AFRICA": "非洲",
+    "CENTRAL_AMERICA": "中美洲",
+    "SOUTH_AMERICA": "南美洲",
+    "WESTERN_EUROPE": "西欧",
+    "EASTERN_EUROPE": "东欧",
+    "SOUTHEAST_ASIA": "东南亚"
+  },
+  "settings": {
+    "title": "设置",
+    "animationSpeed": "动画速度",
+    "speed": {
+      "slow": "慢",
+      "normal": "正常",
+      "fast": "快",
+      "instant": "即时"
+    },
+    "sound": "音效",
+    "on": "开",
+    "off": "关",
+    "volume": "音量",
+    "language": "语言",
+    "cardImages": "卡牌图片",
+    "cardImagesOption": {
+      "follow": "跟随语言",
+      "en": "English",
+      "zh": "中文"
+    },
+    "motion": {
+      "label": "动效",
+      "system": "跟随系统",
+      "reduce": "减少",
+      "full": "完整"
+    },
+    "confirmFinal": "结束本次出牌前确认",
+    "confirmFinalHint": "掷骰和会结束游戏的选择总是需要确认。",
+    "pauseOnReveals": "头条和计分时暂停",
+    "mapLabels": "地图文字",
+    "mapLabelsValue": "{{percent}}%",
+    "patterns": "阵营图案（便于黑白显示）",
+    "followAction": "镜头跟随行动（桌面版）"
+  },
+  "ending": {
+    "title": {
+      "won": "胜利",
+      "lost": "失败",
+      "draw": "平局"
+    },
+    "winner": "{{side}}获胜",
+    "reason": {
+      "vp20": "{{winner}}达到 20 VP。",
+      "europe-control": "欧洲计分时{{winner}}控制欧洲，自动获胜。",
+      "defcon": "{{loser}}的行动使 DEFCON 降至 1：爆发核战争，{{loser}}输掉游戏。",
+      "cmc-suicide": "{{loser}}在古巴导弹危机期间发动政变：爆发核战争，{{loser}}输掉游戏。",
+      "held-scoring": "第 {{turn}} 回合结束时{{loser}}仍持有计分牌（{{cards}}），输掉游戏。",
+      "held-scoring-both": "第 {{turn}} 回合结束时双方都持有计分牌：平局。",
+      "milops-vp20": "第 {{turn}} 回合结束时的军事行动惩罚使{{winner}}达到 20 VP。",
+      "final-scoring": "最终计分后{{winner}}领先 {{vp}} VP。",
+      "wargames": "“战争游戏”结束了游戏：给予对手 6 VP 后，{{winner}}仍然领先。",
+      "resign": "{{loser}}认输。"
+    },
+    "drawReason": {
+      "final-scoring": "最终计分后双方 VP 持平：平局。",
+      "wargames": "“战争游戏”结束了游戏，双方 VP 持平：平局。",
+      "other": "平局。"
+    },
+    "finalVp": "最终 VP：{{vp}}",
+    "turn": "第 {{turn}} 回合",
+    "newGame": "新游戏",
+    "viewBoard": "查看棋盘"
+  },
+  "error": {
+    "title": "出错了",
+    "engine": "规则引擎加载失败。",
+    "modelDownload": "AI 模型下载失败。请检查网络连接后重试。",
+    "modelVerify": "下载的 AI 模型已损坏（校验和不符）。",
+    "worker": "AI 已停止响应。",
+    "webassembly": "此浏览器不支持 WebAssembly，无法运行游戏。",
+    "storage": "此浏览器禁止本地存储，因此无法保存对局。",
+    "saveIncompatible": "已保存的对局来自其他版本的引擎或 AI，无法继续。",
+    "offline": "你已离线。首次下载 AI 模型需要网络连接。",
+    "reconnecting": "连接中断，正在重试……",
+    "aiRestarting": "正在重启 AI……",
+    "unexpected": "意外错误：{{message}}",
+    "retry": "重试",
+    "reload": "重新加载页面",
+    "details": "详细信息"
+  },
+  "list": {
+    "pair": "{{a}}、{{b}}"
+  },
+  "side": {
+    "US": "美国",
+    "USSR": "苏联",
+    "long": {
+      "US": "美国",
+      "USSR": "苏联"
+    }
+  },
+  "a11y": {
+    "skipToMap": "跳到地图"
+  },
+  "slip": {
+    "orders": "指令 · 第 {{turn}} 回合 · 第 {{ar}} 行动轮",
+    "ordersHeadline": "指令 · 第 {{turn}} 回合 · 头条",
+    "ordersSetup": "指令 · 初始设置",
+    "stamp": {
+      "you": "轮到你",
+      "ai": "{{side}} · AI"
+    },
+    "verb": {
+      "influence": "放置影响力",
+      "coup-target": "政变",
+      "realign-target": "调整"
+    },
+    "counter": {
+      "ops": "剩余点数",
+      "left": "剩余",
+      "rolls": "剩余次数",
+      "setup-place": "剩余",
+      "bid-place": "剩余",
+      "influence": "剩余点数",
+      "realign-target": "剩余次数",
+      "event-target": "剩余"
+    },
+    "hint": {
+      "influence": "点击带圈的国家：+1 影响力。标有 {{cost}} 的国家由对手控制，每点需 2 行动点。",
+      "headline": "AI 同时选择。行动点数高者先结算，相同时美国先结算。",
+      "coupFinal": "政变一经掷骰便无法撤销。再次点击{{country}}或按回车确认。",
+      "coup-target": "政变一经掷骰便无法撤销。",
+      "asiaBonus": "若全部点数用于亚洲，中国牌额外 +1 行动点。"
+    },
+    "confirm": {
+      "coup": "发动政变",
+      "realign": "在{{country}}调整",
+      "headline": "确定头条",
+      "play": "打出{{card}}",
+      "score": "立即为{{region}}计分",
+      "take": "拿取{{card}}",
+      "discard": "弃掉{{card}}",
+      "give": "给出{{card}}"
+    },
+    "ai": {
+      "waiting": "等待{{side}}……",
+      "plays": "{{side}}打出{{card}}",
+      "preparing": "正在准备 AI…… {{percent}}%"
+    },
+    "skip": "跳过",
+    "skipAll": "跳到我的回合",
+    "continue": "继续",
+    "list": "列表",
+    "speed": "速度"
+  },
+  "stamp": {
+    "headline": "头条",
+    "discard": "弃掉",
+    "give": "给出",
+    "play": "打出",
+    "committed": "已提交",
+    "revealed": "已揭晓",
+    "cancelled": "已取消",
+    "pass": "放弃"
+  },
+  "mode": {
+    "howTitle": "如何使用这张牌？",
+    "event": "事件",
+    "eventFirst": "先结算事件",
+    "eventDesc": "结算事件",
+    "operations": "行动",
+    "influence": "影响力",
+    "coup": "政变",
+    "realign": "调整",
+    "space": "太空竞赛",
+    "un": "对其打出{{card}}",
+    "back": "放回手牌",
+    "undoFree": "掷骰之前均可撤销"
+  },
+  "plate": {
+    "ifScored": "若计分",
+    "even": "持平",
+    "net": "{{side}} +{{vp}}",
+    "wins": "{{side}}获胜",
+    "pres": "存在",
+    "dom": "支配",
+    "ctrl": "控制",
+    "none": "—",
+    "values": {
+      "0": "3·7·★",
+      "1": "3·7·9",
+      "2": "3·5·7",
+      "3": "1·4·6",
+      "4": "1·3·5",
+      "5": "2·5·6",
+      "6": "每国 1 VP · 泰国 2"
+    },
+    "name": {
+      "0": "欧洲",
+      "1": "亚洲",
+      "2": "中东",
+      "3": "非洲",
+      "4": "中美洲",
+      "5": "南美洲",
+      "6": "东南亚"
+    },
+    "table": {
+      "status": "状态",
+      "countries": "国家",
+      "battlegrounds": "战场国",
+      "adjacent": "与敌方超级大国相邻",
+      "base": "状态 VP",
+      "total": "合计"
+    }
+  },
+  "map": {
+    "ariaMap": "地图",
+    "countryLabel": "{{name}}，{{region}}{{bg}}，稳定度 {{stab}}，美国 {{us}}{{usCtrl}}，苏联 {{ussr}}{{ussrCtrl}}{{target}}",
+    "aria": {
+      "bg": "，战场国",
+      "controlled": "（控制）",
+      "target": "，可选目标",
+      "targetCost2": "，可选目标：需 2 行动点"
+    },
+    "plateLabel": "{{region}}：若现在计分，{{net}}",
+    "cost2": "2 点",
+    "toUSA": "往美国",
+    "toJapan": "往日本",
+    "toControl": "→ 控制",
+    "control": "控制",
+    "lost": "失去",
+    "zoomIn": "放大",
+    "zoomOut": "缩小",
+    "world": "全图"
+  },
+  "tip": {
+    "stabilityRegion": "稳定度 · {{region}}",
+    "you": "（你）",
+    "control": "控制",
+    "battleground": "战场国",
+    "battlegroundDefcon": "战场国：DEFCON {{from}} → {{to}}",
+    "costs2": "需 2 行动点（{{side}}控制）",
+    "success": "成功 {{k}}/6",
+    "milops": "军事行动 +{{n}}",
+    "keys": {
+      "place": "点击放置 · 右键详情",
+      "coup": "点击选中 · 再次点击发动",
+      "inspect": "右键或空格键：固定此提示",
+      "inspectTouch": "轻触别处关闭"
+    }
+  },
+  "adversary": {
+    "title": "对手",
+    "sub": "DeepStruggle AI · 全力以赴",
+    "waiting": "等待中",
+    "thinking": "思考中",
+    "playing": "出牌中",
+    "hand_other": "手牌 {{count}} 张",
+    "known": "已知 {{count}} 张",
+    "knownTag": "已知",
+    "china": "中国牌：{{where}}",
+    "chinaWhere": {
+      "mine": "在你手中",
+      "theirs": "在 AI 手中",
+      "mineFaceDown": "在你手中 · 正面朝下",
+      "theirsFaceDown": "在 AI 手中 · 正面朝下"
+    }
+  },
+  "effects": {
+    "title": "生效中",
+    "duration": {
+      "PERMANENT": "永久",
+      "TURN": "本回合",
+      "CONDITIONAL": "有条件",
+      "SPACE_PERK": "太空竞赛特权"
+    }
+  },
+  "log": {
+    "title": "电报",
+    "filter": {
+      "all": "全部",
+      "plays": "出牌",
+      "dice": "掷骰"
+    },
+    "jump": "跳到最新",
+    "turnSep": "第 {{turn}} 回合 · {{era}}"
+  },
+  "banner": {
+    "turn": "第 {{turn}} 回合 · {{era}}",
+    "era": {
+      "mid": "战争中期：新卡牌已洗入抽牌堆",
+      "late": "战争晚期：新卡牌已洗入抽牌堆"
+    },
+    "headlinePhase": "头条阶段"
+  },
+  "toast": {
+    "reshuffle": "抽牌堆耗尽：弃牌堆已洗入。手中剩余的牌双方均已知晓。",
+    "defcon2": "DEFCON 2：此时对战场国政变将结束游戏。",
+    "china": "中国牌交给{{side}}，正面朝下，下回合才能打出。"
+  },
+  "scoring": {
+    "kickerYou": "你打出{{card}}",
+    "kickerAi": "{{side}}打出{{card}}",
+    "cardNumber": "卡牌 #{{id}}",
+    "status": "状态",
+    "statusName": {
+      "NONE": "—",
+      "PRESENCE": "存在",
+      "DOMINATION": "支配",
+      "CONTROL": "控制"
+    },
+    "countries": "国家",
+    "battlegrounds": "战场国",
+    "adjacent": "与敌方超级大国相邻",
+    "base": "状态 VP",
+    "total": "合计",
+    "scores": "{{side}}得分",
+    "net": "净得 {{side}} +{{n}}",
+    "europeControl": "控制欧洲：游戏结束",
+    "final": "最终计分"
+  },
+  "over": {
+    "flash": "急电 · 急电 · 急电",
+    "verdict": "{{side}}胜利",
+    "youWin": "你赢了",
+    "youLose": "你输了",
+    "draw": "平局",
+    "vpBefore": "裁定前 VP",
+    "chart": "各回合 VP",
+    "review": "查看地图",
+    "fullLog": "完整电报",
+    "gameOver": "游戏结束"
+  },
+  "start": {
+    "classified": "绝密 · 仅限阅览",
+    "kicker": "冷战 1945–1989",
+    "titleLine1": "Twilight",
+    "titleLine2": "Struggle",
+    "titleZh": "冷战热斗",
+    "tagline": "你指挥一个超级大国，DeepStruggle 指挥另一个。",
+    "pick": {
+      "US": "美国",
+      "USSR": "苏联",
+      "random": "掷硬币"
+    },
+    "pickDesc": {
+      "US": "每个行动轮后手。在西欧放置 7 点影响力，再加 2 点竞价。",
+      "USSR": "每个行动轮先手。开局持有中国牌，在东欧放置 6 点影响力。",
+      "random": "交给历史决定。"
+    },
+    "stamp": {
+      "US": "US",
+      "USSR": "CCCP"
+    },
+    "take": "开始指挥",
+    "resume": "继续对局",
+    "resumeDetail": "第 {{turn}} 回合 · 第 {{ar}} 行动轮 · 你执{{side}} · {{ago}}",
+    "resumeDetailHeadline": "第 {{turn}} 回合 · 头条 · 你执{{side}} · {{ago}}",
+    "replaces": "这会覆盖已保存的对局。",
+    "startNew": "开始新对局",
+    "rules": "规则（GMT 在线规则）",
+    "chips": {
+      "standard": "标准规则 + 可选卡牌 #104–110",
+      "bid": "美国竞价 +2",
+      "tournament": "锦标赛规则：回合结束时持有计分牌即判负",
+      "ai": "AI 全力以赴 · 无难度分级"
+    },
+    "boot": {
+      "link": "正在连接 DeepStruggle",
+      "engine": "规则引擎",
+      "model": "AI 模型",
+      "verify": "校验",
+      "start": "启动 AI",
+      "ready": "就绪"
+    },
+    "fine": "爱好者制作，免费，无广告。冷战热斗 © GMT Games。",
+    "fineEngine": "AI 与规则引擎：DeepStruggle（MIT）。",
+    "credits": "致谢与许可证"
+  },
+  "shortcuts": {
+    "title": "键盘快捷键",
+    "row": {
+      "focus": "在仪表盘、地图、指令、手牌和侧栏之间移动",
+      "mapArrows": "地图：在国家之间移动，可选目标优先",
+      "cycleTargets": "地图：上一个 / 下一个目标",
+      "regions": "地图：跳到某个区域",
+      "enter": "执行 · 确认已选中的操作",
+      "holdEnter": "长按确认",
+      "space": "查看国家 · 放大卡牌 · 跳过动画",
+      "shiftSpace": "跳到我的回合",
+      "esc": "取消选中 · 关闭 · 放回手牌",
+      "undo": "撤销本次出牌",
+      "done": "完成 / 放弃",
+      "modes": "使用方式：事件、影响力、政变、调整、太空竞赛",
+      "targets": "目标列表",
+      "log": "显示或隐藏侧栏 · 打开电报",
+      "camera": "放大 · 缩小 · 全图",
+      "help": "本列表"
+    },
+    "key": {
+      "focus": "Tab / Shift+Tab",
+      "mapArrows": "方向键",
+      "cycleTargets": "[ ]",
+      "regions": "1–7",
+      "enter": "回车",
+      "holdEnter": "按住回车",
+      "space": "空格",
+      "shiftSpace": "Shift+空格",
+      "esc": "Esc",
+      "undo": "Z · Ctrl/⌘+Z",
+      "done": "D",
+      "modes": "E I C R S",
+      "targets": "T",
+      "log": "L",
+      "camera": "+ − 0",
+      "help": "?"
+    }
+  }
+}

@@ -1,0 +1,69 @@
+/*
+ * Hold-to-confirm (ui-spec §8.2, §8.3 "fatal"): hazard stripes, alert text, a danger ring that fills.
+ */
+.hold {
+  position: relative;
+  display: inline-grid;
+  justify-items: start;
+  gap: 3px;
+  min-height: 36px;
+  padding: 7px 14px 6px;
+  border: 0;
+  border-radius: var(--ts-radius-s);
+  background: var(--ts-hazard);
+  color: var(--ts-alert-500);
+  box-shadow: inset 0 0 0 1.5px var(--ts-alert-500);
+  cursor: pointer;
+  text-align: left;
+  touch-action: manipulation;
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
+  transition: transform var(--ts-dur-xs) var(--ts-ease-out), filter var(--ts-dur-xs) var(--ts-ease-out);
+}
+.hold:hover { filter: brightness(1.12); }
+.holding { transform: scale(.98); filter: brightness(1.2); }
+.hold[aria-disabled="true"] { opacity: .45; cursor: not-allowed; }
+
+.content {
+  position: relative;
+  font: 700 var(--ts-fs-s) / 1.15 var(--ts-font-ui);
+  letter-spacing: var(--ts-track-caps);
+  text-transform: var(--ts-caps);
+}
+:global(:root:lang(zh)) .content { font-family: var(--ts-font-body); font-size: var(--ts-fs-m); }
+.hint {
+  position: relative;
+  font: 600 var(--ts-fs-micro) / 1 var(--ts-font-ui);
+  letter-spacing: var(--ts-track-caps);
+  text-transform: var(--ts-caps);
+  color: var(--ts-paper-200);
+  opacity: .85;
+}
+:global(:root:lang(zh)) .hint { font-family: var(--ts-font-body); }
+
+/* The ring: an SVG rect over the button edge, filled by stroke-dashoffset (WAAPI). */
+.ring {
+  position: absolute;
+  inset: -3px;
+  width: calc(100% + 6px);
+  height: calc(100% + 6px);
+  pointer-events: none;
+  overflow: visible;
+}
+.ringFill {
+  width: calc(100% - 3px);
+  height: calc(100% - 3px);
+  fill: none;
+  stroke: var(--ts-danger);
+  stroke-width: 3;
+  stroke-linecap: round;
+}
+
+.onRoom:focus-visible { box-shadow: inset 0 0 0 1.5px var(--ts-alert-500), var(--ts-focus-ring); }
+.onPaper:focus-visible { box-shadow: inset 0 0 0 1.5px var(--ts-alert-500), var(--ts-focus-ring-on-paper); }
+
+@media (forced-colors: active) {
+  .hold { border: 2px solid ButtonText; }
+  .ringFill { stroke: Highlight; }
+}

@@ -1,0 +1,114 @@
+/* The shell's dossiers and the menu (ui-spec §11.2, §11.3, §12). Tokens only. */
+
+/* ── Settings ── */
+.settings { display: flex; flex-direction: column; gap: 2px; }
+.setRow {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 6px 16px;
+  padding: 9px 0;
+  border-bottom: 1px solid var(--ts-line-ink-soft);
+}
+.setRow:last-child { border-bottom: 0; }
+.setLabel { font: 600 var(--ts-fs-body) / 1.3 var(--ts-font-body); color: var(--ts-ink-900); }
+.setHint { grid-column: 1 / -1; margin-top: -2px; font: 400 var(--ts-fs-s) / 1.35 var(--ts-font-body); color: var(--ts-ink-500); }
+
+.seg {
+  display: inline-flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  border-radius: 3px;
+  overflow: hidden;
+  box-shadow: inset 0 0 0 1.5px var(--ts-line-ink);
+}
+.seg button {
+  min-height: 30px;
+  padding: 6px 10px 5px;
+  border: 0;
+  background: transparent;
+  color: var(--ts-ink-700);
+  font: 700 var(--ts-fs-s) / 1 var(--ts-font-ui);
+  letter-spacing: .04em;
+  white-space: nowrap;
+}
+:root:lang(zh) .seg button { font-family: var(--ts-font-body); letter-spacing: 0; }
+.seg button + button { box-shadow: inset 1px 0 0 var(--ts-line-ink-soft); }
+.seg button[aria-checked="true"] { background: var(--ts-ink-900); color: var(--ts-paper-50); }
+.seg button:hover:not([aria-checked="true"]) { background: color-mix(in srgb, var(--ts-ink-900) 8%, transparent); }
+.seg button:focus-visible { box-shadow: var(--ts-focus-ring-on-paper); position: relative; }
+/* Touch screens: 44 × 44 px targets (ui-spec §3.3, §12; Q-048), the footer buttons too. */
+@media (pointer: coarse) {
+  .seg button { min-height: 44px; min-width: 44px; padding: 6px 12px 5px; }
+  .footer > button { min-height: 44px; min-width: 44px; }
+}
+
+/* ── About ── */
+.about { display: flex; flex-direction: column; gap: 10px; font: 400 var(--ts-fs-body) / 1.5 var(--ts-font-body); color: var(--ts-ink-900); }
+.about p { margin: 0; }
+.about h3 {
+  margin: 6px 0 0;
+  font: 700 var(--ts-fs-xs) / 1 var(--ts-font-ui);
+  letter-spacing: var(--ts-track-wide);
+  text-transform: var(--ts-caps);
+  color: var(--ts-ink-500);
+}
+:root:lang(zh) .about h3 { font-family: var(--ts-font-body); }
+.about a, .links a { color: var(--ts-us-700); text-underline-offset: 2px; }
+.about a:hover, .links a:hover { color: var(--ts-ink-900); }
+.links { display: flex; flex-wrap: wrap; gap: 6px 16px; margin: 0; padding: 0; list-style: none; font: 600 var(--ts-fs-m) / 1.4 var(--ts-font-body); }
+.links a { display: inline-flex; align-items: center; gap: 4px; }
+.small { font-size: var(--ts-fs-s); color: var(--ts-ink-700); }
+
+/* ── Shortcuts ── */
+.keys { width: 100%; border-collapse: collapse; font: 400 var(--ts-fs-body) / 1.35 var(--ts-font-body); color: var(--ts-ink-900); }
+.keys th, .keys td { text-align: left; padding: 6px 0; border-bottom: 1px solid var(--ts-line-ink-soft); vertical-align: top; }
+.keys th { width: 38%; padding-right: 14px; font-weight: 400; white-space: nowrap; }
+.keys tr:last-child th, .keys tr:last-child td { border-bottom: 0; }
+.keys kbd { font-size: var(--ts-fs-xs); }
+
+/* ── Confirm ── */
+.confirmText { margin: 0; font: 400 var(--ts-fs-body) / 1.5 var(--ts-font-body); color: var(--ts-ink-900); }
+.footer { display: flex; gap: 10px; justify-content: flex-end; align-items: center; flex-wrap: wrap; width: 100%; }
+
+/* ── Menu (☰ popover; compact: sheet) ── */
+.menu { display: flex; flex-direction: column; min-width: 230px; padding: 4px 0; }
+.menuItem {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 36px;
+  padding: 6px 14px;
+  border: 0;
+  background: transparent;
+  color: var(--ts-steel-100);
+  text-align: left;
+  text-decoration: none;
+  font: 700 var(--ts-fs-m) / 1.2 var(--ts-font-ui);
+  letter-spacing: var(--ts-track-caps);
+  text-transform: var(--ts-caps);
+}
+:root:lang(zh) .menuItem { font-family: var(--ts-font-body); font-size: var(--ts-fs-body); letter-spacing: 0; }
+.menuItem:hover, .menuItem:focus-visible { background: var(--ts-room-700); color: var(--ts-paper-50); }
+.menuItem:focus-visible { box-shadow: inset var(--ts-focus-ring); }
+.menuItem:disabled { color: var(--ts-text-3); cursor: not-allowed; background: transparent; }
+.menuItem svg { width: 16px; height: 16px; flex: none; color: var(--ts-brass-400); }
+.menuItem kbd { margin-left: auto; }
+.menuItem .ext { margin-left: auto; color: var(--ts-steel-400); }
+.danger { color: var(--ts-alert-500); }
+.danger svg { color: var(--ts-alert-500); }
+.sep { height: 1px; margin: 4px 0; background: var(--ts-line-room); }
+.menuLang { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 6px 14px; min-height: 52px; color: var(--ts-steel-300); font: 700 var(--ts-fs-m) / 1.2 var(--ts-font-ui); text-transform: var(--ts-caps); letter-spacing: var(--ts-track-caps); }
+:root:lang(zh) .menuLang { font-family: var(--ts-font-body); letter-spacing: 0; }
+
+/* The language switch in the compact menu sheet: 44 px targets like the rows around it (Q-048). */
+.menuLang .menuLangToggle button { min-width: 44px; min-height: 44px; padding: 6px 12px; }
+:root:lang(zh) .menuLang .menuLangToggle button { font-size: var(--ts-fs-m); }
+
+.sheetMenu { padding: 0 0 8px; background: var(--ts-surface-rail); }
+.sheetMenu .menuItem { min-height: 52px; padding: 8px 18px; font-size: var(--ts-fs-body); }
+/* Phones held sideways: 44 px rows, so the whole menu, the language switch included, fits the short screen. */
+@media (max-height: 499px) and (orientation: landscape) {
+  .sheetMenu .menuItem { min-height: 44px; padding: 4px 18px; }
+  .sheetMenu .menuLang { min-height: 48px; padding: 2px 14px; }
+}
