@@ -3,11 +3,13 @@
  * tamper-proof: save v2, OD-1), the rules variant, credits (DeepStruggle MIT, the model, fonts under the OFL,
  * Natural Earth), a link to GMT's official living rules (never hosted here) and the trademark note.
  */
+import { useContext } from "react";
 import { MODEL_LABEL } from "../../ai/config";
 import { useI18n } from "../../i18n/react";
 import { Button } from "../common/Button";
 import { Dossier } from "../common/Dossier";
 import { Icon } from "../common/Icon";
+import { UiRootContext } from "../state/context";
 import s from "./dialogs.module.css";
 
 export interface AboutDossierProps {
@@ -22,6 +24,8 @@ const NATURAL_EARTH_URL = "https://www.naturalearthdata.com/";
 
 export function AboutDossier({ onClose }: AboutDossierProps) {
   const { t } = useI18n();
+  // D-203: while this game is not being saved, the save line says so too.
+  const unsaved = !!useContext(UiRootContext)?.vm.saveUnavailable;
   const ext = (href: string, label: string) => (
     <a href={href} target="_blank" rel="noopener noreferrer">{label}<Icon name="external" size={12} /></a>
   );
@@ -35,7 +39,7 @@ export function AboutDossier({ onClose }: AboutDossierProps) {
     >
       <div className={s.about}>
         <p>{t("ui:about.body")}</p>
-        <p>{t("ui_shell:about.save")}</p>
+        <p>{t("ui_shell:about.save")}{unsaved ? ` ${t("ui_shell:save.aboutNow")}` : null}</p>
         <p>{t("ui:about.rulesVariant")}</p>
         <h3>{t("ui_shell:about.rules")}</h3>
         <p>{t("ui:about.rulebook")}</p>

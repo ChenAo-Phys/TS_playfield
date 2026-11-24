@@ -52,6 +52,10 @@
     "language": "{{lang}} could not be loaded. Check your connection and try again.",
     "saveUnreadable": "Your saved game could not be read (it was changed or damaged) and was discarded."
   },
+  "save": {
+    "unavailable": "This browser isn't saving the game: it will be lost if you close or reload the page.",
+    "aboutNow": "Right now this browser isn't saving your game."
+  },
   "superseded": {
     "title": "This game continued in another tab",
     "body": "A saved game can be played in one tab at a time. Reload to continue it here.",

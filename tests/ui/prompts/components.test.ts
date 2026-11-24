@@ -238,8 +238,9 @@ describe("OrdersSlip — AI mode", () => {
     await setLanguage("en");
   });
   it("loading the model", () => {
+    // The boot line's bar over all stages (QA L-2): 62 % of the model download is 55 % of the whole load.
     const t = text(render("prompt-influence", slip(), { patch: ai({ aiThinking: true, load: { stage: "model-download", fraction: 0.62 } }) }));
-    expect(t).toContain("Getting the AI ready… 62%");
+    expect(t).toContain("Getting the AI ready… 55%");
   });
 });
 

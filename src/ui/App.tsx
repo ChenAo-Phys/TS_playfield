@@ -40,6 +40,20 @@ export function retryBoot(controller: Pick<GameController, "boot">, humanSide: s
   else controller.boot().catch(() => { /* reported as status "error" again */ });
 }
 
+/**
+ * D-203 (R3-11): whether to tell the player now that this game is not being saved (`ViewModel.saveUnavailable`: no
+ * storage on this page, or storage refused the last autosave). Once per page: `told` remembers it, so the notice does
+ * not come back when the condition clears and returns.
+ */
+export function tellSaveUnavailable(unavailable: boolean | undefined, told: { current: boolean }): boolean {
+  if (!unavailable || told.current) return false;
+  told.current = true;
+  return true;
+}
+
+/** How long the save notice stays (ms): one plain sentence to read, not a warning. */
+export const SAVE_NOTICE_MS = 9000;
+
 export interface AppProps {
   /** The controller (default: the page's, created once). Tests and demos pass their own. */
   controller?: GameController;
@@ -139,6 +153,14 @@ function Screens() {
     setResigning(false);
     controller.resign();
   }, [resigning, dialog, controller]);
+
+  // The game is not being saved (no storage, or a refused write; D-203): say so once per page, plainly.
+  const toldSaveUnavailable = useRef(false);
+  useEffect(() => {
+    if (tellSaveUnavailable(vm.saveUnavailable, toldSaveUnavailable)) {
+      root.toast(t("ui_shell:save.unavailable"), { tone: "info", ms: SAVE_NOTICE_MS });
+    }
+  }, [vm.saveUnavailable, root, t]);
 
   // "?" opens the shortcut sheet anywhere (a dialog's own scope still wins).
   useKey("?", () => setDialog(d => (d === "shortcuts" ? null : "shortcuts")));

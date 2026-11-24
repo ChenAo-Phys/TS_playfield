@@ -13,6 +13,7 @@ import { BeliefDesyncError, type AiCore } from "./core";
 import { stageOf } from "./errors";
 import { loadCore } from "./load";
 import type { FromWorker, ToWorker } from "./protocol";
+import { dropRuntime, runtimeBytes } from "./runtime_cache";
 
 const scope = self as unknown as {
   postMessage(m: FromWorker, transfer?: Transferable[]): void;
@@ -29,18 +30,21 @@ scope.onmessage = (ev) => {
 
 async function handle(msg: ToWorker): Promise<void> {
   if (msg.type === "load") {
+    // onnxruntime's WebAssembly (~3.7 MB compressed) downloads while the model does, not after it (QA Q-013): handed
+    // to onnxruntime as bytes when it is in, else onnxruntime fetches it itself. In the production build it is kept in
+    // Cache Storage under its content-hashed name, so a deploy does not make returning visitors download it again
+    // (QA L-4); the dev server's URL names no version, so there it is a plain download.
+    const keep = { keep: msg.useCache !== false && !import.meta.env.DEV };
+    const runtime = runtimeBytes(ORT_WASM_URL, keep);
     try {
       const t0 = performance.now();
-      // onnxruntime's WebAssembly (~3.7 MB compressed) downloads while the model does, not after it (QA Q-013): handed
-      // to onnxruntime as bytes when it is in, else onnxruntime fetches it itself.
-      const runtime = fetch(ORT_WASM_URL).then(r => (r.ok ? r.arrayBuffer() : null)).catch(() => null);
       const loaded = await loadCore({
         engineBase: msg.engineBase, search: msg.search, sha256: msg.sha256, urls: msg.urls, size: msg.size,
         useCache: msg.useCache, bytes: msg.bytes, trusted: msg.trusted,
         onProgress: (progress) => post({ type: "progress", progress }),
         beforeSession: async () => {
           const wasm = await runtime;
-          if (wasm) ort.env.wasm.wasmBinary = new Uint8Array(wasm);
+          if (wasm) ort.env.wasm.wasmBinary = new Uint8Array(wasm.bytes);
         },
       });
       ort.env.wasm.wasmBinary = undefined;
@@ -51,6 +55,8 @@ async function handle(msg: ToWorker): Promise<void> {
            bytes ? [bytes.buffer] : []);
     } catch (e) {
       ort.env.wasm.wasmBinary = undefined;
+      // onnxruntime could not start from kept bytes: forget them, so a Retry downloads the file again.
+      if (stageOf(e) === "ai-worker" && (await runtime)?.fromCache) await dropRuntime(ORT_WASM_URL, keep);
       post({ type: "error", message: e instanceof Error ? e.message : String(e), stage: stageOf(e), name: e instanceof Error ? e.name : undefined });
     }
     return;

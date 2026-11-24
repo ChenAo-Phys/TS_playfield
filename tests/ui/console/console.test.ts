@@ -126,10 +126,11 @@ describe("console markup", () => {
     expect(out).toContain("Playfield · vs DeepStruggle");
     expect(out.match(/<i class="[^"]*"[^>]*>\d+<\/i>/g)?.length).toBe(10);
     expect(out).toContain(">Early<");
-    expect(out).toMatch(/AR 1 · <span class="[^"]*sideUssr[^"]*">USSR<\/span> <span class="[^"]*you[^"]*">\(you\)<\/span>/);
+    // The side as its word and its glyph (the squeeze's step 5 shows the glyph; R3-06).
+    expect(out).toMatch(/AR 1 · <span class="[^"]*sideUssr[^"]*"><span class="[^"]*arWord[^"]*">USSR<\/span><svg[^>]*>.*?<\/svg><\/span> <span class="[^"]*you[^"]*">\(you\)<\/span>/);
     expect(out).toContain("No coups/realigns: Europe"); // DEFCON 4 caption
     expect(out).toContain('aria-label="DEFCON 4: No coups or realignments in Europe"');
-    expect(out).toMatch(/USSR \+<span[^>]*>.*2/); // the lead with a rolling number
+    expect(out).toMatch(/USSR<\/span><svg[^>]*>.*?<\/svg> \+<span[^>]*>.*2/); // the lead (word + glyph) with a rolling number
     expect(out).toContain("Mil ops · need 4");
     expect(out).toContain("Space Race");
     expect(out).toContain('aria-label="Space race: US box 2, USSR box 4"');
@@ -174,10 +175,10 @@ describe("console markup", () => {
     expect(out).toMatch(/aria-label="Turn 6 of 10, Mid War · AR 1 · USSR \(you\)"/);
     expect(out).toMatch(/_arWord_[^"]*">USSR<\/span><svg class="[^"]*_arGlyph_/);
     expect(out).toContain('data-squeeze="0"');
-    // The desktop console has no squeeze and no glyph forms.
+    // The desktop console measures no single lines (data-fit); it squeezes as a whole in the tablet steps (R3-06).
     const desk = html(hs.wrap(h(Console, { variant: "desktop" })));
-    expect(desk).not.toContain("data-squeeze");
-    expect(desk).not.toMatch(/_vpGlyph_|_arGlyph_|data-fit/);
+    expect(desk).toContain('data-squeeze="0"');
+    expect(desk).not.toMatch(/data-fit/);
   });
 
   it("squeeze steps: one more per measurement while a line is cut, up to 4; a new width or text starts over", () => {
@@ -228,7 +229,7 @@ describe("console markup", () => {
     try {
       const hs = harness({ state: midgame() });
       const out = html(hs.wrap(h(Console, { variant: "desktop" })));
-      expect(out).toMatch(/第 1 行动轮 · <span[^>]*>苏联<\/span><span[^>]*>（你）<\/span>/);
+      expect(out).toMatch(/第 1 行动轮 · <span[^>]*><span[^>]*>苏联<\/span><svg[^>]*>.*?<\/svg><\/span><span[^>]*>（你）<\/span>/);
       expect(out).toContain("军事行动 · 需 4");
       expect(out).toContain("欧洲禁止政变与调整");
       expect(out).toContain(">早期<");

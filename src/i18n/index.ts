@@ -10,7 +10,7 @@
  * Engine names, enum values and saves stay as they are; only what the page shows is translated.
  *
  * The language is, in order: `?lang=` when the link names one (en, zh, zh-CN, ...), else the one
- * chosen last in this browser (localStorage "tsp.lang"), else the browser's preferred languages
+ * chosen last in this browser (localStorage "ts-playfield.lang"), else the browser's preferred languages
  * (`navigator.languages`, first match wins: any zh* is Simplified Chinese, any en* English), else
  * English. Choosing one does not put it in the address, so a shared link keeps the reader's own.
  *
@@ -34,8 +34,12 @@ type Bundle = Record<string, object>;
 const LOADERS: Partial<Record<Language, () => Promise<{ default: Bundle }>>> = {
   "zh-CN": () => import("./locales/zh-CN"),
 };
-/** localStorage key of the language chosen last in this browser. */
-export const STORAGE_KEY = "tsp.lang";
+/** localStorage key of the language chosen last in this browser (the origin is shared with other Pages sites: our keys
+ *  all start "ts-playfield.", QA L-6). */
+export const STORAGE_KEY = "ts-playfield.lang";
+/** The key this choice had before (QA L-6): read when STORAGE_KEY is empty, and copied there once. Never written or
+ *  removed (a short key like this one may be another site's). */
+export const LEGACY_STORAGE_KEY = "tsp.lang";
 
 i18next.use({
   type: "postProcessor",
@@ -97,7 +101,7 @@ export function normalizeLanguage(tag: string | null | undefined): Language | nu
 export interface LanguageEnvironment {
   /** `location.search`, e.g. "?lang=zh". */
   search?: string;
-  /** The stored choice (localStorage "tsp.lang"). */
+  /** The stored choice (localStorage "ts-playfield.lang", else the older "tsp.lang"). */
   stored?: string | null;
   /** `navigator.languages`, most preferred first. */
   languages?: readonly string[];
@@ -132,11 +136,22 @@ function storage(): Pick<Storage, "getItem" | "setItem"> | null {
   return (globalThis as { localStorage?: Pick<Storage, "getItem" | "setItem"> }).localStorage ?? null;
 }
 
+/** The stored choice: STORAGE_KEY, else a language under the older LEGACY_STORAGE_KEY, which is then copied over. */
+function storedLanguage(store: Pick<Storage, "getItem" | "setItem"> | null): string | null {
+  if (!store) return null;
+  const stored = store.getItem(STORAGE_KEY);
+  if (stored !== null) return stored;
+  const legacy = store.getItem(LEGACY_STORAGE_KEY);
+  if (!isLanguage(legacy)) return null;
+  try { store.setItem(STORAGE_KEY, legacy); } catch { /* quota: read again next time */ }
+  return legacy;
+}
+
 /** This browser's environment for `detectLanguage` (empty under Node). */
 export function browserEnvironment(): LanguageEnvironment {
   const env: LanguageEnvironment = {};
   try { env.search = globalThis.location?.search ?? ""; } catch { /* no location */ }
-  try { env.stored = storage()?.getItem(STORAGE_KEY) ?? null; } catch { /* storage blocked */ }
+  try { env.stored = storedLanguage(storage()); } catch { /* storage blocked */ }
   try {
     const nav = globalThis.navigator;
     if (nav) env.languages = nav.languages?.length ? nav.languages : nav.language ? [nav.language] : [];

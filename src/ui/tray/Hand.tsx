@@ -17,7 +17,7 @@ import { promptStore } from "../prompts/store";
 import { UiRootContext } from "../state/context";
 import type { OptionPolicy } from "../ui-contract";
 import { HandCard } from "./HandCard";
-import { fanAngle, fitHand, handCardState, handCardWidth, HAND_FIT_PAD, serveFocusRequest, spineOf, type HandMode, type StampVerb, type TrayVariant } from "./trayModel";
+import { fanAngle, fitHand, handCardState, handCardWidth, handFocusReady, HAND_FIT_PAD, serveFocusRequest, spineOf, type HandMode, type StampVerb, type TrayVariant } from "./trayModel";
 import { useTrayStore } from "./useTrayBeats";
 import { useWide } from "./useWide";
 import s from "./Hand.module.css";
@@ -134,8 +134,7 @@ export function Hand(props: HandProps) {
   // (the prompt layer asks through its store; the stage that had focus is gone).
   const prompts = root ? promptStore(root.controller) : null;
   const focusReq = useSyncExternalStore(prompts?.subscribe ?? NO_SUBSCRIBE, prompts ? () => prompts.get().focusCard : NO_FOCUS, NO_FOCUS);
-  const focusIdx = focusReq === null ? -1 : order.indexOf(focusReq);
-  const focusReady = focusIdx >= 0 && interactive && states[focusIdx] !== "lifted" && mode === "active";
+  const focusReady = handFocusReady(focusReq, order, states, { interactive, mode });
   useEffect(() => {
     if (!focusReady || focusReq === null || !prompts) return;
     serveFocusRequest(prompts, els.current.get(focusReq) ?? null);

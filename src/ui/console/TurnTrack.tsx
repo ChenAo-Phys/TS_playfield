@@ -1,8 +1,9 @@
 /**
  * Turn instrument (ui-spec §5): ten cells 15×18 (an extra gap before turns 4 and 8, where new cards
  * enter), past dimmed, the current one brass and lit, and the era row EARLY / MID / LATE. Condensed
- * (1200–1439 px, tablet): the readout "5/10 · Mid War". The lit cell slides one step when the turn
- * changes. Tooltip: era, when its cards were shuffled in, hand size.
+ * (1200–1439 px, tablet): the readout "5/10 · Mid War"; `short` (tablet) also renders "5/10", which the tablet
+ * console's squeeze shows instead (R3-06). The lit cell slides one step when the turn changes. Tooltip: era, when
+ * its cards were shuffled in, hand size.
  */
 import { useI18n } from "../../i18n/react";
 import { ERA_START, eraOf, type Era } from "./model";
@@ -13,6 +14,9 @@ import s from "./Console.module.css";
 export interface TurnTrackProps {
   turn: number;
   condensed: boolean;
+  // ── extensions ──
+  /** Also render the short readout "5/10" (the tablet console's squeeze step 6 shows it instead of the full one). */
+  short?: boolean;
   className?: string;
 }
 
@@ -35,13 +39,15 @@ export function TurnTip({ turn }: { turn: number }) {
   );
 }
 
-export function TurnReadout({ turn, className }: { turn: number; className?: string }) {
+export function TurnReadout({ turn, short = false, className }: { turn: number; short?: boolean; className?: string }) {
   const { t } = useI18n();
-  const text = t("ui_console:turn.readout", { turn: slot("turn"), max: 10, era: t(`ui:track.era.${eraOf(turn)}`) });
+  const text = short
+    ? t("ui_console:turn.short", { turn: slot("turn"), max: 10 })
+    : t("ui_console:turn.readout", { turn: slot("turn"), max: 10, era: t(`ui:track.era.${eraOf(turn)}`) });
   return <div className={[s.turnRead, className].filter(Boolean).join(" ")}>{fillSlots(text, { turn: <b className="ts-num">{turn}</b> })}</div>;
 }
 
-export function TurnTrack({ turn, condensed, className }: TurnTrackProps) {
+export function TurnTrack({ turn, condensed, short = false, className }: TurnTrackProps) {
   const { t } = useI18n();
   const era = eraOf(turn);
   const label = t("ui_console:turn.aria", { turn, era: t(`ui:track.era.${era}`) });
@@ -51,7 +57,12 @@ export function TurnTrack({ turn, condensed, className }: TurnTrackProps) {
   return (
     <Instrument label={label} anchor="turn" tip={<TurnTip turn={turn} />} className={[s.turn, className].filter(Boolean).join(" ")} data={{ turn }}>
       <div className={s.instLabel} aria-hidden="true">{t("ui:track.turn")}</div>
-      {condensed ? (
+      {condensed && short ? (
+        <>
+          <TurnReadout turn={turn} className={s.turnFull} />
+          <TurnReadout turn={turn} short className={s.turnShort} />
+        </>
+      ) : condensed ? (
         <TurnReadout turn={turn} />
       ) : (
         <div className={s.turnBox}>

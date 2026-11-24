@@ -8,6 +8,7 @@ import { useI18n } from "../../i18n/react";
 import { MODEL_BYTES } from "../../ai/config";
 import { isWasmUnsupportedMessage } from "../../ai/errors";
 import { Button } from "../common/Button";
+import { loadBar } from "../common/loadBar";
 import s from "./BootLine.module.css";
 
 export type BootStep = "link" | "engine" | "model" | "verify" | "start" | "ready";
@@ -18,7 +19,7 @@ export interface BootLineProps {
   onRetry(): void;
   // ── extensions ──
   status: ViewModel["status"];
-  /** The AI worker is up (the controller cleared `vm.load` after AI progress). */
+  /** The AI has loaded (`vm.aiReady`; it stays loaded for the page). */
   aiReady: boolean;
   /** The load stage seen last before an error (picks the ui:error.* message). */
   failedStage?: LoadProgress["stage"] | null;
@@ -30,12 +31,12 @@ const MB = MODEL_BYTES / 1e6;
 /** Where the boot stands, as a step of the line and a bar fraction (0..1). */
 export function bootProgress(status: ViewModel["status"], load: LoadProgress | undefined, aiReady: boolean): { step: BootStep; bar: number } {
   if (status === "boot") return { step: "link", bar: 0.02 };
-  if (status === "loading" || load?.stage === "engine") return { step: "engine", bar: 0.08 };
+  if (status === "loading" || load?.stage === "engine") return { step: "engine", bar: loadBar({ stage: "engine", fraction: null }) };
   if (aiReady) return { step: "ready", bar: 1 };
   switch (load?.stage) {
-    case "model-download": return { step: "model", bar: 0.15 + 0.65 * (load.fraction ?? 0) };
-    case "model-verify": return { step: "verify", bar: 0.84 };
-    case "ai-worker": return { step: "start", bar: 0.9 + 0.1 * (load.fraction ?? 0) };
+    case "model-download": return { step: "model", bar: loadBar(load) };
+    case "model-verify": return { step: "verify", bar: loadBar(load) };
+    case "ai-worker": return { step: "start", bar: loadBar(load) };
     default: return { step: "model", bar: 0.15 };
   }
 }

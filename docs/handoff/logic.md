@@ -428,3 +428,31 @@ the human the AI's hand). Decision: obfuscate + checksum, and say plainly that i
   "unreadable" }` and `{ savedAt: save.savedAt, reason: "build" }` (contract `ViewModel.incompatibleSave.reason?`); see
   "Save format v2". The contract's `CoupOdds.milOps?` (R-002) landed too; `computeCoupOdds` now returns plain
   `CoupOdds`.
+
+## QA round 3 fixes (group F1, 2026-11-23)
+
+- **Autosave unavailable (D-203, R3-01)**: the controller sets `ViewModel.saveUnavailable = true` (contract field added
+  by the coordinator) while a game is `playing`, the page is not superseded, and either `deps.storage` is null
+  (`browserStorage()`'s probe write failed at load: storage blocked, privacy mode) or the last `writeSave` returned
+  false (quota). A later write that goes through clears it (each write is followed by an emit, so subscribers hear the
+  change); so do game over / resign (status `over`), the start screen, a new game or resume whose first write is
+  taken, and supersession (that page has its own notice). Field: `saveRefused` (set from every `save()` write,
+  reset by `reset()`); `saveUnavailable()` derives the flag in `buildViewModel`. The shell (F4) shows one toast per
+  page session when it becomes true. Tests: `tests/game/r3-fixes.test.ts` (no storage; storage that takes every
+  write; a refusing storage mid-game then freed; a refused first write; a superseded page whose last write was
+  refused; a resume whose claim is refused; `browserStorage()` over a node `localStorage` stub that refuses writes /
+  throws on access). Browser (dev, 1440×900): with `Storage.prototype.setItem` throwing from load, `saveUnavailable`
+  is absent on the menu, true after `newGame` and after moves, absent after resign; with it throwing mid-game, absent
+  → true after the next answers → absent once `setItem` is restored, no page errors (`$SP/r3-fix-F1/save-unavail.mjs`).
+- **Coup prompt Ops (D-202, R3-02)**: `prompt:title.coup` / `prompt:detail.coup` stated `pending_ops_value`, which
+  holds the region-conditional bonuses (the China Card's +1 in Asia, Vietnam Revolts' +1 in Southeast Asia for the
+  USSR; ops.cpp `budget_if_spent_in`), so "(5 Ops)" was wrong for a China Card coup outside Asia. A surface does print
+  the title: the target-list dossier (`OrdersSlip`, key T / the List button) is titled with `Prompt.title`
+  ("CHOOSE A COUNTRY TO COUP (5 OPS)" at a China Card coup, before). The coup-target words now use new keys
+  `prompt:title.coupUpTo` / `prompt:detail.coupUpTo` ("up to N Ops" / "最多 N 行动点") exactly when the engine's
+  own test for a regional bonus holds (`pending_op_card` is the China Card, or the human is the USSR and
+  `VIETNAM_REVOLTS_ACTIVE`); otherwise the Ops are the same in every country and the old keys stay ("(N Ops)").
+  Deviation from the item's simplest option (always "up to N"): "up to" only where it can be less, so an ordinary
+  coup keeps its exact number. Tests: `tests/game/r3-fixes.test.ts` (an ordinary card: every target's
+  `CoupOdds.ops` equals the stated N; the China Card: `coupUpTo`, max N and min N − 1 over the targets; Vietnam
+  Revolts: `coupUpTo` for the USSR, `coup` for the US). Shots: `docs/qa/shots/r3-fix-F1/{before,after}-coup-list-{en,zh}.jpg`.

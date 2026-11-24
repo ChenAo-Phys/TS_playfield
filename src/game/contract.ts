@@ -266,6 +266,13 @@ export interface ViewModel {
   /** At boot, an unfinished save that cannot be resumed was found and discarded; set until a game starts (Q-014).
    *  `reason`: "build" = written by another engine build; "unreadable" = changed or damaged (`savedAt` is 0 then). */
   incompatibleSave?: { savedAt: number; reason?: "build" | "unreadable" };
+  /** This game is not being autosaved: the page has no storage (blocked, privacy mode) or storage refused the last
+   *  write (quota; the chenao-phys.github.io origin is shared with other Pages sites). Set while a game is running and
+   *  the condition holds; cleared once a later write succeeds. The UI tells the player once per page (D-203). */
+  saveUnavailable?: boolean;
+  /** The AI has loaded (model, worker, session) and stays loaded for the page's life: true from then on, also on a
+   *  start screen mounted again after a game (QA L-1). Absent before, and while a failed load is retried. */
+  aiReady?: boolean;
 }
 
 export interface CoupOdds {

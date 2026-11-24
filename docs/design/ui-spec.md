@@ -68,6 +68,10 @@ the VP chart and the start-screen rule chips.
   `data-patterns="on"`, inline `--ts-speed`.
 * **Hidden information:** the UI only ever sees `PublicState`. It MUST NOT keep or show anything the redaction removed. Unknown
   AI cards are always backs.
+* *As built (QA round 3):* the production page carries a **Content-Security-Policy** meta (`vite.config.ts`, build only;
+  `docs/DEPLOY.md` §3): scripts, styles, fonts, images and workers from the site itself only (`'wasm-unsafe-eval'` for the
+  engine and onnxruntime), no `blob:`, no inline `<style>` / `<script>` / `style=""` attributes (React style props and
+  `style.setProperty` go through the CSSOM and are fine), network only to the site and Hugging Face (the model's fallback).
 
 ---
 
@@ -240,7 +244,13 @@ As desktop, with:
   controls keep their look and answer 44 px hit areas (R-010): the strip buttons, the flyout's ×, the console's language, ⚙ and ☰
   (their gap grows to 12 px), the map zoom buttons (36 px, 8 px apart), the slip's action and tool buttons (44 px tall; icon-only
   buttons and the speed segment 44 px wide), the region buttons, play-mode Back to hand, the piles and the toast close.
-  Neighbouring areas split the gap. Where the 126 px slip's content already overflows (setup-place) its edge clips the area to 36 px.
+  Neighbouring areas split the gap. *As built (QA round 3, R3-03):* the slip's content fits its 120–126 px height (§8.1 title
+  block), so every slip control answers a 44 px area inside the slip; on the dense region grid the top row's areas cover the
+  one-line title (the grid starts right under it) and the bottom row's take the gap and run to the slip's edge.
+* *As built (QA round 3, R3-06):* on a narrow tablet (below ~960 px), or a condensed desktop bar in a long language, the console
+  squeezes in measured steps: DEFCON lamps become the word, the wordmark goes to two lines, AR pips go, the VP gauge narrows
+  (labelled VP, no ends), side words become glyphs, the turn drops its era, and last the wordmark goes. The language switch,
+  ⚙ and ☰ stay on screen at every width (700 px and up).
 
 ### 3.3 Compact (phones, portrait tablets) — `final-phone.png`, `final-phone-zh.png`
 
@@ -302,6 +312,13 @@ As desktop, with:
   chip (and its column), the staged region button its ↵, the ☰ menu its "?"; `aria-keyshortcuts` stays (a `Button` derives it
   from its single-key cap: "D", "↵" → Enter, "Esc" → Escape). The zoom buttons (40 px)
   and the play-mode sheet's Back to hand answer 44 px hit areas (R-010). The dock calls the log 电报, as the glossary (R-019).
+* *As built (QA round 3):* on touch screens the **ticker** is 44 px tall (it grows visibly instead of reaching over the map;
+  R3-08); the **theatre chips'** padding adapts (6–12 px) so a chip cut by the bar's edge shows ≥ 44 px or none, and an edge
+  with more chips beyond it fades (R3-09); the compact-landscape ☰ answers 44 × 44 from the bar's top; a **full-height sheet**
+  (the compact-landscape play-mode sheet) has a 44 px tall grab whose area starts at the sheet's top, where the 12 px reach of
+  other grabs would be off-screen (R3-09). **Back to hand** (D-201): Esc, close (grab, scrim, swipe) or Back to hand on the
+  compact play-mode sheet undoes the play; the shell opens the hand drawer and the drawer focuses the returned card
+  (`HandDrawer` serves `PromptStore.focusCard`; R3-04, R3-10).
 
 ### 3.4 Compact landscape
 
@@ -435,6 +452,11 @@ rendering. Everything else talks to the map only through `MapViewProps` and `Map
 
 Paint rule: rings are drawn **before** the box body inside the box group, so the box covers the ring's inner half. Targets render
 above non-targets. The hovered or selected box renders last.
+*As built (QA round 3, X-1):* a box focused by a finger (`touchPress()`) is not raised until its tap's click (`raisedBox` in
+`map/board.ts`): WebKit drops the click when the pressed box's `<g>` moves between mousedown and mouseup, so the first tap on a
+box did nothing on iPhone / iPad. During a finger's press the box raised before it stays raised (lowering it would move the
+nodes after its slot, the tapped box among them), so nothing moves until the click. Its hover look and ghost show at once;
+only the paint order waits.
 
 ### 4.5 Region plates ("if scored now")
 
@@ -588,6 +610,8 @@ Click → card zoom. Anchor: `effects` (the section header).
 * As built: only the newest 240 entries are drawn, with "Show earlier dispatches" above them (a whole game logs ~1500 entries).
 * Typewriter 11.5 px (zh 12 px, line-height 1.5).
 * Screen readers: a visually hidden `aria-live="polite"` region announces each new AI entry once, as plain text (`render(text)`).
+* *As built (QA round 3, R3-07):* on touch screens the filters are ≥ 44 × 44 px and their header row is 44 px tall (tablet
+  flyout, compact log sheet); the tape starts below the row.
 
 ---
 
@@ -743,6 +767,15 @@ ORDERS · TURN 5 · AR 3                          [YOUR MOVE]  ← head 14 px: 1
   folded. This is the touch path to text that `title` tooltips give the mouse (§12). **Head** (R-014): a game that ended inside a
   round reads "Orders · Turn 5 · AR 2", as the telex. **AI crumb** (R-007): a roll names a target only for a coup, realignment or
   war ("OAS Founded › Space race", never "→ Norway"). Touch targets and key caps: §3.2 / §3.3.
+* *As built (QA round 3, R3-03):* **Title block** on desktop / tablet slips: the first arrangement that fits beside the rest:
+  two title lines + crumb; two lines with the crumb yielding its line (visually hidden, still read out; the title's tap toggle
+  shows it); one line. The AI's title gives up its second line before the crumb. Without a crumb line the big counter stands
+  beside the title alone (it used to leave an 18 px blank row). Tablet slips with a staged warning: panel padding 3 px, the
+  actions' top padding 4 px. A yielded crumb keeps the shown crumb's top margin, so it measures the same in both states (a
+  4 px difference made the fit reverse itself on every render and blanked the page on 770–798 px tall tablets: review
+  V-1-1 / V-2-1); past 4 changes in one frame the fit settles on the more compact arrangement (`settleFit`).
+  **Loading** (L-2): "Getting the AI ready… n %" shows the load's overall share (`loadPercent`, the boot line's bar), so the
+  number only rises across the download, verify and start stages; the AI wait clock (§9.5) starts when the load ends.
 * **Game over (as built):** the slip shows **New game** and **Result** (reopens the telex), once the last frames have played.
 * **Human frame animating** (your own click resolving): the slip keeps the last prompt's content, frozen and non-interactive. No flicker.
 * `aria-live="polite"` on the title and counter. The new title is announced, focus is never stolen.
@@ -940,6 +973,10 @@ rows, no Z cap; its title and `aria-keyshortcuts` keep the shortcut), so it stay
 the grid shows the staged region's consequence, else the prompt's detail, only where it fits (desktop slips; not tablet slips).
 The region buttons use tighter tracking, so "MIDDLE EAST" stays whole in their 69 px columns.
 
+*As built (QA round 3, R3-05):* a dense region button whose short name is cut drops the staged primary's ↵ cap, then its caps
+tracking (`data-fit` 1 / 2); names that fit are untouched. It applies to en-XA names ("⟦MIDDLE EAST⟧" even unstaged) and,
+staged with a mouse, to English "MIDDLE EAST", "C. AMERICA" and "S. AMERICA"; Chinese names always fit.
+
 ### 8.12 Country tooltip content (`CountryTooltip`, given to the map as `renderTooltip`)
 
 Paper card, 12.5 px body:
@@ -976,6 +1013,9 @@ confirm words replace the action pill once staged).
 As built (QA round 1): the active row is kept by country id across placements (a second Enter places in the same country; a
 row that leaves the list moves to the next target in board order), and rows are named "Finland, stability 4, US 0, USSR 1 —
 place 1 influence" (Q-027). Compact landscape opens the list from the side-column slip (§3.4; Q-030).
+*As built (QA round 3, R3-02):* the dossier's title for a coup says "Choose a country to coup (up to 5 Ops)" / "选择要发动政变的
+国家（最多 5 行动点）" when a regional bonus gives targets different Ops (the China Card; Vietnam Revolts for the USSR), the exact
+"(5 Ops)" otherwise.
 
 ---
 
@@ -1103,6 +1143,8 @@ column of §9.4):
   decision is counted alike, the padded forced answers included, so the count reveals nothing the THINKING state does not. Past
   20 s, once per page session (sessionStorage `ts-playfield.aiSlowHint`), the slow-device sentence follows: in the slip where it
   has room, else as a toast (tablet slips); §8.1. `ui:slip.ai.stillThinking` is retired (R-005).
+  *As built (QA round 3, L-2):* a game started before the AI is ready shows "Getting the AI ready… n %" until the load ends; the
+  wait clock starts only then, so the download never counts as thinking or spends the slow-device sentence.
 * **Reveal dock** (desktop/tablet): 236 px, at the **top right of the table** (right 64 px, top 34 px; over Siberia, where no boxes
   are). Before each country beat of the same play, if the beat's box intersects the dock rect, the dock slides to the
   **top left** (350 ms) and stays there for that play. The dock stays pinned (compact form: 120 px card + caption) until the next
@@ -1294,6 +1336,13 @@ An inset frame over the whole app (z 100, `pointer-events: none`): 2 px alert bo
 * As built: the coin spins while the controller draws, then lands (900 ms) on the drawn side's seal; the screen stays up for the
   landing (+350 ms). Menu → New game confirms once (`ui:game.newGameConfirm`); the start screen then starts without the second
   "replaces your saved game" prompt, and its Resume returns to the running game.
+* As built (QA round 3): the boot line reads Ready whenever the AI is loaded (`vm.aiReady`), also on a start screen shown again
+  after a game (L-1; it used to sit at "AI MODEL", 15 %, with the first-visit note). When the browser refuses the autosave
+  (storage blocked, or full: other sites on the shared `github.io` origin can fill it), a toast says once per page that the game
+  will be lost on close or reload (`vm.saveUnavailable`, `ui_shell:save.unavailable`, 9 s) and About's save line adds
+  `ui_shell:save.aboutNow` while it holds (D-203: R3-01, R3-11). Returning visitors keep onnxruntime's wasm in Cache Storage
+  (`ts-playfield-runtime-v1`, by its hashed name), so a new deploy no longer downloads it again (L-4). The toss-a-coin seal's
+  wrap has no `preserve-3d` (Firefox painted the coin in the page's corner; X-2).
 
 ### 11.2 Settings dossier (modal, ⚙)
 
@@ -1325,12 +1374,18 @@ As built (Q-046): one `role="menu"`; the first item gets focus once the popover 
 "Tab moves on" would leave the page). About & credits also links the third-party licence notices
 (`THIRD_PARTY_LICENSES.txt`, shipped from `public/`; Q-012).
 
+As built (QA round 3, L-7): on touch screens About's links stand one per line, each 44 px tall.
+
 ### 11.4 Language switch
 
 `EN | 中文` segmented control (console, start screen); one button showing the other language on tablets; inside ☰ on compact.
 `setLang()` switches instantly with no reload. `<html lang>` updates, so every `:lang(zh)` rule (fonts, caps, sizes) applies at once. Card
 images cross-fade 150 ms (when `cardImages === "follow"`). Map names re-fit (recompute `textLength` per language, cached). Messages
 re-render. The URL is not changed. Glossary: `docs/glossary.md` (DEFCON stays "DEFCON"; 调整; 稳定度; 战争早期/中期/晚期; 抽牌堆; 弃掉…).
+
+As built (QA round 3, L-6): the choice is stored in `localStorage["ts-playfield.lang"]`, like every other key in the
+`ts-playfield.` namespace (the origin is shared with the account's other Pages sites); an old `tsp.lang` holding one of our
+languages is read once when the new key is empty, and never written or removed.
 
 ---
 

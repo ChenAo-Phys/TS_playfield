@@ -198,3 +198,54 @@ Items from `docs/qa/r2-TRIAGE.md` (console + rail part; the shell part is in `ui
   the flyout's top edge. Worth a look with a taller flyout header on touch.
 * `tests/ui/console/console.test.ts`: a game that ended inside a round now reads that round (F3's R-014 in `displayTurnAr`;
   `arModel` unchanged: phase "other", readout "AR 3 · USSR", the played pips kept).
+
+## QA round 3 (fix group F4, 2026-11-23)
+
+Items from the round-2 report's "Remaining issues" (console + rail part; the shell part is in `ui-shell.md` §14). Probes
+and the sweep live in the session scratch dir `$SP/r3-fix-F4/` (`console.mjs`, `sweep.mjs`, `touch.mjs`); shots in
+`docs/qa/shots/r3-fix-F4/` (`console-before-montage.jpg`, `console-after-montage.jpg`, `console-condensed-after.jpg`,
+`log-after-montage.jpg`).
+
+* **R3-06, the console never runs off the screen.** Every non-compact bar (tablet, condensed, desktop) now squeezes in
+  measured steps (`squeeze.ts` `TABLET_SQUEEZE_STEPS` = 7, the same `useSqueeze` as the compact bar, which keeps its own
+  four steps; a step is a class `sqN` on the bar, the steps never change the bar's text, so both forms of each readout
+  are rendered and CSS shows one):
+  1. DEFCON: the lamps (and, condensed / desktop, the restriction caption) give way to the word "DEFCON" beside the
+     numeral (`DefconGauge word`);
+  2. the wordmark goes on two lines (condensed / desktop: without its subtitle);
+  3. Action round: no pips, the readout stays;
+  4. VP: the label "VP" (`VpGauge fold`), no end labels, the gauge as wide as its readout, 96 px at least (the gauge's
+     widths are `var(--vp-w, Npx)`; the step sets `--vp-w: auto` on the bar);
+  5. the AR readout's and the VP lead's side words become their glyphs (`ArTrack glyph`, `VpLead glyph`);
+  6. the turn readout drops the era: "6/10" (`TurnTrack short`, new key `ui_console:turn.short` "{{turn}}/{{max}}", en and
+     zh; the desktop keeps its turn track);
+  7. no wordmark (the ☰ opens the same menu). Never needed in the sweep; it is the margin.
+
+  Which widths use the tablet bar: `layoutFor` gives "tablet" for 700–1199 px wide in landscape (taller than wide is
+  compact, under 500 px tall is compact landscape) and for any width ≥ 1200 under 640 px tall, so the smallest tablet
+  bar is 700 px (700 × 500 … 700 × 700); 768 × 1024 is compact. Before: the bar's content was 930 (en), 972 (zh), 977
+  (en-XA) px wide, +12 px on touch, so the switch, ⚙ and ☰ went off-screen below ~960 px. After, swept in the fixture demo
+  (resize without reload, 5 scenes: influence, setup, headline, action card, turn end) at every width 700–1199 px (6 px
+  steps, 500 and 600 px tall) and 1200–2000 px at 600 px tall, en / zh / en-XA, touch and mouse: 1830 + 480 sizes, **no
+  overflow**, the three buttons on screen and each answering ±21 px around its centre on touch (44 × 44). Steps used: en ≤ 4,
+  zh ≤ 6, en-XA ≤ 6 (700 px). Checked sizes: 1024 × 768 and 1199 × 700 level 0; 960 × 600 zh / en-XA 1; 900 × 600 en 1,
+  en-XA 2; 853 × 533 2; 800 × 600 en 2, zh / en-XA 4; 720 × 520 en 4, zh 6; 700 × 500 en 4, zh / en-XA 6.
+  The **condensed desktop bar** (1200–1439 px) had the same fault, unreported: 1220 / 1242 / 1293 px of content at 1200 px
+  (en / zh / en-XA), the ☰ off-screen up to ~1290 px in en-XA; it now takes the same steps (≤ 2 at 1200 px); the full
+  desktop bar needs step 1 only for en-XA on a 1440 px touch screen. Swept 1200–1500 px (10 px steps, touch and mouse),
+  no overflow. Production preview (800 × 600 zh, 720 × 520 en, touch): level 3, the buttons inside the screen.
+* **R3-07, log filters on touch.** Under `@media (pointer: coarse)` the log header row (`.log .panelH`) is 44 px tall with no
+  padding above or below, the filters are at least 44 px wide (the pill keeps its height) and each answers a 44 px tall
+  `::after` centred on it, which the row centres: the area is the row's height exactly, so it reaches neither the tape
+  below nor the flyout's / sheet's top edge, and neighbours never overlap (2 px apart). Measured (`elementFromPoint`):
+  All / Plays / Dice 44 × 44 in the tablet flyout (1024 × 768, 720 × 520) and the compact log sheet (390 × 844, 360 × 740,
+  844 × 390), en and zh; the tape starts right below the row; the flyout × keeps its 44 × 44 corner (the row keeps 48 px
+  clear on the right).
+* **R3-09 (console part), the compact ☰** in the 44 px compact-landscape bar answered 44 × 43.5 (its area started 0.5 px above
+  the screen): `.iconBtnTouch::after { inset: -1.5px -2px -2.5px }` → 44 × 44 from the bar's top (portrait too).
+* Tests: `tests/ui/console/r3-fixes.test.ts` (both forms in the markup, the step order in the stylesheet, the level
+  arithmetic, en-XA, the filters' areas); `console.test.ts` follows the glyph forms now present on the desktop bar.
+* Deviations from the spec (§3.1 / §3.2 / §5): on a narrow tablet the console drops, in this order, the DEFCON lamps, the
+  wordmark's single line, the AR pips, the VP gauge's ends and long label, the side words and the era (all still in the
+  instruments' names and tooltips); the condensed and desktop bars take the same steps when they need them (the DEFCON
+  caption and the wordmark subtitle go first there). The log filters are 44 px wide on touch screens.

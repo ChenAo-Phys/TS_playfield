@@ -235,7 +235,9 @@
 .chev { margin-left: auto; font: 700 var(--ts-fs-2xl) / 1 var(--ts-font-ui); color: var(--ts-brass-300); }
 
 /* The coin */
-.coinWrap { display: inline-grid; width: 54px; height: 54px; transform-style: preserve-3d; }
+/* Flat, not preserve-3d: the spin turns the wrap itself, whose one child is flat; with preserve-3d Firefox painted
+   the coin in the page's top-left corner instead of its button (QA X-2). */
+.coinWrap { display: inline-grid; width: 54px; height: 54px; }
 .coin { width: 54px; height: 54px; }
 .coinRim { fill: var(--ts-brass-500); stroke: var(--ts-brass-700); }
 .coinRing { stroke: var(--ts-brass-700); }

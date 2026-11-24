@@ -92,4 +92,8 @@
   .grabRow { padding-top: 0; padding-bottom: 0; }
   .grab { position: relative; height: 32px; }
   .grab::after { content: ""; position: absolute; left: 0; right: 0; top: -12px; height: 44px; }
+  /* A full-height sheet (the compact-landscape play-mode sheet) starts at the screen's top, where the 12 px reach
+     would be off-screen: its grab is 44 px tall and its area starts at the sheet's top (QA round 3, R3-09). */
+  .h_full .grab { height: 44px; }
+  .h_full .grab::after { top: 0; }
 }

@@ -1,10 +1,11 @@
 /**
- * Language detection order (?lang= -> localStorage "tsp.lang" -> navigator.languages -> en), the
+ * Language detection order (?lang= -> localStorage "ts-playfield.lang" -> navigator.languages -> en), the
  * browser environment it reads, and what a switch does to the document and the stored choice.
  */
 import { afterEach, describe, expect, it, vi } from "vitest";
 import {
   PSEUDO,
+  LEGACY_STORAGE_KEY,
   STORAGE_KEY,
   browserEnvironment,
   detectLanguage,
@@ -92,12 +93,30 @@ function fakeDocument() {
 }
 
 describe("browser environment", () => {
-  it("reads location.search, localStorage tsp.lang and navigator.languages", () => {
+  it("reads location.search, localStorage ts-playfield.lang and navigator.languages", () => {
     vi.stubGlobal("location", { search: "?lang=zh", href: "https://example.org/TS_playfield/?lang=zh" });
     vi.stubGlobal("localStorage", fakeStorage({ [STORAGE_KEY]: "en" }));
     vi.stubGlobal("navigator", { languages: ["zh-CN", "en"], language: "zh-CN" });
     expect(browserEnvironment()).toEqual({ search: "?lang=zh", stored: "en", languages: ["zh-CN", "en"] });
-    expect(STORAGE_KEY).toBe("tsp.lang");
+    expect(STORAGE_KEY).toBe("ts-playfield.lang");
+  });
+
+  it("keeps the shared origin's keys namespaced: the older tsp.lang is read once, copied, never written or removed (L-6)", () => {
+    expect(LEGACY_STORAGE_KEY).toBe("tsp.lang");
+    vi.stubGlobal("location", { search: "" });
+    vi.stubGlobal("navigator", { languages: ["en"] });
+    const store = fakeStorage({ [LEGACY_STORAGE_KEY]: "zh-CN" });
+    vi.stubGlobal("localStorage", store);
+    expect(browserEnvironment().stored).toBe("zh-CN");
+    expect(store.getItem(STORAGE_KEY)).toBe("zh-CN");
+    expect(store.getItem(LEGACY_STORAGE_KEY)).toBe("zh-CN");
+    // The new key wins from then on; a foreign value under the old key is not ours to read.
+    store.setItem(STORAGE_KEY, "en");
+    expect(browserEnvironment().stored).toBe("en");
+    const foreign = fakeStorage({ [LEGACY_STORAGE_KEY]: "{\"theme\":\"dark\"}" });
+    vi.stubGlobal("localStorage", foreign);
+    expect(browserEnvironment().stored).toBeNull();
+    expect(foreign.getItem(STORAGE_KEY)).toBeNull();
   });
 
   it("falls back to navigator.language", () => {

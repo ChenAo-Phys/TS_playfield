@@ -5,11 +5,13 @@
  *
  * Variants (`layoutFor` + width, chosen by the shell):
  *  - desktop  (≥ 1440 px): wordmark · Turn (track + era row) · AR · DEFCON (+ caption) · VP 224 · Mil ops ·
- *             Space · ··· · EN|中文 · ⚙ · ☰
+ *             Space · ··· · EN|中文 · ⚙ · ☰ (with the squeeze steps below as a safety net)
  *  - condensed (1200–1439 px): Turn as the readout "5/10 · Mid War", VP 176, DEFCON caption 112, smaller
- *             wordmark
+ *             wordmark; squeezes like the tablet bar when a narrow window or a long language needs it (R3-06)
  *  - tablet:  no wordmark subtitle, Mil ops, Space or DEFCON caption (the Status flyout has them); VP 170;
- *             the language as one button showing the other language
+ *             the language as one button showing the other language. Below ~960 px it takes the tablet squeeze
+ *             steps in ./squeeze (DEFCON word for the lamps, a two-line wordmark, no AR pips, a narrow VP gauge,
+ *             side glyphs, no era, no wordmark), so the language switch, ⚙ and ☰ stay on screen (R3-06).
  *  - compact: turn/AR readout · DEFCON numeral + "DEFCON" · mini VP gauge (flex) · ☰ 40×40 (with an amber
  *             dot when a warning needs attention). The VP number is never cut: when the bar is too narrow it
  *             takes the squeeze steps in ./squeeze (side glyphs, no DEFCON caption, no VP label) before the turn
@@ -30,7 +32,7 @@ import { LangToggle } from "./LangToggle";
 import { MilOpsTrack } from "./MilOpsTrack";
 import { arModel, eraOf } from "./model";
 import { SpaceTrack } from "./SpaceTrack";
-import { useSqueeze } from "./squeeze";
+import { SQUEEZE_STEPS, TABLET_SQUEEZE_STEPS, useSqueeze } from "./squeeze";
 import { useTrackView } from "./trackStore";
 import { TurnTip, TurnTrack } from "./TurnTrack";
 import { useTrackBeats, useTrackValues, useVpHistory } from "./useTrackBeats";
@@ -72,10 +74,15 @@ export function Console({ variant, onSettings, onMenu, menuOpen, menuAlert, clas
   const values = useTrackValues(state ?? EMPTY_STATE);
   const history = useVpHistory(state?.turn ?? 0, values.vp);
   const compact = variant === "compact";
+  const tablet = variant === "tablet";
+  // Every bar but the compact one squeezes in the tablet steps (./squeeze) and renders the short forms they switch to.
+  // The full desktop bar has room for everything (it needs step 1 only for the pseudo-language on a 1440 px touch screen).
+  const folds = !compact;
   const alert = menuAlert ?? (compact && needsAttention(root.vm, root.vm.humanSide));
   const openMenu = (e: MouseEvent<HTMLElement>) => onMenu?.(e.currentTarget);
   const bar = useRef<HTMLElement | null>(null);
-  const squeeze = useSqueeze(bar, compact);
+  const squeeze = useSqueeze(bar, true, compact ? SQUEEZE_STEPS : TABLET_SQUEEZE_STEPS);
+  const squeezeCls = Array.from({ length: squeeze }, (_, i) => s[`sq${i + 1}`]);
   // The turn to show: never the engine's counter past the end (turn 11 after final scoring; Q-031). While the last
   // frames still play, the shown state is in the ending's turn and reads as usual (displayTurnAr).
   const ending = root.vm.ending;
@@ -99,16 +106,16 @@ export function Console({ variant, onSettings, onMenu, menuOpen, menuAlert, clas
   return (
     <header
       ref={bar}
-      className={[s.console, s[`v_${variant}`], "ts-grain", squeeze >= 1 ? s.sq1 : "", squeeze >= 2 ? s.sq2 : "", squeeze >= 3 ? s.sq3 : "", squeeze >= 4 ? s.sq4 : "", className].filter(Boolean).join(" ")}
+      className={[s.console, s[`v_${variant}`], "ts-grain", ...squeezeCls, className].filter(Boolean).join(" ")}
       aria-label={t("ui_console:label")}
       data-variant={variant}
-      data-squeeze={compact ? squeeze : undefined}
+      data-squeeze={squeeze}
     >
       {view.flash ? <span key={view.flash} className={s.flash} aria-hidden="true" /> : null}
       {compact ? null : (
         <button type="button" className={s.wordmark} onClick={openMenu} aria-label={t("ui_console:wordmark.label")}>
           <b>{t("ui_console:wordmark.title")}</b>
-          {variant === "tablet" ? null : <span>{t("ui_console:wordmark.sub")}</span>}
+          {tablet ? null : <span>{t("ui_console:wordmark.sub")}</span>}
         </button>
       )}
 
@@ -132,17 +139,17 @@ export function Console({ variant, onSettings, onMenu, menuOpen, menuAlert, clas
 
       {state && !compact ? (
         <>
-          <TurnTrack turn={turn} condensed={variant !== "desktop"} />
-          <ArTrack state={state} humanSide={human} ar={values.ar} ending={ending} />
+          <TurnTrack turn={turn} condensed={variant !== "desktop"} short={folds} />
+          <ArTrack state={state} humanSide={human} ar={values.ar} ending={ending} glyph={folds} />
         </>
       ) : null}
 
-      {state ? <DefconGauge defcon={values.defcon} variant={compact ? "compact" : "full"} caption={variant !== "tablet"} /> : null}
+      {state ? <DefconGauge defcon={values.defcon} variant={compact ? "compact" : "full"} caption={!tablet} word={folds} /> : null}
 
       {state ? (
         compact
           ? <VpGauge vp={values.vp} width={0} variant="mini" history={history} className={s.vpFlex} />
-          : <VpGauge vp={values.vp} width={VP_WIDTH[variant]} variant="full" history={history} />
+          : <VpGauge vp={values.vp} width={VP_WIDTH[variant]} variant="full" history={history} fold={folds} />
       ) : null}
 
       {state && (variant === "desktop" || variant === "condensed") ? (
@@ -155,7 +162,7 @@ export function Console({ variant, onSettings, onMenu, menuOpen, menuAlert, clas
       <div className={s.spacer} />
 
       <div className={s.actions}>
-        {compact ? null : <LangToggle variant={variant === "tablet" ? "single" : "segmented"} />}
+        {compact ? null : <LangToggle variant={tablet ? "single" : "segmented"} />}
         {compact ? null : (
           <button type="button" className={s.iconBtn} aria-label={t("ui:menu.settings")} title={t("ui:menu.settings")} onClick={() => onSettings?.()}>
             <Icon name="gear" size={17} />

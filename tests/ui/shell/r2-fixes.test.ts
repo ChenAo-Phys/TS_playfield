@@ -128,10 +128,12 @@ describe("tablet flyouts (R-017)", () => {
     const btn = Number(con.match(/\.iconBtn \{[^}]*width: (\d+)px;/)![1]);
     const touchBtn = Number(con.match(/\.iconBtnTouch \{ width: (\d+)px;/)![1]);
     const inset = Number(coarse.match(/\.iconBtn::after \{[^}]*inset: -(\d+)px;/)![1]);
-    const touchInset = Number(coarse.match(/\.iconBtnTouch::after \{ inset: -(\d+)px; \}/)![1]);
+    // The compact ☰: top / left-right / bottom (R3-09: shifted 0.5 px down so the area never crosses the screen's top).
+    const touchInset = coarse.match(/\.iconBtnTouch::after \{ inset: -([\d.]+)px -([\d.]+)px -([\d.]+)px; \}/)!.slice(1).map(Number);
     const gap = Number(coarse.match(/\.actions \{ gap: (\d+)px; \}/)![1]);
     expect(btn + 2 * inset).toBe(44);
-    expect(touchBtn + 2 * touchInset).toBe(44);
+    expect(touchBtn + touchInset[0]! + touchInset[2]!).toBe(44);
+    expect(touchBtn + 2 * touchInset[1]!).toBe(44);
     expect(gap).toBeGreaterThanOrEqual(2 * inset);
     expect(coarse).toMatch(/\.langToggle button \{[^}]*min-width: 44px;/);
     expect(coarse).toMatch(/\.langToggle button::after \{[^}]*height: 44px;/);

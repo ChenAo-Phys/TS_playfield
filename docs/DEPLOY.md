@@ -137,21 +137,26 @@ for p in engine/ts_engine.mjs engine/ts_engine.wasm engine/engine.json models/ds
 done
 curl -s -o /dev/null -w "%{http_code} rulebook\n" "${SITE}game_resources/TS_Rules_Deluxe.pdf"   # 404
 
-# In a browser: the boot line reaches "Ready", with no errors. Headless (Playwright, this machine):
-source scripts/pw-env.sh && node --input-type=module -e '
-import { chromium } from "playwright";
-const b = await chromium.launch();
+# In a browser: the boot line reaches "Ready", with no errors and no CSP violations. Headless (Playwright, this
+# machine; BROWSER=chromium, firefox or webkit, section 5):
+source scripts/pw-env.sh && BROWSER=chromium node --input-type=module -e '
+import * as pw from "playwright";
+const b = await pw[process.env.BROWSER].launch();
 try {
   const p = await b.newPage(), errors = [];
   p.on("pageerror", e => errors.push(String(e)));
   p.on("console", m => { if (m.type() === "error") errors.push(m.text()); });
+  await p.addInitScript(() => { window.__csp = [];
+    document.addEventListener("securitypolicyviolation", e => window.__csp.push(`${e.violatedDirective} ${e.blockedURI}`)); });
   const t0 = Date.now();
   await p.goto(process.argv[1] + "?lang=en");
   await p.waitForFunction(() => document.querySelector("[role=progressbar]")?.getAttribute("aria-valuenow") === "100", null, { timeout: 120000 });
-  console.log({ readyMs: Date.now() - t0, note: await p.textContent("[role=progressbar] + *"),
+  console.log({ browser: process.env.BROWSER, readyMs: Date.now() - t0, note: await p.textContent("[role=progressbar] + *"),
+                csp: await p.evaluate(() => !!document.querySelector("meta[http-equiv=Content-Security-Policy]")),
+                violations: await p.evaluate(() => window.__csp),
                 devHooks: await p.evaluate(() => "__tsp" in window || "__tspAuto" in window), errors });
 } finally { await b.close(); }' "$SITE"
-# expect { readyMs: …, note: "Ready", devHooks: false, errors: [] }
+# expect { browser, readyMs: …, note: "Ready", csp: true, violations: [], devHooks: false, errors: [] }
 ```
 
 Then play a few moves by hand in English and Chinese, on a desktop and on a phone.
@@ -171,6 +176,10 @@ gh run watch "$(gh run list --workflow pages.yml --limit 1 --json databaseId --j
   (`gh run rerun <good-run-id>`), which builds and deploys that run's commit.
 - Pages serves everything with `cache-control: max-age=600`: a new deploy can take up to 10 minutes to reach a
   returning visitor.
+- The built `index.html` carries a Content-Security-Policy `<meta>` (`tsp-csp-meta` in `vite.config.ts`, build
+  only). A change that loads something from a new origin, or adds an inline `<script>` / `<style>`, must extend it;
+  check the preview for `securitypolicyviolation` events / "Refused to …" console errors in Chromium, Firefox and
+  WebKit (section 5, `docs/qa/r3-xbrowser.md`). On the live site: `curl -s "$SITE" | grep -o 'Content-Security-Policy'`.
 - `npm ci` (npm 11) warns that the install scripts of `esbuild` and `protobufjs` are "not yet covered by
   allowScripts". That is harmless: the build and the tests pass without them (checked 2026-11-23).
 
@@ -231,3 +240,49 @@ git add public/models scripts/fetch-model.sh src/ai/config.ts && git commit -m "
 ```
 
 A new model can need a different engine fingerprint (`docs/notes/build-deploy.md` §5).
+
+## 5. Firefox and WebKit on this machine
+
+QA runs Playwright's own browser builds; besides Chromium, Firefox and WebKit (Safari's engine) are installed
+(`npx playwright install firefox webkit` → `~/.cache/ms-playwright/firefox-*`, `webkit-*`; not an npm install).
+There is no root, so their missing system libraries live in user space, like Chromium's:
+
+| Browser | Extra libraries | How it finds them |
+|---|---|---|
+| Chromium | `libnss3`, `libnspr4`, `libasound2` in `~/.local/opt/chromelibs/root` | `LD_LIBRARY_PATH` (unchanged) |
+| Firefox | none (it loads its own NSS from its own directory) | – |
+| WebKit | 38 Ubuntu 24.04 packages (GTK 4, GStreamer base/gl/bad, libsoup 3, AVIF, …) in `~/.local/opt/pwlibs/root` | `LD_LIBRARY_PATH`, see below |
+
+`source scripts/pw-env.sh` before any Playwright command sets all of it up. For WebKit it also
+(1) patches the WebKit bundle's `MiniBrowser` wrapper, which would otherwise replace `LD_LIBRARY_PATH`, to append
+the inherited path (idempotent; it redoes this for a new WebKit build), and (2) sets
+`PLAYWRIGHT_SKIP_VALIDATE_HOST_REQUIREMENTS=1`, because Playwright's pre-launch check looks for two `dlopen()`ed
+libraries only in the system's `ldconfig` cache (each launch prints one "Skipping host requirements validation"
+line). Nothing Chromium loads changes. To redo the WebKit libraries on a fresh machine (no root needed):
+
+```bash
+mkdir -p /tmp/debs && cd /tmp/debs
+apt-get download libabsl20220623t64 libavif16 libcairo-script-interpreter2 libdav1d7 libenchant-2-2 libevdev2 \
+  libevent-2.1-7t64 libgav1-1 libgles2 libgraphene-1.0-0 libgssdp-1.6-0 libgstreamer-gl1.0-0 \
+  libgstreamer-plugins-bad1.0-0 libgstreamer-plugins-base1.0-0 libgtk-4-1 libgudev-1.0-0 libgupnp-1.6-0 \
+  libgupnp-igd-1.6-0 libharfbuzz-icu0 libhyphen0 libmanette-0.2-0 libnice10 libopus0 liborc-0.4-0t64 librav1e0 \
+  libsecret-1-0 libsoup-3.0-0 libsvtav1enc1d1 libva-drm2 libva2 libwayland-server0 libwebpdemux2 libwebpmux3 \
+  libx264-164 libxcb-xkb1 libxkbcommon-x11-0 libxslt1.1 libyuv0
+for d in *.deb; do dpkg -x "$d" ~/.local/opt/pwlibs/root; done
+# check: no "not found" left
+source scripts/pw-env.sh
+W=$(ls -d ~/.cache/ms-playwright/webkit-*/minibrowser-wpe | tail -1)
+for f in $(find "$W" -type f \( -name '*.so*' -o -perm -u+x \)); do
+  LD_LIBRARY_PATH="$W/lib:$W/sys/lib:$LD_LIBRARY_PATH" ldd "$f" 2>/dev/null; done | grep 'not found'
+```
+
+The QA drivers take `--browser chromium|firefox|webkit` (default chromium):
+
+```bash
+source scripts/pw-env.sh
+node src/ui/screens/demo/play.mjs --browser webkit --url http://localhost:PORT/TS_playfield/ --side USSR --until end
+node src/ui/screens/demo/shoot.mjs --browser firefox --url http://localhost:PORT/TS_playfield/ --out <dir>
+```
+
+Playwright's WebKit is WebKitGTK/WPE on Linux, not Apple's Safari: it shares the engine (layout, CSS, JavaScript,
+WebAssembly), not the iOS/macOS font stack, scrolling or touch gestures. Results: `docs/qa/r3-xbrowser.md`.

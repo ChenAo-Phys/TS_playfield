@@ -16,6 +16,7 @@
     "region": "{{card}}：选择一个区域",
     "influence_other": "放置影响力：剩余 {{count}} 行动点",
     "coup_other": "选择要发动政变的国家（{{count}} 行动点）",
+    "coupUpTo_other": "选择要发动政变的国家（最多 {{count}} 行动点）",
     "realign_other": "选择要调整的国家（剩余 {{count}} 次调整掷骰）",
     "opMode_other": "使用{{card}}的行动点数（{{count}} 行动点）"
   },
@@ -34,6 +35,7 @@
     "optional": "可选：可以跳过。",
     "eventCardDone": "选完后按“完成”。",
     "coup_other": "掷骰 + {{count}} 行动点须大于稳定度的 2 倍。在战场国发动政变会使 DEFCON 降低 1 级。",
+    "coupUpTo_other": "掷骰 + 行动点数须大于稳定度的 2 倍（最多 {{count}} 行动点：加成仅在其限定区域内有效）。在战场国发动政变会使 DEFCON 降低 1 级。",
     "playModeOwn_other": "事件、太空竞赛，或使用 {{count}} 行动点进行行动。",
     "playModeNeutral_other": "中立卡牌：事件为你发生，或使用其 {{count}} 行动点。"
   },

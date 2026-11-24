@@ -17,7 +17,7 @@ export { registerTrayBeats, TrayStore, NO_OVERRIDES, chosenHeadline, play, wait,
 export {
   fitHand, fanAngle, handMode, handCardState, handOffered, stampVerb, liftedOutCard, isHandPrompt, knownToAi, locationOf,
   headlineSlotOf, pileTop, chinaView, handCardWidth, chinaCardWidth, FAN_DEG, MIN_OVERLAP, MAX_OVERLAP, HAND_FIT_PAD, SPINE_FROM, spineOf,
-  DISCARD_PICK_CARDS, GIVE_PICK_CARD, chinaFocusReady, serveFocusRequest,
+  DISCARD_PICK_CARDS, GIVE_PICK_CARD, chinaFocusReady, handFocusReady, drawerFocusCard, serveFocusRequest,
   type HandMode, type HandCardState, type StampVerb, type TrayVariant, type HandFit, type ChinaView, type PilesView,
 } from "./trayModel";
 export { useWide } from "./useWide";

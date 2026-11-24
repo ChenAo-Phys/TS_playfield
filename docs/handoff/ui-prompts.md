@@ -197,7 +197,10 @@ Requests (this round):
 * **Clock**: the prompt store's new `aiSince` (its clock: `Timers.now`, default `performance.now()`) is set when a
   ViewModel says `aiThinking` and cleared when it stops — every AI decision alike, the padded forced answers included,
   so the count tells nothing the "thinking" state does not. It lives in the store (not the slip), so a remount (layout
-  change) keeps the count.
+  change) keeps the count. Not while `vm.load` is set (QA r3 L-2: a game started before the AI was ready): the clock
+  starts when the load is done, so the download never shows "Still thinking" nor spends the one-time hint; the slip's
+  "Getting the AI ready… N%" is `loadPercent(vm.load)` (`src/ui/common/loadBar.ts`, the boot line's bar over all
+  stages), which only rises.
 * **`aiWait.ts`**: `useAiWait()` → `{ since, seconds, still, hintDue }`, re-rendering on each whole second
   (`msToNextSecond`); `STILL_THINKING_S` 8, `SLOW_HINT_S` 20; the one-time hint: `slowHintAvailable(since)`,
   `claimSlowHint(since)`, `slowHintClaimedBy(since)` (module state + sessionStorage `ts-playfield.aiSlowHint`, so a
@@ -284,3 +287,89 @@ New deviations from the spec (add to the list above):
 * `useAiPlay` takes a roll's target through `rollCountry` (`../stage/model`, R-007): a space-race roll names no country.
 * The as-built notes for deviations 22–25 and the r2-hand-wait changes (AI wait, tap queue, spines) are in ui-spec §3.2,
   §3.3, §7.2, §8.1, §8.2, §8.6, §8.11, §8.12, §9.5. Tests: `tests/ui/prompts/r2-integrate.test.ts`.
+
+## QA round 3 (fix group F3, 2026-11-23)
+
+Items R3-03, R3-04 (prompt part) and R3-05 of the round-3 list (from `docs/qa/r2-REPORT.md` "Remaining issues" 5, 6
+and D-201). Tests: `tests/ui/prompts/round3-f3.test.ts`; shots (git-ignored) in `docs/qa/shots/r3-fix-F3/`.
+
+### R3-03 Tablet slip: touch areas inside the slip
+
+Reproduced at 1024 × 768 / 1100 × 700 touch (en, zh, en-XA, 17 demo scenes and a live game): the hit areas were cut
+by the slip's edge (`overflow: hidden`) wherever its content was taller than the 120–126 px slip, and at 1100 × 700
+the buttons themselves were cut 3–6 px: setup / bid (Undo play, List 30–36 px), every event prompt with a two-line
+title (UN Intervention, Che, Decolonization …: 33–39 px), the AI's "United States plays Middle East Scoring" (speed
+segment and Skip 33 px), a staged card with a warning (40 px), and the region grid's bottom row (37–38 px).
+Root causes and fixes:
+
+* **The big counter's empty row.** Without a crumb (setup, bid) the counter spanned the title row and an empty
+  second row, and the grid split its height over both: an 18 px blank under the title. On desktop / tablet slips the
+  counter now takes row 1 alone when no crumb line shows (`.top:not(:has(> .crumb:not([data-yield]))) > .bigCount`).
+  Desktop setup / bid slips gain that room (their hint shows a line more).
+* **The title block fits the slip** (`titleFit`, pure and exported; `useTitleFit` replaces `useTitleLines`). Steps
+  tried in order, the first that fits beside the rest of the column: prompts: two title lines + crumb → two lines,
+  the crumb yields → one line; the AI's play: two lines + crumb → one line + crumb (the crumb names card › mode →
+  target) → one line. Then the title takes more lines, up to its own (`scrollHeight`, unclamped in Chromium, WebKit and
+  Gecko) and the maximum, where there is room beside the note's reserved line; the note never decides the step, so
+  desktop slips keep their crumbs (checked 1280 × 720 … 1920 × 1080, en / zh / en-XA: no crumb yields). A yielded
+  crumb (`data-yield`) is visually hidden, still read out, and the title block becomes the R-012 toggle: a tap shows
+  the title whole and the crumb. The AI title carries `data-lines` on fixed slips (it had the bare 2-line clamp); the
+  "still thinking" note is marked `data-note`.
+* **A staged warning on tablet slips**: the panel takes 3 px padding and margin (one whole line at least, three at
+  most) and the actions 4 px top padding after it, so one title line + panel + actions fit 120 px.
+* **Region grid on tablet slips (coarse pointers)**: two 44 px rows need 88 px, all of the 120 px slip under its head.
+  The grid starts right under the one-line title (`.top[data-dense]`, a 20 px line in both languages, no margin); the
+  top row's areas cover the title's line and stop at the row, the bottom row's take the whole 4 px gap and run to the
+  slip's edge (rows 30–76 / 76–120 at 1100 × 700). A cut title (none in en / zh / en-XA) keeps its toggle: the top
+  row then stays off it. Desktop slips keep the R-010 rules.
+
+Measured after (dev, `elementFromPoint` scans, touch): every slip control 44 px or more at 1024 × 768 and 1100 × 700
+in en / zh / en-XA, in Chromium and WebKit: 17 scenes, staged coups / realignments / Che, a staged warned card, and
+live games to turn 3 (AI mode, frozen slips, Continue); only the Undo play under the play-mode stage and the DEFCON
+dossier is covered, on purpose. Autopilot to turn 3 at 1100 × 700 touch (en, seed 3) and 1024 × 768 touch (zh, US,
+seed 13), and at 390 × 844 touch (zh, US, seed 1, with undo): 0 fallbacks / mismatches / errors.
+
+### R3-04 (D-201) Compact: the play-mode sheet's close is Back to hand
+
+The compact play-mode sheet's `onClose` (the grab, the scrim, a swipe; Esc reaches the rows' own Esc binding, which
+already did this) now calls `backToHand` (undo + `PromptStore.focusCard`) instead of a bare undo, so every way out of
+the sheet asks the hand to focus the card. The shell opens the drawer for the request (F4, `dockForFocus`) and the
+drawer serves it (ui-tray.md). `FOCUS_TIMEOUT_MS` stays 3 s (the drawer slides in over 380 ms).
+
+### R3-05 Region names whole (en-XA "MIDDLE EAST" on desktop)
+
+`RegionChoice` (dense) measures each name after rendering (`useNameFit`; again when the language, the staged region,
+touch, the grid's width or the web fonts change) and tightens only a button whose name is cut, one step at a time
+(`nextNameFit`, pure): `data-fit="1"` drops the staged primary's ↵ key cap (its ink fill marks it), `data-fit="2"`
+also drops the caps tracking. en and zh unstaged buttons are untouched at every size (no `data-fit`). Found on the
+way: with a mouse, a **staged** "MIDDLE EAST", "C. AMERICA" or "S. AMERICA" in English was cut beside its ↵ (39 px
+for 47–55 px); those now drop the cap. Checked 1024 × 768 (mouse and touch), 1280 × 720, 1440 × 900, 1920 × 1080 in
+en / zh / en-XA, each region staged in turn: no cut name.
+
+New deviations from the spec (add to the list above):
+
+26. **Slip title block (§8.1 "Fit")**: on fixed slips where two title lines, the crumb and the rest don't fit (tablet
+    slips), the crumb yields its line (still read out; the title toggle shows it), then the title goes to one line;
+    the AI's title gives up its second line before the crumb.
+27. **Tablet region grid on touch (§8.11)**: no margin between the one-line title and the grid; the top row's touch
+    areas cover the title's line.
+28. **Region primary (§8.11)**: the ↵ key cap gives way where the name needs the room; a name still cut after that
+    loses its caps tracking.
+
+## QA round 3 integration (integrator, 2026-11-23)
+
+* **Crash fix (review findings V-1-1 / V-2-1, blocker):** `useTitleFit` measures the crumb's line as line height +
+  top margin, but the R3-03 yield rule set `margin: -1px`, so a yielded crumb measured 4 px less than a shown one.
+  Where the column was 1–4 px short of "two lines + crumb" (tablet slips 770–798 px tall: event-target, event-card,
+  defcon-level and op-mode prompts with a two-line title), each measurement reversed the last decision until React
+  threw "Maximum update depth exceeded" in `<PromptBody>` and the page went blank (no error boundary), mid-game and
+  again on resume. Fixes: the yield rule sets no margin (it is absolute and clipped, so nothing moves on screen) and
+  the two states measure the same; `settleFit` caps the changes per frame (past 4 before the next animation frame the
+  more compact arrangement wins), so any future measurement that depends on its own outcome settles instead of
+  unmounting the page. Tests in `tests/ui/prompts/round3-f3.test.ts` ("the title block settles"): the stylesheet's two
+  margins agree, a fixed point for every column 60–130 px in both start states (prompt and AI steps), the old -1 px
+  flip reproduced, and the hook's loop with that flip ending in under 8 renders. Checked: resize sweeps 700–860 px at
+  1100 wide, 35 prompt / AI scenes × en / zh (touch) plus the six affected scenes in en-XA, 900 and 1280 wide (into
+  desktop heights): 0 crashes, each affected scene yields once and comes back once over the sweep; with the old margin
+  injected the guard alone kept every page alive. Real app: `play.mjs` 1100 × 780 touch seed 3 USSR and 900 × 780 en
+  seed 1 USSR to turn 2: 0 fallbacks / mismatches / errors (both crashed before).

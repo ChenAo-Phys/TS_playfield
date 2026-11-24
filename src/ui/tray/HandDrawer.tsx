@@ -8,7 +8,7 @@
  * Because it opens by itself over the orders slip, its header also carries the hand prompt's question and
  * its done button (`HandPromptBar`, from the prompts layer: Blockade's "Discard nothing", QA Q-028).
  */
-import { useContext, useMemo, useRef, type KeyboardEvent, type MouseEvent, type ReactNode } from "react";
+import { useContext, useEffect, useMemo, useRef, useSyncExternalStore, type KeyboardEvent, type MouseEvent, type ReactNode } from "react";
 import { CHINA_CARD, cardInfo } from "../../data";
 import type { Side } from "../../game/contract";
 import { useI18n } from "../../i18n/react";
@@ -20,12 +20,13 @@ import { Sheet } from "../common/Sheet";
 import { Stamp } from "../common/Stamp";
 import { useTouchUi } from "../common/touch";
 import { HandPromptBar } from "../prompts/HandPromptBar";
+import { promptStore } from "../prompts/store";
 import { useShown } from "../runner/ShownContext";
 import { OverlayContext, useUiRoot } from "../state/context";
 import type { OptionPolicy } from "../ui-contract";
 import { moveCardFocus } from "./Hand";
 import { useHandView } from "./Tray";
-import { cardStateKey, handCardState, handCardWidth, knownToAi, type HandCardState, type StampVerb } from "./trayModel";
+import { cardStateKey, drawerFocusCard, handCardState, handCardWidth, knownToAi, serveFocusRequest, type HandCardState, type StampVerb } from "./trayModel";
 import { useTrayOverrides, useTrayStore, WithTrayBeats } from "./useTrayBeats";
 import s from "./HandDrawer.module.css";
 
@@ -41,6 +42,8 @@ export interface HandDrawerProps {
 /**
  * Keep it mounted (with `open` false when closed): it then also runs the tray beats (unless a
  * TrayBeatsProvider is above), so the China toast and the known-card overrides work in compact.
+ * It serves the prompt layer's focus request (`PromptStore.focusCard`: Esc, close or Back to hand on the play-mode
+ * sheet, D-201) while open: the card gets focus once it is back in the drawer (the shell opens the drawer for it).
  */
 export function HandDrawer(props: HandDrawerProps) {
   return <WithTrayBeats><DrawerBody {...props} /></WithTrayBeats>;
@@ -64,6 +67,8 @@ function DrawerBody({ open, onClose, offered, staged, onActivateCard, className 
     prevOrder.current = o;
     return o;
   }, [hand]);
+  const prompts = promptStore(root.controller);
+  const focusReq = useSyncExternalStore(prompts.subscribe, () => prompts.get().focusCard, NO_FOCUS);
   if (!state || !human) return null;
 
   const china = ov.china ?? state.china_card;
@@ -81,13 +86,18 @@ function DrawerBody({ open, onClose, offered, staged, onActivateCard, className 
   );
   const lifted = new Set(ov.gone);
   if (view.lifted !== null) lifted.add(view.lifted);
+  const states = order.map(c => handCardState(c, { mode: view.mode, offered: view.offered, staged: view.staged, lifted }));
+  const focusCard = drawerFocusCard(focusReq, {
+    open, cards: order, states, china: holdsChina ? (china.playable ? "faceUp" : "faceDown") : null,
+    chinaLifted: lifted.has(CHINA_CARD), interactive: view.interactive, mode: view.mode,
+  });
   return (
     <Sheet open={open} onClose={onClose} height="auto" label={t("ui_tray:drawer.label")} header={header} className={[s.drawer, className].filter(Boolean).join(" ")}>
       <DrawerStrip
         human={human}
         cards={order}
         china={holdsChina ? china : null}
-        states={order.map(c => handCardState(c, { mode: view.mode, offered: view.offered, staged: view.staged, lifted }))}
+        states={states}
         chinaState={holdsChina ? chinaState(china.playable, view.mode, view.offered.has(CHINA_CARD), view.staged === CHINA_CARD, lifted.has(CHINA_CARD)) : null}
         offered={view.offered}
         known={(c: number) => ov.known.has(c) || knownToAi(state, human, c)}
@@ -96,10 +106,14 @@ function DrawerBody({ open, onClose, offered, staged, onActivateCard, className 
         verb={view.verb}
         interactive={view.interactive}
         onActivate={onActivateCard}
+        focusCard={focusCard}
+        focusStore={prompts}
       />
     </Sheet>
   );
 }
+
+const NO_FOCUS = () => null;
 
 type ChinaState = HandCardState | "faceDown";
 function chinaState(playable: boolean, mode: ReturnType<typeof useHandView>["mode"], offered: boolean, staged: boolean, lifted: boolean): ChinaState {
@@ -127,6 +141,9 @@ function DrawerStrip(p: {
   verb: StampVerb;
   interactive: boolean;
   onActivate(card: number): void;
+  /** A card to focus now (`drawerFocusCard`), and the store whose request it serves. */
+  focusCard: number | null;
+  focusStore: { setFocusCard(card: number | null): void };
 }) {
   const { t, cardName } = useI18n();
   const root = useUiRoot();
@@ -156,18 +173,34 @@ function DrawerStrip(p: {
       if (moveCardFocus(strip.current, e.currentTarget, e.key === "ArrowLeft" ? -1 : 1)) e.preventDefault();
     }
   };
-  // Stable merged refs: the shared anchors (`card:<id>`, `china:<human>`, `hand:<human>`) and the tray's registry.
+  // Stable merged refs: the shared anchors (`card:<id>`, `china:<human>`, `hand:<human>`), the tray's registry and
+  // our own element map.
   const refs = useRef(new Map<number, (el: HTMLButtonElement | null) => void>());
+  const els = useRef(new Map<number, HTMLButtonElement>());
   const ref = (card: number) => {
     let r = refs.current.get(card);
     if (!r) {
       const a = root.anchors.ref(card === CHINA_CARD ? `china:${p.human}` : `card:${card}`);
       const b = store?.ref(card === CHINA_CARD ? "china" : `card:${card}`);
-      r = (el: HTMLButtonElement | null) => { a(el); b?.(el); };
+      r = (el: HTMLButtonElement | null) => {
+        a(el); b?.(el);
+        if (el) els.current.set(card, el);
+        else els.current.delete(card);
+      };
       refs.current.set(card, r);
     }
     return r;
   };
+  // D-201: focus the requested card once it is back here. A frame later: the sheet focuses its own panel as it
+  // opens, in an effect that runs after this one (a child's effects run first).
+  const { focusCard, focusStore } = p;
+  useEffect(() => {
+    if (focusCard === null) return;
+    const serve = () => { serveFocusRequest(focusStore, els.current.get(focusCard) ?? null); };
+    if (typeof requestAnimationFrame !== "function") { serve(); return; }
+    const id = requestAnimationFrame(serve);
+    return () => cancelAnimationFrame(id);
+  }, [focusCard, focusStore]);
   const handAnchor = root.anchors.ref(`hand:${p.human}`);
   const stripRef = useMemo(() => (el: HTMLDivElement | null) => { strip.current = el; handAnchor(el); }, [handAnchor]);
   const label = (card: number, state: ChinaState) => {

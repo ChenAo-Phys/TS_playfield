@@ -9,6 +9,7 @@
   "turn": {
     "aria": "第 {{turn}} 回合（共 10 回合），{{era}}",
     "readout": "{{turn}}/{{max}} 回合 · {{era}}",
+    "short": "{{turn}}/{{max}}",
     "compact": "第 {{turn}} 回合 · {{era}}",
     "eraShort": {
       "early": "早期",

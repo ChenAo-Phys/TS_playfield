@@ -9,6 +9,7 @@
   "turn": {
     "aria": "Turn {{turn}} of 10, {{era}}",
     "readout": "{{turn}}/{{max}} · {{era}}",
+    "short": "{{turn}}/{{max}}",
     "compact": "Turn {{turn}} · {{era}}",
     "eraShort": {
       "early": "Early",

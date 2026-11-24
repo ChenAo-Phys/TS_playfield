@@ -19,7 +19,7 @@ const tokens = new Set(
   [...(readFileSync(join(ROOT, "src/ui/theme/tokens.css"), "utf8") + readFileSync(join(ROOT, "src/ui/theme/fonts.css"), "utf8")).matchAll(/(--ts-[a-z0-9-]+)\s*:/g)].map(m => m[1]),
 );
 /** Custom properties the shell defines itself (layout overrides, per-element variables). */
-const LOCAL = new Set(["--i"]);
+const LOCAL = new Set(["--i", "--chip-pad"]); // --chip-pad: TheatreBar sets it on the bar (R3-09)
 
 describe("shell stylesheets", () => {
   it("exist", () => { expect(css.length).toBeGreaterThanOrEqual(5); });

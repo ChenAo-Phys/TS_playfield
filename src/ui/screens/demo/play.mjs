@@ -1,7 +1,8 @@
 #!/usr/bin/env node
-// Play-through driver (dev only; QA). Drives the real app in Chromium by clicking (or, with --touch, tapping) the
-// real UI: map boxes, hand cards, play-mode rows, dossier tiles, slip buttons (keyboard only where the UI offers it:
-// Enter to confirm a staged choice, D for done, Z for undo, Enter on a focused map box it cannot reach by pointer).
+// Play-through driver (dev only; QA). Drives the real app in Chromium (or Firefox / WebKit: --browser) by clicking
+// (or, with --touch, tapping) the real UI: map boxes, hand cards, play-mode rows, dossier tiles, slip buttons (keyboard
+// only where the UI offers it: Enter to confirm a staged choice, D for done, Z for undo, Enter on a focused map box it
+// cannot reach by pointer).
 // It reads the view model through the dev-only `window.__tsp` hook to decide what to click, never to answer.
 //
 // What to click: `--policy ai` (default) asks the dev-only autopilot (`window.__tspAuto`, src/dev/autopilot.ts) for
@@ -14,20 +15,23 @@
 //   source scripts/pw-env.sh
 //   node src/ui/screens/demo/play.mjs --side USSR --until end [--policy ai|random] [--auto policy|full] [--game-seed n]
 //        [--lang en] [--w 1440 --h 900] [--touch] [--undo] [--switch-lang] [--reload] [--resign] [--shots dir]
-//        [--speed fast] [--url …] [--seed n] [--max n] [--json file]
+//        [--speed fast] [--url …] [--seed n] [--max n] [--json file] [--browser chromium|firefox|webkit]
 //
 //   --until N|end   stop when turn N starts (default 3), or play until the game is over
 //   --game-seed n   dev ?seed=n: the controller's random source is seeded (game seed, the coin of --side random);
 //                   with ?ai=policy and --policy ai the whole game replays exactly
 //   --auto full     the autopilot runs the full leaderboard search instead of the network's argmax (slow)
 //   --touch         a touch device (hasTouch + isMobile): taps instead of clicks, no hover (default below 700 px)
+//   --browser b     chromium (default), firefox or webkit (Playwright's builds; on this machine see scripts/pw-env.sh).
+//                   All three take hasTouch + isMobile and touchscreen.tap; only Chromium has CDP, so elsewhere a touch
+//                   hold (1.6 s) is a synthetic touch PointerEvent pair (counted as "synthHold").
 //   --seed n        the driver's own random choices (--policy random; dialog picks)
 //   --json file     write the result summary as JSON
 //
 // Exit code 1 when the UI failed to answer a prompt (a fallback was needed), the UI answered with another option than
 // the one pressed for (a mismatch: the driver spies on `__tsp.choose`), the page logged errors, or it stalled.
 import { mkdirSync, writeFileSync } from "node:fs";
-import { chromium } from "playwright";
+import { chromium, firefox, webkit } from "playwright";
 
 const args = process.argv.slice(2);
 const opt = (k, d) => { const i = args.indexOf(`--${k}`); return i >= 0 && args[i + 1] && !args[i + 1].startsWith("--") ? args[i + 1] : d; };
@@ -46,6 +50,9 @@ const AUTO = opt("auto", "policy");
 const GAME_SEED = opt("game-seed", "");
 const TOUCH = flag("touch") || W < 700;
 const JSON_OUT = opt("json", "");
+const BROWSER = opt("browser", "chromium");
+const ENGINES = { chromium, firefox, webkit };
+if (!ENGINES[BROWSER]) throw new Error(`--browser chromium|firefox|webkit, not ${BROWSER}`);
 const MAX_STEPS = Number(opt("max", UNTIL === Infinity ? "6000" : "900"));
 if (!["ai", "random"].includes(POLICY)) throw new Error(`--policy ai|random, not ${POLICY}`);
 let rngState = Number(opt("seed", String(Date.now() % 100000)));
@@ -58,16 +65,31 @@ let reloading = false;
 const fallbacks = [];
 const done = new Set();
 /** How each answer went through the UI. */
-const via = { click: 0, tap: 0, key: 0, hold: 0, dialog: 0 };
+const via = { click: 0, tap: 0, key: 0, hold: 0, synthHold: 0, dialog: 0 };
 /** AI mode: answers whose option is not the autopilot's own pick (its pick was not an option; logged by it). */
 const autoFallbacks = [];
 
-const browser = await chromium.launch();
-const ctx = await browser.newContext({ viewport: { width: W, height: H }, hasTouch: TOUCH, isMobile: TOUCH, deviceScaleFactor: 1 });
+const browser = await ENGINES[BROWSER].launch();
+/** A context; `isMobile` is retried without where a Playwright build does not support it (Firefox before 1.5x). */
+async function newContext(o) {
+  try { return await browser.newContext(o); } catch (e) {
+    if (!o.isMobile || !/isMobile/.test(String(e))) throw e;
+    log(`${BROWSER}: no isMobile (${String(e).split("\n")[0].slice(0, 100)}); hasTouch only`);
+    return browser.newContext({ ...o, isMobile: false });
+  }
+}
+const ctx = await newContext({ viewport: { width: W, height: H }, hasTouch: TOUCH, isMobile: TOUCH, deviceScaleFactor: 1 });
 const page = await ctx.newPage();
-page.on("pageerror", e => errors.push(`pageerror: ${e}`));
+/** The wall-clock time of an error (matches the log's timestamps). */
+const at = () => `[${new Date().toISOString().slice(11, 19)}]`;
+page.on("pageerror", e => errors.push(`${at()} pageerror: ${e}`));
 page.on("console", m => {
-  if (m.type() === "error") errors.push(`console.error: ${m.text()}`);
+  if (m.type() === "error") {
+    // Firefox's text() of console.error(err) is only "Error": add the arguments' messages.
+    const i = errors.push(`${at()} console.error: ${m.text()}`) - 1;
+    Promise.all(m.args().map(a => a.evaluate(v => (v instanceof Error ? `${v.name}: ${v.message} @ ${(v.stack ?? "").split("\n").slice(0, 3).join(" | ")}` : typeof v === "object" ? "" : String(v))).catch(() => "")))
+      .then(xs => { const more = xs.filter(Boolean).join(" ").slice(0, 600); if (more && !errors[i].includes(more)) errors[i] += ` (${more})`; });
+  }
   if (m.type() === "warning" && m.text().startsWith("[autopilot]")) log(m.text());
 });
 if (flag("trace")) {
@@ -77,7 +99,9 @@ if (flag("trace")) {
   page.on("console", m => { if (m.type() === "warning" || m.type() === "warn") log("trace", ts(), "warn", m.text().slice(0, 300)); });
   page.on("requestfailed", r => log("trace", ts(), "FAILED", r.url().split("/").pop(), r.failure()?.errorText));
 }
-page.on("requestfailed", r => { if (!r.url().includes("favicon") && !(reloading && /ERR_ABORTED/.test(r.failure()?.errorText ?? ""))) errors.push(`requestfailed: ${r.url()} ${r.failure()?.errorText}`); });
+/** A request the page itself dropped by reloading (Chromium net::ERR_ABORTED, Firefox NS_BINDING_ABORTED, WebKit "cancelled"). */
+const ABORTED = /ERR_ABORTED|NS_BINDING_ABORTED|cancell?ed/i;
+page.on("requestfailed", r => { if (!r.url().includes("favicon") && !(reloading && ABORTED.test(r.failure()?.errorText ?? ""))) errors.push(`requestfailed: ${r.url()} ${r.failure()?.errorText}`); });
 
 const params = new URLSearchParams({ lang: LANG });
 if (AI) params.set("ai", AI);
@@ -85,6 +109,9 @@ if (AUTO !== "policy") params.set("auto", AUTO);
 if (GAME_SEED) params.set("seed", GAME_SEED);
 await page.goto(`${URL}?${params}`, { waitUntil: "load" });
 await page.waitForFunction(() => window.__tsp && window.__tsp.getSnapshot().status === "menu", null, { timeout: 30000 });
+// Let the first load finish booting (engine, AI worker) before the reload below: WebKit logs every module load it
+// cancels in a dying worker as a console error ("Cannot load … due to access control checks").
+await page.waitForFunction(() => document.querySelector("[role=progressbar]")?.getAttribute("aria-valuenow") === "100", null, { timeout: 30000 }).catch(() => {});
 await page.evaluate(([speed]) => {
   localStorage.removeItem("ts-playfield.game.v1");
   localStorage.setItem("ts-playfield.ui.v1", JSON.stringify({ speed }));
@@ -299,14 +326,29 @@ async function pressAt(x, y) {
   via.click++;
 }
 
-/** Press and hold (1.6 s) at a point: the mouse, or a touch through CDP on a touch device. */
+/**
+ * Press and hold (1.6 s) at a point: the mouse, or a touch through CDP on a touch device (Chromium). Firefox and WebKit
+ * have no CDP and Playwright's touchscreen only taps: there the hold is a synthetic touch PointerEvent pair on the
+ * element under the point (the HoldButton listens to pointer events; isTrusted is false, pointer capture fails quietly).
+ */
 let cdp = null;
 async function holdAt(x, y) {
-  if (TOUCH) {
+  if (TOUCH && BROWSER === "chromium") {
     cdp ??= await ctx.newCDPSession(page);
     await cdp.send("Input.dispatchTouchEvent", { type: "touchStart", touchPoints: [{ x, y }] });
     await page.waitForTimeout(1600);
     await cdp.send("Input.dispatchTouchEvent", { type: "touchEnd", touchPoints: [] });
+  } else if (TOUCH) {
+    const init = { bubbles: true, cancelable: true, composed: true, pointerId: 7, pointerType: "touch", isPrimary: true, clientX: x, clientY: y, button: 0, buttons: 1 };
+    await page.evaluate(([px, py, o]) => {
+      const el = document.elementFromPoint(px, py);
+      window.__tspHoldTarget = el;
+      el?.dispatchEvent(new PointerEvent("pointerdown", o));
+    }, [x, y, init]);
+    await page.waitForTimeout(1600);
+    await page.evaluate(o => { window.__tspHoldTarget?.dispatchEvent(new PointerEvent("pointerup", { ...o, buttons: 0 })); window.__tspHoldTarget = null; }, init);
+    via.synthHold++;
+    return;
   } else {
     await page.mouse.move(x, y);
     await page.mouse.down();
@@ -610,7 +652,7 @@ async function switchLang(name) {
 const sideName = { US: /United States|美国|⟦United States⟧/, USSR: /Soviet Union|苏联|⟦Soviet Union⟧/, random: /Toss a coin|掷硬币|⟦Toss a coin⟧/ }[SIDE];
 await press(page.getByRole("button", { name: sideName }).first());
 await page.waitForFunction(() => window.__tsp.getSnapshot().status === "playing", null, { timeout: 20000 });
-log(`game started ${SIDE} → human ${(await vm()).human}; policy ${POLICY}${POLICY === "ai" ? ` (${AUTO})` : ""}, ${W}×${H} ${LANG}${TOUCH ? " touch" : ""}${GAME_SEED ? `, game seed ${GAME_SEED}` : ""}`);
+log(`game started ${SIDE} → human ${(await vm()).human}; policy ${POLICY}${POLICY === "ai" ? ` (${AUTO})` : ""}, ${W}×${H} ${LANG}${TOUCH ? " touch" : ""}${GAME_SEED ? `, game seed ${GAME_SEED}` : ""}; ${BROWSER} ${browser.version()}`);
 
 let steps = 0, last = "", langSwitched = 0, reloaded = false, undone = false, lastTurnLogged = 0;
 const t0 = Date.now();
@@ -736,6 +778,7 @@ const end = await vm();
 const auto = POLICY === "ai" ? await page.evaluate(() => window.__tspAuto.stats()).catch(() => null) : null;
 const wall = Math.round((Date.now() - t0) / 1000);
 const result = {
+  browser: `${BROWSER} ${browser.version()}`,
   side: SIDE, human: end.human, policy: POLICY, auto: POLICY === "ai" ? AUTO : null, viewport: `${W}x${H}`, lang: LANG, touch: TOUCH,
   gameSeed: GAME_SEED || null, status: end.status, turn: end.turn, vp: end.vp, defcon: end.defcon, ending: end.ending,
   answers: steps, via, fallbacks: fallbacks.length, mismatches: mismatches.length, autopilotFallbacks: autoFallbacks.length,

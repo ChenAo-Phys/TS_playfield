@@ -155,10 +155,12 @@ export class PromptStore {
   observe(vm: ViewModel | null): void {
     const prompt = vm?.prompt ?? null;
     const state = vm?.frame?.state ?? null;
-    // The AI's decision clock: starts when it begins to think, for every decision alike.
+    // The AI's decision clock: starts when it begins to think, for every decision alike -- but not while the AI is
+    // still loading (`vm.load`, a game started before Ready): that wait is the download's, not a decision's (QA L-2).
     const thinking = !!vm?.aiThinking;
-    if (thinking && this.state.aiSince === null) this.set({ aiSince: this.now() });
-    else if (!thinking && this.state.aiSince !== null) this.set({ aiSince: null });
+    const deciding = thinking && !vm?.load;
+    if (deciding && this.state.aiSince === null) this.set({ aiSince: this.now() });
+    else if (!deciding && this.state.aiSince !== null) this.set({ aiSince: null });
     // A queued activation never survives the AI's turn or the end of the game.
     if (this.state.queued && (thinking || (vm && vm.status !== "playing"))) this.dropQueued();
     if (!prompt) {

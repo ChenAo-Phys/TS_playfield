@@ -58,6 +58,11 @@
 .about a:hover, .links a:hover { color: var(--ts-ink-900); }
 .links { display: flex; flex-wrap: wrap; gap: 6px 16px; margin: 0; padding: 0; list-style: none; font: 600 var(--ts-fs-m) / 1.4 var(--ts-font-body); }
 .links a { display: inline-flex; align-items: center; gap: 4px; }
+/* Touch screens: each link a 44 px tall target on a line of its own (ui-spec §3.3, Q-048; QA L-7: 18 px, two a line). */
+@media (pointer: coarse) {
+  .links { flex-direction: column; align-items: flex-start; gap: 0; }
+  .links a { min-height: 44px; }
+}
 .small { font-size: var(--ts-fs-s); color: var(--ts-ink-700); }
 
 /* ── Shortcuts ── */

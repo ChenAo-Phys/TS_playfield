@@ -27,7 +27,8 @@ and change the port). `$SP/r2-visual/qa.mjs` takes `--url`. Every Playwright run
   `Hand.tsx` (`focusCard` is served only from the hand's own order); `zh-CN/ui_shell.json` `dock.log` "记录". I also looked at
   two screenshots (the 1920 sheet under the dock, the zh tablet spines). **None is rejected.** Two parts of findings are not
   routed: the crumb's card-name ellipsis in R-012 is the recorded §8.1 "Fit" design, and the coup prompt strings in R-015 are
-  printed by no surface (D-202).
+  printed by no surface (D-202). *Corrected in QA round 3:* the target-list dossier (`OrdersSlip`'s Dossier for map prompts)
+  is titled with `Prompt.title`, so the coup title was printed; reworded in R3-02.
 * Routed: **F1 5**, **F2 3**, **F3 8**, **F4 3**. **No blockers.** Severities are as filed: 5 major, 11 minor, 3 polish.
   **Owner decisions: none.** No finding needs a product choice, and the contract changes are additive requests for the
   coordinator. **Deferred: 3.** None of them is filed above polish; D-202 and D-203 are side parts of R-015 and R-003.
@@ -399,7 +400,7 @@ and change the port). `$SP/r2-visual/qa.mjs` takes `--url`. Every Playwright run
     already shows the right Ops from `CoupOdds`.
   * Glossary: 中国牌, 行动点.
 * Not routed: the `prompt:title.coup` / `prompt:detail.coup` strings built from `pending_ops_value`. No surface prints them
-  (D-202).
+  (D-202). *Corrected in QA round 3:* the target-list dossier prints `title` (fixed in R3-02).
 
 ### R-016 (polish) Esc / Back to hand after playing the China Card puts focus on the orders slip, not on the China Card
 * Sources: r2-review R2R-2. Files: `src/ui/tray/ChinaSlot.tsx` (no `focusCard` effect), `src/ui/tray/Hand.tsx` (serves only its
@@ -484,13 +485,13 @@ additive requests for the coordinator.
 
 | Id | Item | Reason |
 |---|---|---|
-| D-201 | Compact: Esc / close on the play-mode sheet returns focus to the sheet's opener, not to the card in the hand drawer (leftover L-4, "shell (optional)") | Deferred, polish. Its author marked it optional. Focus lands on a sensible element (not `<body>`). A fix needs both the shell, which reopens the drawer when `focusCard` is pending (F4), and `HandDrawer`, which serves the request (F3, as R-016 does for the China slot). Revisit with a keyboard pass at 200 % zoom (compact landscape). |
-| D-202 | `prompt:title.coup` / `prompt:detail.coup` state `pending_ops_value` ("(5 Ops)", "Roll + 5 Ops must beat …") for the China Card / Vietnam Revolts, while a coup outside Asia / SE Asia gets 1 less (r2-review R2R-3, "Related, coups") | Deferred, latent. No surface prints these strings: the slip uses `ui:slip.verb.coup` / `ui:slip.hint.coup-target`, and the staged crumb uses `CoupOdds.ops`. R-015 fixes the visible part, the unstaged crumb. If a surface ever prints `title` / `detail`, F1 rewords them as "up to N Ops" (`src/game/prompt.ts`, `prompt.json`). |
-| D-203 | When storage refuses writes (blocked, or a full `chenao-phys.github.io` origin shared with other Pages projects, D-001), `browserStorage()`'s probe write fails at load and the page plays with no autosave and no notice (r2-review R2R-4, "Likelihood") | Deferred, not a regression. Round 1 (qa-prod-perf) judged blocked storage handled: the game plays and nothing breaks. A one-time "this game can't be saved in this browser" toast is a small F1 + F4 addition worth doing with the deploy pass; R-003 fixes the actual two-tab defect. |
+| D-201 | Compact: Esc / close on the play-mode sheet returns focus to the sheet's opener, not to the card in the hand drawer (leftover L-4, "shell (optional)") | Deferred, polish. Its author marked it optional. Focus lands on a sensible element (not `<body>`). A fix needs both the shell, which reopens the drawer when `focusCard` is pending (F4), and `HandDrawer`, which serves the request (F3, as R-016 does for the China slot). Revisit with a keyboard pass at 200 % zoom (compact landscape). **Resolved in QA round 3** (R3-04 `HandDrawer` serves `focusCard`, R3-10 the shell's `dockForFocus` opens the drawer; checked with the keyboard at 390×844, 844×390 and 640×360 at 200 %). |
+| D-202 | `prompt:title.coup` / `prompt:detail.coup` state `pending_ops_value` ("(5 Ops)", "Roll + 5 Ops must beat …") for the China Card / Vietnam Revolts, while a coup outside Asia / SE Asia gets 1 less (r2-review R2R-3, "Related, coups") | Deferred, latent. No surface prints these strings: the slip uses `ui:slip.verb.coup` / `ui:slip.hint.coup-target`, and the staged crumb uses `CoupOdds.ops`. R-015 fixes the visible part, the unstaged crumb. If a surface ever prints `title` / `detail`, F1 rewords them as "up to N Ops" (`src/game/prompt.ts`, `prompt.json`). **Corrected and resolved in QA round 3** (R3-02): the target-list dossier is titled with `title`, so it printed "(5 Ops)" at a China Card coup; it now says "up to N Ops" where a regional bonus applies. |
+| D-203 | When storage refuses writes (blocked, or a full `chenao-phys.github.io` origin shared with other Pages projects, D-001), `browserStorage()`'s probe write fails at load and the page plays with no autosave and no notice (r2-review R2R-4, "Likelihood") | Deferred, not a regression. Round 1 (qa-prod-perf) judged blocked storage handled: the game plays and nothing breaks. A one-time "this game can't be saved in this browser" toast is a small F1 + F4 addition worth doing with the deploy pass; R-003 fixes the actual two-tab defect. **Resolved in QA round 3** (R3-01 `vm.saveUnavailable`, R3-11 the toast). |
 
 **Rejected:** none. Every finding matched the code it names, and I looked at two of the screenshots (the dock over the 1920 Africa
 sheet; the zh tablet spines). Two parts were set aside, not rejected: the crumb's card-name ellipsis (R-012, recorded §8.1 design)
-and the unprinted coup strings (D-202).
+and the unprinted coup strings (D-202; round 3 found the target-list dossier prints them, R3-02).
 
 ---
 

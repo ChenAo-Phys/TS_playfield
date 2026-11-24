@@ -23,6 +23,8 @@ export interface ArTrackProps {
   ar?: { ar: number; side: Side } | null;
   /** Readout only (compact console). */
   readoutOnly?: boolean;
+  /** The readout's side as its word and its glyph (the tablet console's squeeze step 5 shows the glyph; R3-06). */
+  glyph?: boolean;
   /** The game's ending once over: the readout shows the end of its turn, never the engine's counters past it (Q-031). */
   ending?: Pick<Ending, "turn"> | null;
   className?: string;
@@ -45,8 +47,9 @@ export function arReadoutText(t: ReturnType<typeof useI18n>["t"], model: ArModel
 /**
  * "AR 3 · USSR (you)" / "Headline" / "Setup" with the side word and "(you)" as styled nodes. `fit`
  * (compact console): a measured line (`data-fit`, see ./squeeze) whose text the instrument's name repeats.
+ * `glyph` (default `fit`): the side as both its word and its glyph, for a console squeeze step that shows the glyph.
  */
-export function ArReadout({ model, humanSide, className, fit = false }: { model: ArModel; humanSide: Side; className?: string; fit?: boolean }) {
+export function ArReadout({ model, humanSide, className, fit = false, glyph = fit }: { model: ArModel; humanSide: Side; className?: string; fit?: boolean; glyph?: boolean }) {
   const { t } = useI18n();
   let body;
   if (model.phase === "headline") body = t("ui:track.headline");
@@ -59,9 +62,9 @@ export function ArReadout({ model, humanSide, className, fit = false }: { model:
       : t("ui_console:ar.readout", { ar: model.ar, side: slot("side") });
     const word = t(`ui:side.${model.side}`);
     body = fillSlots(text, {
-      // The compact console's squeeze step 3 shows the glyph instead of the word (./squeeze).
+      // The compact console's squeeze step 3 (the tablet's step 5) shows the glyph instead of the word (./squeeze).
       side: <span className={model.side === "US" ? s.sideUs : s.sideUssr}>
-        {fit ? <><span className={s.arWord}>{word}</span><SideGlyph side={model.side} className={s.arGlyph} /></> : word}
+        {glyph ? <><span className={s.arWord}>{word}</span><SideGlyph side={model.side} className={s.arGlyph} /></> : word}
       </span>,
       you: <span className={s.you}>{t("ui:tip.you")}</span>,
     });
@@ -87,7 +90,7 @@ function ArTip({ state, model }: { state: PublicState; model: ArModel }) {
   );
 }
 
-export function ArTrack({ state, humanSide, ar, readoutOnly = false, ending, className }: ArTrackProps) {
+export function ArTrack({ state, humanSide, ar, readoutOnly = false, glyph = false, ending, className }: ArTrackProps) {
   const { t } = useI18n();
   const view = useTrackView();
   const model = arModel(state, ar ?? null, ending);
@@ -96,7 +99,7 @@ export function ArTrack({ state, humanSide, ar, readoutOnly = false, ending, cla
     ? t("ui_console:ar.aria", { ar: model.ar, side: t(`ui:side.long.${model.side}`) })
     : model.phase === "headline" ? t("ui:track.headline") : model.phase === "setup" ? t("ui:track.setup")
     : model.phase === "end" ? t("log:session.endOfTurn", { turn: model.turn }) : t("ui:track.actionRound");
-  if (readoutOnly) return <ArReadout model={model} humanSide={humanSide} className={className} />;
+  if (readoutOnly) return <ArReadout model={model} humanSide={humanSide} glyph={glyph} className={className} />;
   return (
     <Instrument label={label} anchor="ar" tip={<ArTip state={state} model={model} />} className={[s.ar, className].filter(Boolean).join(" ")} data={{ ar: model.ar, phase: model.phase }}>
       <div className={s.instLabel} aria-hidden="true">{t("ui:track.actionRound")}</div>
@@ -117,7 +120,7 @@ export function ArTrack({ state, humanSide, ar, readoutOnly = false, ending, cla
           </span>
         ))}
       </div>
-      <ArReadout model={model} humanSide={humanSide} />
+      <ArReadout model={model} humanSide={humanSide} glyph={glyph} />
     </Instrument>
   );
 }

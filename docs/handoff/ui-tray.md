@@ -234,3 +234,23 @@ Discard reaches up over the deck row (not a control), Removed down into the pile
 
 Tests: `tests/ui/tray/round2.test.ts`.
 
+
+## QA round 3 (fix group F3, 2026-11-23)
+
+### R3-04 (D-201) The compact hand drawer serves the focus request
+
+On compact layouts (no tray, so neither `Hand` nor `ChinaSlot` is mounted) Esc, close or Back to hand on the play-mode
+sheet left focus on the sheet's opener or the drawer's panel. `HandDrawer` now serves `PromptStore.focusCard` as `Hand`
+and `ChinaSlot` do: `DrawerBody` subscribes to the request and `drawerFocusCard(request, { open, cards, states, china,
+chinaLifted, interactive, mode })` (pure, `trayModel.ts`) names the card once it is back in the open drawer and the
+hand chooses again (`handFocusReady`, now shared with `Hand`; the China Card through `chinaFocusReady`). `DrawerStrip`
+keeps its own element map and focuses that card with `serveFocusRequest` one animation frame later: the sheet focuses
+its own panel in a mount effect that runs after the strip's (a child's effects run first). The shell opens the drawer
+for the request (F4, `GameScreen` `dockForFocus`); the play-mode sheet's every close is `backToHand` (ui-prompts.md).
+`FOCUS_TIMEOUT_MS` (3 s) is far longer than the drawer's 380 ms slide: unchanged.
+
+Checked with the keyboard (dev, `$SP/r3-fix-F3/d201.mjs`: focus a playable card in the drawer, Enter, then Esc / Tab to
+Back to hand + Enter / Enter on the sheet's grab) at 390 × 844 (compact), 844 × 390 and 640 × 360 at DSF 2 (1280 × 720
+at 200 %, compact landscape): `document.activeElement` is the card's button in "Your hand" at 0.15 / 0.4 / 0.9 / 2 /
+3.5 s in all nine runs, never `<body>`; the China Card too (Esc and grab). Desktop 1280 × 720 unchanged (hand card and
+China slot). Tests: `tests/ui/tray/round3.test.ts`.

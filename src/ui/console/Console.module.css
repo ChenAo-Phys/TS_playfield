@@ -419,7 +419,9 @@
 @media (pointer: coarse) {
   .actions { gap: 12px; }
   .iconBtn::after { content: ""; position: absolute; inset: -6px; }
-  .iconBtnTouch::after { inset: -2px; }
+  /* 44 × 44, never above the screen's top edge: in the 44 px compact-landscape bar the 40 px ☰ sits 1.5 px below
+     the top (R3-09: it measured 44 × 43.5 with an even inset). */
+  .iconBtnTouch::after { inset: -1.5px -2px -2.5px; }
   .langToggle { overflow: visible; }
   .langToggle button { position: relative; min-width: 44px; }
   .langToggle button:first-child { border-radius: 4px 0 0 4px; }
@@ -512,10 +514,32 @@
    "DEFCON" caption; 3 the AR readout's side word → its glyph; 4 no "VP" label. Then the turn readout
    ellipsizes. */
 .arGlyph { display: none; width: .95em; height: .95em; vertical-align: -.1em; }
-.sq1 .vpMini .vpWord { display: none; }
-.sq1 .vpMini .vpGlyph { display: inline-block; }
-.sq2 .defconCompact .defconSub { display: none; }
-.sq3 .arWord { display: none; }
-.sq3 .arGlyph { display: inline-block; }
-.sq4 .vpMini .vpHead .instLabel { display: none; }
-.sq4 .vpMini .vpHead { justify-content: center; }
+.v_compact.sq1 .vpMini .vpWord { display: none; }
+.v_compact.sq1 .vpMini .vpGlyph { display: inline-block; }
+.v_compact.sq2 .defconCompact .defconSub { display: none; }
+.v_compact.sq3 .arWord { display: none; }
+.v_compact.sq3 .arGlyph { display: inline-block; }
+.v_compact.sq4 .vpMini .vpHead .instLabel { display: none; }
+.v_compact.sq4 .vpMini .vpHead { justify-content: center; }
+
+/* Squeeze steps of the tablet, condensed and desktop bars (./squeeze.ts, cumulative; R3-06), so the language switch,
+   ⚙ and ☰ stay on screen: 1 the DEFCON word for the lamps (and no caption); 2 the wordmark on two lines (no
+   subtitle); 3 no AR pips (the readout stays); 4 VP: the label "VP", no ends, as wide as its readout; 5 the side
+   words → glyphs; 6 the turn readout without the era (desktop: the turn track stays); 7 no wordmark (the ☰ opens the
+   same menu). The short forms are rendered hidden until their step. */
+.defconWord, .turnShort, .vpShort { display: none; }
+.console:not(.v_compact).sq1 .lamps, .console:not(.v_compact).sq1 .defconCaption { display: none; }
+.console:not(.v_compact).sq1 .defconWord { display: block; }
+.console:not(.v_compact).sq2 .wordmark b { width: min-content; white-space: normal; }
+.console:not(.v_compact).sq2 .wordmark span { display: none; }
+.console:not(.v_compact).sq3 .arTrack { display: none; }
+.console:not(.v_compact).sq3 .arRead { margin-top: 0; }
+.console:not(.v_compact).sq4 { --vp-w: auto; }
+.console:not(.v_compact).sq4 .vpTitle, .console:not(.v_compact).sq4 .vpEnds { display: none; }
+.console:not(.v_compact).sq4 .vpShort { display: inline; }
+.console:not(.v_compact).sq4 .vpScale { min-width: 96px; }
+.console:not(.v_compact).sq5 .arWord, .console:not(.v_compact).sq5 .vpWord { display: none; }
+.console:not(.v_compact).sq5 .arGlyph, .console:not(.v_compact).sq5 .vpGlyph { display: inline-block; }
+.console:not(.v_compact).sq6 .turnFull { display: none; }
+.console:not(.v_compact).sq6 .turnShort { display: block; }
+.console:not(.v_compact).sq7 .wordmark { display: none; }

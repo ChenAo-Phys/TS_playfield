@@ -20,6 +20,7 @@ import { CardFace } from "../cards/CardFace";
 import { Button } from "../common/Button";
 import { HoldButton } from "../common/HoldButton";
 import { Icon } from "../common/Icon";
+import { loadPercent } from "../common/loadBar";
 import { MessageText } from "../common/MessageText";
 import { Stamp } from "../common/Stamp";
 import { useTouchUi } from "../common/touch";
@@ -110,7 +111,13 @@ function Coins({ total, spent, pulse }: { total: number; spent: number; pulse: n
   );
 }
 
-function CrumbLine({ crumb }: { crumb: Crumb }) {
+/** Does the crumb say anything (else `CrumbLine` renders nothing)? */
+function hasCrumb(crumb: Crumb): boolean {
+  return !!(crumb.card || crumb.mode || crumb.target || crumb.ops);
+}
+
+/** The crumb line; `yieldLine`: hidden where a short fixed slip has no line for it (`titleFit`), still read out. */
+function CrumbLine({ crumb, yieldLine = false }: { crumb: Crumb; yieldLine?: boolean }) {
   const { t, cardName } = useI18n();
   const parts: ReactNode[] = [];
   if (crumb.card) parts.push(<span key="c" className={s.crumbCard}>{cardName(crumb.card)}</span>);
@@ -121,7 +128,7 @@ function CrumbLine({ crumb }: { crumb: Crumb }) {
       {crumb.ops ? <span className={s.crumbOps}><i aria-hidden="true">·</i>{crumb.ops}</span> : null}
     </>
   );
-  if (!parts.length && !crumb.target && !crumb.ops) return null;
+  if (!hasCrumb(crumb)) return null;
   // The line ellipsizes when the slip is narrow: the whole crumb is its tooltip.
   const full = [
     [crumb.card ? cardName(crumb.card) : "", crumb.mode ?? ""].filter(Boolean).join(" › "),
@@ -129,7 +136,7 @@ function CrumbLine({ crumb }: { crumb: Crumb }) {
     crumb.ops ? `· ${crumb.ops}` : "",
   ].filter(Boolean).join(" ");
   return (
-    <div className={s.crumb} aria-label={t("ui_prompts:crumb.label")} title={full} data-crumb="">
+    <div className={s.crumb} aria-label={t("ui_prompts:crumb.label")} title={full} data-crumb="" data-yield={yieldLine || undefined}>
       {parts.map((p, i) => (
         <span key={i} className={s.crumbPart}>{i > 0 ? <i aria-hidden="true">›</i> : null}{p}</span>
       ))}
@@ -293,35 +300,118 @@ function useFitLines(box: RefObject<HTMLElement | null>, line: RefObject<HTMLEle
   return enabled ? lines : max;
 }
 
+/** One arrangement of a fixed slip's title block: the title's lines and whether the crumb keeps its line. */
+export interface TitleFit {
+  lines: number;
+  crumb: boolean;
+}
+
+/** The heights `titleFit` weighs, in px (from the slip's DOM, `useTitleFit`). */
+export interface TitleFitMeasure {
+  /** The title's own lines (unclamped: its `scrollHeight`) and its line height. */
+  natural: number;
+  lineHeight: number;
+  /** The crumb's line with its top margin (0: no crumb). */
+  crumb: number;
+  /** The big counter beside the title (0: none): it spans the title and crumb rows. */
+  counter: number;
+  /** Everything else in the slip's column: the ops row, region grid, warning, actions. */
+  rest: number;
+  /** The note's reserved line (the hint / consequence under the title, 0: none): more title lines leave it room. */
+  note: number;
+  /** The column's height. */
+  room: number;
+}
+
 /**
- * How many lines the slip's title may take (QA R-012): at least `min` (the 2-line clamp; 1 on the dense region
- * prompt), up to `max` (4) while the slip has room beside everything but its note (the hint / consequence under
- * the title, `data-note`), which keeps the whole lines left after the title (`useFitLines`) and is reserved one
- * line here where it shows (`noteShown`). The title never depends on the note's own fit, so the two settle in
- * one pass. Re-measured on every render and when the slip resizes.
+ * The title block of a fixed (desktop / tablet) slip: the first of `steps` that fits the column (the note, which
+ * keeps only the lines left over, never decides it), its title then taking more lines, up to `max`, while there is
+ * room beside the note's line; the last step when none fits. A step that drops the crumb frees its line (QA R3-03:
+ * on the 120–126 px tablet slips two title lines + crumb + actions overflowed, pushing the actions' 44 px touch
+ * areas, and at 120 px the buttons themselves, past the slip's edge).
  */
-function useTitleLines(title: RefObject<HTMLElement | null>, min: number, max: number, noteShown: boolean, enabled: boolean): number {
-  const [lines, setLines] = useState(min);
-  const fit = () => {
+export function titleFit(m: TitleFitMeasure, steps: readonly TitleFit[], max: number): TitleFit {
+  const height = (n: number, crumb: boolean) => Math.max(Math.min(m.natural, n) * m.lineHeight + (crumb ? m.crumb : 0), m.counter) + m.rest;
+  const fits = (n: number, crumb: boolean, note: number) => height(n, crumb) + note <= m.room + 1;
+  const step = steps.find(st => fits(st.lines, st.crumb, 0)) ?? steps[steps.length - 1];
+  let lines = step.lines;
+  // More lines only where the title has them (its unclamped height: `scrollHeight` in Chromium, WebKit and Gecko).
+  while (lines < Math.min(max, m.natural) && fits(lines + 1, step.crumb, m.note)) lines++;
+  return { lines, crumb: step.crumb };
+}
+
+/** More changes than this before a frame is painted: the measurement is reversing itself (`settleFit`). */
+const FIT_FLIPS = 4;
+/** An arrangement's height rank: a crumb line outweighs any number of title lines. */
+const fitRank = (f: TitleFit) => (f.crumb ? 100 : 0) + f.lines;
+
+/**
+ * The arrangement to commit after `changes` changes of the title block within one frame: `next`, until a measurement
+ * keeps reversing itself (a measured height that depends on the arrangement it decides: QA round 3 V-1-1 / V-2-1,
+ * where a yielded crumb measured 4 px less than a shown one); then the more compact of the two, so the slip settles
+ * instead of React giving up ("Maximum update depth exceeded") and unmounting the page. A legitimate pass takes one
+ * or two changes.
+ */
+export function settleFit(prev: TitleFit, next: TitleFit, changes: number): TitleFit {
+  if (changes <= FIT_FLIPS) return next;
+  return fitRank(next) <= fitRank(prev) ? next : prev;
+}
+
+/** A prompt's title block: two lines and the crumb; then the crumb yields (a tap on the title shows it); then one line. */
+const PROMPT_FIT: readonly TitleFit[] = [{ lines: 2, crumb: true }, { lines: 2, crumb: false }, { lines: 1, crumb: false }];
+/** The dense region prompt: one line beside nothing (no crumb). */
+const DENSE_FIT: readonly TitleFit[] = [{ lines: 1, crumb: false }];
+/** The AI's play: its title ("United States plays …") gives up its second line before the crumb (card › mode → target). */
+const AI_FIT: readonly TitleFit[] = [{ lines: 2, crumb: true }, { lines: 1, crumb: true }, { lines: 1, crumb: false }];
+
+/**
+ * How many lines the slip's title may take and whether the crumb keeps its line (QA R-012, R3-03): the first of
+ * `steps` that fits beside everything but the note (the hint / consequence under the title, `data-note`), which keeps
+ * the whole lines left after the title (`useFitLines`) and is reserved one line here where it shows (`noteShown`),
+ * then up to `max` lines where there is room (`titleFit`). The title never depends on the note's own fit, so the two
+ * settle in one pass. Re-measured on every render and when the slip resizes.
+ */
+function useTitleFit(title: RefObject<HTMLElement | null>, steps: readonly TitleFit[], max: number, noteShown: boolean, enabled: boolean): TitleFit {
+  const [fit, setFit] = useState<TitleFit>(steps[0]);
+  // Changes within the current frame (`settleFit`), cleared on the next one.
+  const flips = useRef(0);
+  const measure = () => {
     const tl = title.current, top = tl?.parentElement, b = top?.parentElement;
     if (!enabled || !tl || !top || !b || typeof getComputedStyle !== "function") return;
-    const lh = parseFloat(getComputedStyle(tl).lineHeight) || 20;
-    let used = top.offsetHeight - tl.offsetHeight;
+    const px = (v: string, d = 0) => parseFloat(v) || d;
+    const lineHeight = px(getComputedStyle(tl).lineHeight, 20);
+    const crumbEl = top.querySelector<HTMLElement>(":scope > [data-crumb]");
+    // A yielded crumb is visually hidden (1 px), but its line height and margin are still computed, and the same as
+    // when it shows (the yield rule sets no margin: OrdersSlip.module.css, QA round 3 V-1-1).
+    const crumbCs = crumbEl ? getComputedStyle(crumbEl) : null;
+    const crumb = crumbCs ? px(crumbCs.lineHeight, 16) + px(crumbCs.marginTop) : 0;
+    const counterEl = Array.from(top.children).find(c => c !== tl && c !== crumbEl) as HTMLElement | undefined;
+    const counter = counterEl ? counterEl.offsetHeight + px(getComputedStyle(counterEl).marginTop) : 0;
+    let rest = 0, note = 0;
     for (const c of Array.from(b.children) as HTMLElement[]) {
       if (c === top) continue;
       const cs = getComputedStyle(c);
       if (c.dataset.note !== undefined) {
-        if (noteShown) used += (parseFloat(cs.lineHeight) || 17) + (parseFloat(cs.marginTop) || 0);
+        if (noteShown) note += px(cs.lineHeight, 17) + px(cs.marginTop);
         continue;
       }
-      used += c.offsetHeight + (c.dataset.dock !== undefined ? 0 : (parseFloat(cs.marginTop) || 0));
+      // The actions row's auto top margin only takes what is left over: count its height alone.
+      rest += c.offsetHeight + (c.dataset.dock !== undefined ? 0 : px(cs.marginTop));
     }
-    const n = Math.max(min, Math.min(max, Math.floor((b.clientHeight - used + 1) / lh)));
-    setLines(prev => (prev === n ? prev : n));
+    const natural = Math.max(1, Math.round(tl.scrollHeight / lineHeight));
+    const next = titleFit({ natural, lineHeight, crumb, counter, rest, note, room: b.clientHeight }, steps, max);
+    if (next.lines === fit.lines && next.crumb === fit.crumb) return;
+    if (++flips.current === 1) {
+      const clear = () => { flips.current = 0; };
+      if (typeof requestAnimationFrame === "function") requestAnimationFrame(clear);
+      else setTimeout(clear, 16);
+    }
+    const settled = settleFit(fit, next, flips.current);
+    if (settled !== fit) setFit(settled);
   };
-  useIsoLayoutEffect(fit);
-  const latest = useRef(fit);
-  latest.current = fit;
+  useIsoLayoutEffect(measure);
+  const latest = useRef(measure);
+  latest.current = measure;
   useIsoLayoutEffect(() => {
     const b = title.current?.parentElement?.parentElement;
     if (!enabled || !b || typeof ResizeObserver === "undefined") return;
@@ -329,7 +419,7 @@ function useTitleLines(title: RefObject<HTMLElement | null>, min: number, max: n
     ro.observe(b);
     return () => ro.disconnect();
   }, [enabled]);
-  return enabled ? lines : min;
+  return enabled ? fit : steps[0];
 }
 
 /**
@@ -548,15 +638,20 @@ function PromptBody({ p, frozen, variant, expanded, actions }: { p: Prompt; froz
 
   // The title (R-012): up to 4 lines where the slip has room (2 at least; 1 beside the dense region grid), and a
   // tap on a cut title or crumb shows the whole question in place (`aria-expanded`), until tapped again or the
-  // prompt changes.
+  // prompt changes. Where two lines and the crumb don't fit (tablet slips, R3-03) the crumb yields its line first.
   const titleEl = useRef<HTMLDivElement | null>(null);
   const [openId, setOpenId] = useState<number | null>(null);
   const open = openId === p.promptId;
   const fixedSlip = variant !== "compact";
   const noteShown = regionDense ? !!regionText : showConsequence || (!!hint && variant !== "tablet");
-  const titleLines = useTitleLines(titleEl, regionDense ? 1 : 2, regionDense ? 1 : 4, noteShown, fixedSlip && !open);
+  const fit = useTitleFit(titleEl, regionDense ? DENSE_FIT : PROMPT_FIT, regionDense ? 1 : 4, noteShown, fixedSlip && !open);
+  const titleLines = fit.lines;
+  // Desktop / tablet slips are short: a warning panel takes the crumb's line (the clip and the primary name the play).
+  const crumbLine = !regionDense && !(warnings.length > 0 && variant !== "compact") && hasCrumb(crumb);
+  // A crumb that yielded its line (short tablet slips, R3-03) is part of what the title block's tap shows.
+  const crumbYields = crumbLine && fixedSlip && !open && !fit.crumb;
   const cut = useTitleCut(titleEl, open);
-  const toggle = cut || open;
+  const toggle = cut || open || crumbYields;
   const flip = () => setOpenId(open ? null : p.promptId);
 
   return (
@@ -567,6 +662,7 @@ function PromptBody({ p, frozen, variant, expanded, actions }: { p: Prompt; froz
         aria-atomic="true"
         data-open={open || undefined}
         data-toggle={toggle || undefined}
+        data-dense={regionDense || undefined}
         onClick={toggle ? flip : undefined}
       >
         <div
@@ -588,8 +684,7 @@ function PromptBody({ p, frozen, variant, expanded, actions }: { p: Prompt; froz
         >
           {title}
         </div>
-        {/* Desktop / tablet slips are short: a warning panel takes the crumb's line (the clip and the primary name the play). */}
-        {regionDense || (warnings.length > 0 && variant !== "compact") ? null : <CrumbLine crumb={crumb} />}
+        {crumbLine ? <CrumbLine crumb={crumb} yieldLine={crumbYields} /> : null}
         {counter ? (
           <div className={s.bigCount}>
             <b className="ts-num">{p.remaining}</b>
@@ -690,7 +785,7 @@ function useAiPlay(ai: Side): AiPlay | null {
   return play;
 }
 
-function AiBody({ ai }: { ai: Side }) {
+function AiBody({ ai, variant }: { ai: Side; variant: OrdersSlipProps["variant"] }) {
   const i18n = useI18n();
   const { t, cardName, countryName } = i18n;
   const root = useUiRoot();
@@ -700,13 +795,16 @@ function AiBody({ ai }: { ai: Side }) {
   const stage = useStageWaiting();
   const card = shown?.aiPlayCard || play?.card || 0;
   const thinking = vm.aiThinking;
-  // "Still thinking · 14 s" from 8 s into a decision, and once per page session past 20 s the slow-device hint.
+  // A game started before the AI was ready: the AI's load, not a decision (QA L-2). Its percentage is the boot line's,
+  // which only rises (the raw `fraction` starts again at each stage of the load).
+  const loading = !!vm.load && thinking;
+  // "Still thinking · 14 s" from 8 s into a decision, and once per page session past 20 s the slow-device hint; never
+  // for the load (the clock starts when it is done: the prompt store's `aiSince`).
   const wait = useAiWait();
-  const long = thinking && wait.still;
+  const long = thinking && wait.still && !loading;
   const side = t(`ui:side.long.${ai}`);
-  const loading = vm.load && vm.load.stage !== undefined && thinking;
   let title: string;
-  if (loading) title = t("ui:slip.ai.preparing", { percent: Math.round((vm.load?.fraction ?? 0) * 100) });
+  if (loading) title = t("ui:slip.ai.preparing", { percent: loadPercent(vm.load) });
   else if (card) title = t("ui:slip.ai.plays", { side, card: cardName(card) });
   else title = t("ui:slip.ai.waiting", { side });
   const crumb: Crumb | null = card ? {
@@ -736,6 +834,10 @@ function AiBody({ ai }: { ai: Side }) {
     }, 400);
     return () => clearTimeout(id);
   }, [due, fits, wait.since, root, t]);
+  // Fixed slips: the title's second line yields before the crumb, then the crumb (R3-03, `titleFit`).
+  const titleEl = useRef<HTMLDivElement | null>(null);
+  const fixedSlip = variant !== "compact";
+  const fit = useTitleFit(titleEl, AI_FIT, 2, long, fixedSlip);
   const stillKey = hint ? "ui_prompts:ai.stillThinkingSlow" : "ui_prompts:ai.stillThinking";
   const stillText = t(stillKey, { seconds: wait.seconds });
   // The number in its own fixed-width span (tabular, 2 digits reserved): nothing shifts as it counts.
@@ -743,10 +845,10 @@ function AiBody({ ai }: { ai: Side }) {
   return (
     <>
       <div className={s.top} aria-live="polite" aria-atomic="true">
-        <div className={`${s.title} ${s.aiTitle}`} title={title}>
+        <div ref={titleEl} className={`${s.title} ${s.aiTitle}`} title={title} data-lines={fixedSlip ? fit.lines : undefined}>
           {thinking ? <CaretTitle text={title} /> : title}
         </div>
-        {crumb ? <CrumbLine crumb={crumb} /> : null}
+        {crumb ? <CrumbLine crumb={crumb} yieldLine={fixedSlip && !fit.crumb} /> : null}
       </div>
       {long ? (
         <div
@@ -755,6 +857,7 @@ function AiBody({ ai }: { ai: Side }) {
           title={stillText}
           data-lines={stillLines}
           data-still=""
+          data-note=""
           data-slow-hint={hint || undefined}
         >
           {stillPre === null ? stillText : (
@@ -864,7 +967,7 @@ export function OrdersSlip({ variant, expanded = false, className }: OrdersSlipP
         {showClip ? <Clip card={clipCard} /> : null}
         <div className={s.main}>
           {p ? <PromptBody p={p} frozen={mode === "frozen"} variant={variant} expanded={expanded} actions={actions} />
-            : mode === "over" ? <OverBody /> : <AiBody ai={ai} />}
+            : mode === "over" ? <OverBody /> : <AiBody ai={ai} variant={variant} />}
         </div>
       </div>
       {mode === "frozen" ? <FrozenContinue /> : null}

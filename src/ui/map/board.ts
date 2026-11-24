@@ -102,6 +102,20 @@ export function tipAfterTap(tip: TipState, tap: { box: number | null; target: bo
   return showing ? TIP_CLOSED : { pinned: null, tipFor: tap.box };
 }
 
+/**
+ * The box the pointer or the focus raises (draws last, over its neighbours): the hovered one, else the focused one --
+ * unless a finger focused it and its tap's click has not come yet (`touchHeld`): then the box raised before the press
+ * (`before`) stays raised, so nothing moves until the click. Raising moves the box's node, and lowering one moves the
+ * nodes after its slot (React's keyed reorder), and WebKit sends no click for a press whose node left the document
+ * between mousedown and mouseup: the first tap on a box did nothing on iPhone / iPad (QA X-1), and so did the first tap
+ * on any box after another was focused (round-3 integration: the earlier box's lowering moved the tapped one). The
+ * tap's own result (a staged target, a pinned tooltip) raises it.
+ */
+export function raisedBox(hover: number | null, focused: number | null, touchHeld: number | null, before: number | null = null): number | null {
+  if (hover !== null) return hover;
+  return focused !== null && focused === touchHeld ? before : focused;
+}
+
 /** The map's transient popovers: the country tooltip and a region plate's "if scored now" popover. */
 export interface Popovers extends TipState {
   plateTip: RegionSlot | null;

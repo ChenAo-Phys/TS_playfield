@@ -16,6 +16,7 @@ engine, its own onnxruntime-web session (single-threaded wasm, no COOP/COEP) and
 | `src/ai/core.ts` | `AiCore.decide`: restore → seat → belief delta → single-legal / search / policy fallback. Shared by worker and inline mode. |
 | `src/ai/load.ts` | `loadCore`: model bytes + own `WasmEngine` (loaded in parallel) + ORT session. |
 | `src/ai/model_fetch.ts` | Cache API → self-hosted URL → HF URL, streamed with progress, sha256-checked. |
+| `src/ai/runtime_cache.ts` | onnxruntime's wasm in Cache Storage `ts-playfield-runtime-v1`, keyed by its content-hashed URL (production build only; one entry; bytes must start `\0asm`; the worker drops the entry when onnxruntime could not start from it). A deploy gives every Pages file a new ETag, so without it returning visitors downloaded the 3.7 MB (gzip) again after each push (QA r3 L-4). |
 | `src/ai/model_cache.ts`, `onnx_meta.ts`, `model.ts`, `rollout_spec.ts`, `rollout.ts` | DS ports (MIT header). `rollout.ts` = `rolloutRoot`, `playOut`, `weighBelief` unchanged, plus `policyArgmax`; `SearchResult` gained `beliefRows`. |
 | `src/ai/ort_env.ts` | Browser ORT setup: `?url` imports of `ort-wasm-simd-threaded.{wasm,mjs}`, `numThreads = 1`, `proxy = false`. |
 | `src/ai/ort_node.ts` | Node ORT setup (`env.wasm.wasmBinary` from node_modules); dynamically imported by inline mode under Node only. |
@@ -114,12 +115,13 @@ __tspAuto.setSearch("full");         // or ?auto=full in the URL: leaderboard #1
 
 ```sh
 # a dev server whose page cannot be reloaded by other agents' edits (HMR and file watching off; restart it after
-# your own edits): a config that spreads the project's vite.config.ts with server: { hmr: false, watch: null }
-TSP_VITE_CACHE=node_modules/.vite-PORT npx vite --config <no-hmr config> --port PORT --strictPort &
+# your own edits): TSP_NO_HMR=1 (vite.config.ts then sets server: { hmr: false, watch: null })
+TSP_NO_HMR=1 TSP_VITE_CACHE=node_modules/.vite-PORT npx vite --port PORT --strictPort &
 source scripts/pw-env.sh
 node src/ui/screens/demo/play.mjs --url http://localhost:PORT/TS_playfield/ --side USSR|US|random --until end \
      [--policy ai|random] [--auto policy|full] [--game-seed n] [--w 390 --h 844] [--touch] [--lang zh] \
-     [--undo --switch-lang --reload --resign] [--shots dir] [--json file] [--speed fast]
+     [--undo --switch-lang --reload --resign] [--shots dir] [--json file] [--speed fast] \
+     [--browser chromium|firefox|webkit]
 ```
 
 - `--policy ai` (default): each prompt's option comes from `__tspAuto.suggest()`; the driver still answers it by
@@ -132,7 +134,11 @@ node src/ui/screens/demo/play.mjs --url http://localhost:PORT/TS_playfield/ --si
 - `--game-seed n` adds the dev `?seed=n`: with `?ai=policy` (the driver's default `--ai policy`) the game replays
   exactly and the seed finder above predicts it. `--auto full` runs the autopilot on leaderboard #1's search.
 - `--touch` (default below 700 px wide): `hasTouch` + `isMobile`, taps (no hover), sheets closed by their grab, a
-  hold through CDP touch events.
+  hold through CDP touch events in Chromium, a synthetic touch PointerEvent pair (`via.synthHold`) in Firefox /
+  WebKit.
+- `--browser` (default chromium): Playwright's Firefox or WebKit build (`source scripts/pw-env.sh` first; DEPLOY.md
+  §5). The driver waits for the boot line to reach 100 % before its start-up reload (WebKit / Firefox otherwise log
+  the dying worker's cancelled module loads as errors).
 - Checks: a **fallback** = the UI did not answer (the driver then calls `__tsp.choose` and fails); a **mismatch** =
   the UI answered a different option than the one pressed for (the driver spies on `__tsp.choose`); page errors;
   a 25 s stall watchdog. Exit 1 on any. The last line is `RESULT {json}` (also `--json file`): final turn, ending,

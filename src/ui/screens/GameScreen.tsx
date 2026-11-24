@@ -25,7 +25,7 @@ import { Console, type ConsoleVariant } from "../console";
 import { MapView, useMapBeats, type MapHandle } from "../map";
 import { scoreOf } from "../map/board";
 import {
-  CardPicker, CardSheetActions, OrdersSlip, PromptDialogs, PromptStage, useHandProps, usePromptActions, usePromptMapProps,
+  CardPicker, CardSheetActions, OrdersSlip, PromptDialogs, PromptStage, useHandProps, usePromptActions, usePromptMapProps, usePromptUi,
 } from "../prompts";
 import { AiAnnouncer, Rail, RailFlyout, RailStrip, type RailPanelName } from "../rail";
 import { useRailBeats } from "../rail/useRailBeats";
@@ -106,6 +106,15 @@ export function closesFlyout(target: EventTarget | null, screen: Node | null, ke
   return !keep.some(k => !!k && k.contains(node));
 }
 
+/**
+ * The compact dock's open sheet once the hand is asked to focus a card (`PromptStore.focusCard`, D-201 / R3-10: "Back
+ * to hand", Esc or close on the play-mode sheet): the hand drawer, where that card is. Elsewhere, or with no request,
+ * the dock stays as it is.
+ */
+export function dockForFocus(compact: boolean, focusCard: number | null, dock: DockPanel | null): DockPanel | null {
+  return compact && focusCard !== null ? "hand" : dock;
+}
+
 /** Clicks that should not skip an animation (controls keep working while frames play). */
 const NO_SKIP = "button, a, input, select, textarea, [role=button]:not([data-country]), [role=dialog], [data-no-skip]";
 
@@ -172,6 +181,12 @@ function GameScreenBody() {
     else setDock(d => (d === "hand" ? null : d));
     setExpanded(false);
   }, [compact, promptId]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // D-201 (R3-10): "Back to hand" / Esc / close on the compact play-mode sheet asks the hand to focus the card that
+  // returns (`PromptStore.focusCard`). The card is in the hand drawer: open it, as the dock's Hand button does, and
+  // move no focus here: the drawer takes focus as it opens and serves the request (its card, never the sheet's opener).
+  const focusCard = usePromptUi("focusCard");
+  useEffect(() => { setDock(d => dockForFocus(compact, focusCard, d)); }, [compact, focusCard]);
 
   // ── keys (ui-spec §12): skip while busy, skip to my turn, the log on compact ──
   useKey("Space", () => { if (!shown.busy) return false; shown.skip(); });

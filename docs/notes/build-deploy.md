@@ -753,12 +753,12 @@ The procedure is `docs/DEPLOY.md`; the front page is `README.md`.
   overlays) and `public/models/` (5.8 MB). The first commit is about 830 files and 23.8 MB. CI only installs, checks and builds. There is no Emscripten,
   no submodule checkout and no model download in CI, so no caches are needed and R7's CI-timing
   questions are moot.
-- **Workflow:** push to `main` or `workflow_dispatch`. One `build` job runs `actions/checkout@v4` without
-  submodules, `actions/setup-node@v4` (Node 26, npm cache), `npm ci`, `npx tsc --noEmit -p .`,
-  `npx vitest run --maxWorkers=2`, `npx vite build` and `actions/upload-pages-artifact@v3` (`dist`). A
-  `deploy` job then runs `actions/deploy-pages@v4` in the `github-pages` environment. Concurrency group
-  `pages`, no cancelling. DS's own workflow at `5b95e91` uses newer majors (checkout/setup-node v7,
-  upload-pages-artifact v5, deploy-pages v5). Switch to those if GitHub retires the v4/v3 ones.
+- **Workflow:** push to `main` or `workflow_dispatch`. One `build` job runs `actions/checkout@v7` without
+  submodules, `actions/setup-node@v7` (Node 26, npm cache), `npm ci`, `npx tsc --noEmit -p .`,
+  `npx vitest run --maxWorkers=2`, `npx vite build` and `actions/upload-pages-artifact@v5` (`dist`). A
+  `deploy` job then runs `actions/deploy-pages@v5` in the `github-pages` environment. Concurrency group
+  `pages`, no cancelling. The first deploy (2026-11-23, v4/v3 majors) warned that those target the deprecated
+  Node 20, so the workflow moved to the majors DS's own workflow uses at `5b95e91`.
 - **The test suite needs no browser.** The Playwright scripts (`src/**/demo/*.mjs`,
   `tests/ai/browser/run.mjs`) are not vitest files. Two test files are gated on env vars CI does not
   set: `TSP_CAPTURE` (`tests/fixtures/capture.test.ts`) and `TSP_SEEDS` (`tests/ai/autopilot-seeds.test.ts`).

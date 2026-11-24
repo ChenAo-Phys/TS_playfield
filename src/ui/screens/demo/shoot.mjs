@@ -4,10 +4,12 @@
 //
 //   TSP_VITE_CACHE=node_modules/.vite-5189 npx vite --port 5189 --strictPort &
 //   source scripts/pw-env.sh && node src/ui/screens/demo/shoot.mjs [--out docs/design/shots] [--only coup,ai] [--vp 1440,390] [--lang en,zh,en-XA]
+//        [--browser chromium|firefox|webkit]
 //
-// Files: <out>/app-<state>-<w>x<h>-<lang>.png
+// Files: <out>/app-<state>-<w>x<h>-<lang>.png. --browser (default chromium) takes Playwright's Firefox or WebKit build
+// instead (same names: give them their own --out); phones get hasTouch + isMobile in all three.
 import { mkdirSync } from "node:fs";
-import { chromium } from "playwright";
+import { chromium, firefox, webkit } from "playwright";
 
 const args = process.argv.slice(2);
 const opt = (k, d) => { const i = args.indexOf(`--${k}`); return i >= 0 ? args[i + 1] : d; };
@@ -17,6 +19,9 @@ const only = new Set((opt("only", "") || "").split(",").filter(Boolean));
 const vpOnly = new Set((opt("vp", "") || "").split(",").filter(Boolean));
 const langs = (opt("lang", "en,zh") || "en,zh").split(",");
 const XA = !args.includes("--no-xa");
+const BROWSER = opt("browser", "chromium");
+const ENGINES = { chromium, firefox, webkit };
+if (!ENGINES[BROWSER]) throw new Error(`--browser chromium|firefox|webkit, not ${BROWSER}`);
 
 const VIEWPORTS = [
   { w: 1440, h: 900 },
@@ -104,7 +109,15 @@ async function settle(page) {
 }
 
 mkdirSync(OUT, { recursive: true });
-const browser = await chromium.launch();
+const browser = await ENGINES[BROWSER].launch();
+console.log(`${BROWSER} ${browser.version()}`);
+/** A context; `isMobile` is retried without where a Playwright build does not support it (Firefox before 1.5x). */
+async function newContext(o) {
+  try { return await browser.newContext(o); } catch (e) {
+    if (!o.isMobile || !/isMobile/.test(String(e))) throw e;
+    return browser.newContext({ ...o, isMobile: false });
+  }
+}
 const problems = [];
 const jobs = [];
 for (const [state, def] of Object.entries(STATES)) {
@@ -116,7 +129,7 @@ for (const [state, def] of Object.entries(STATES)) {
   }
 }
 for (const { state, def, vp, lang } of jobs) {
-  const ctx = await browser.newContext({
+  const ctx = await newContext({
     viewport: { width: vp.w, height: vp.h }, deviceScaleFactor: vp.mobile ? 2 : 1, hasTouch: !!vp.mobile, isMobile: !!vp.mobile,
   });
   const page = await ctx.newPage();
@@ -125,7 +138,7 @@ for (const { state, def, vp, lang } of jobs) {
   page.on("console", m => { if (m.type() === "error") errors.push(m.text()); });
   const name = `app-${state}-${vp.w}x${vp.h}-${lang}`;
   try {
-    // A phone has no mouse: keep Chromium's parked pointer (0, 0) off the map, or a box there gets a synthetic
+    // A phone has no mouse: keep the browser's parked pointer (0, 0) off the map, or a box there gets a synthetic
     // "mouse" hover and its tooltip (the compact-landscape map reaches the top-left corner).
     if (vp.mobile) await page.mouse.move(vp.w - 1, vp.h - 1);
     await page.goto(def.url(lang), { waitUntil: "load" });

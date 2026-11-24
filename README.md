@@ -11,7 +11,8 @@ always at full strength. English and 简体中文 (中文说明见下文).
   tournament rule that a player holding a scoring card at the end of a turn loses.
 - The rules engine is DeepStruggle's C++ engine compiled to WebAssembly; the AI is DeepStruggle's
   leaderboard #1 network and search, run by onnxruntime-web. Everything runs in your browser: this is a
-  static site with no backend. The game autosaves in your browser so you can resume it later.
+  static site with no backend. The game autosaves in your browser so you can resume it later (if the
+  browser refuses to store it, the page says so).
 - The language follows your browser and can be switched at any time (`?lang=en` / `?lang=zh` also work).
 - The rulebook is not hosted here. Read GMT Games' official living rules:
   https://www.gmtgames.com/living_rules/TS_Rules_Deluxe.pdf
@@ -34,9 +35,19 @@ npx vite build              # -> dist/ (base path /TS_playfield/)
 npx vite preview            # http://localhost:4173/TS_playfield/
 ```
 
+The production build adds a Content-Security-Policy `<meta>` to `index.html` (the `tsp-csp-meta` plugin in
+`vite.config.ts`; GitHub Pages cannot send headers). The dev server has none. Anything that needs a new origin or an
+inline script / style has to be allowed there first, and checked in Chromium, Firefox and WebKit
+(`docs/qa/r3-xbrowser.md`).
+
 Development-only switches (dev server only, never in the production build): `?ai=policy` (a fast AI that
 plays the network's policy without search), `?seed=N`, and `window.__tsp` / `window.__tspAuto` in the console
 (the controller and the autopilot that `src/ui/screens/demo/play.mjs` drives).
+
+The browser QA drivers (`src/ui/screens/demo/play.mjs`, `shoot.mjs`) run Playwright's Chromium, Firefox or
+WebKit (`--browser chromium|firefox|webkit`, default chromium). On a machine without root, run
+`source scripts/pw-env.sh` in the same shell first (it points the browsers at user-space libraries;
+[`docs/DEPLOY.md`](docs/DEPLOY.md) §5).
 
 ### The built assets
 
@@ -105,7 +116,7 @@ at https://www.gmtgames.com/living_rules/TS_Rules_Deluxe.pdf. If you enjoy the g
 - 规则：标准游戏，含可选卡牌（#104–110）；美国获得 +2 影响力的竞价补偿（锦标赛标准，放在已有美国影响力的国家）；
   卡牌文字依照最新勘误；回合结束时仍持有计分牌的玩家输掉游戏。
 - 规则引擎是 DeepStruggle 的 C++ 引擎（编译为 WebAssembly），AI 是 DeepStruggle 排行榜第一的模型与搜索。
-  一切都在你的浏览器中运行，本站是没有后端的静态网站；对局自动保存在浏览器中，之后可以继续。
+  一切都在你的浏览器中运行，本站是没有后端的静态网站；对局自动保存在浏览器中，之后可以继续（若浏览器无法保存，页面会提示）。
 - 界面语言跟随浏览器设置，可随时在英文与简体中文之间切换。
 - 本站不提供规则书，请阅读 GMT Games 官方最新规则：https://www.gmtgames.com/living_rules/TS_Rules_Deluxe.pdf
 

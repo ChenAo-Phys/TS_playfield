@@ -23,7 +23,7 @@ import type { Side } from "../../game/contract";
 import { useI18n } from "../../i18n/react";
 import { dur, mapDetail, TIMING, type FrameSpeed } from "../theme";
 import {
-  anchorOnMap, boardValues, EMPTY_BOX, ghostFor, popoversAfter, sameValues, scoreOf, targetLook, tipAfterTap, withOverrides, type BoxValues,
+  anchorOnMap, boardValues, EMPTY_BOX, ghostFor, popoversAfter, raisedBox, sameValues, scoreOf, targetLook, tipAfterTap, withOverrides, type BoxValues,
   type TipState,
 } from "./board";
 import { COMPACT_TOUCH_SCALE, FRAME_PAD, scaleOf, scaleToFit } from "./camera";
@@ -122,6 +122,8 @@ export const MapView = forwardRef<MapHandle, MapViewProps>(function MapView(prop
   // ── Hover, focus, tooltip ───────────────────────────────────────────────────────────────
   const [hover, setHover] = useState<number | null>(null);
   const [focused, setFocused] = useState<number | null>(null);
+  /** A box a finger focused, not raised until its tap's click is through (`raisedBox`, QA X-1). */
+  const [touchHeld, setTouchHeld] = useState<number | null>(null);
   const [roving, setRoving] = useState<number>(() => readingOrder(COUNTRY_LAYOUT.map(c => c.id))[0] ?? 0);
   const [tipFor, setTipFor] = useState<number | null>(null);
   const [pinned, setPinned] = useState<number | null>(null);
@@ -180,7 +182,11 @@ export const MapView = forwardRef<MapHandle, MapViewProps>(function MapView(prop
   const prompting = targets !== null;
   const regionFocus: RegionSlot | null = focusRegion ?? spot ?? (regionTargets ? plateHover : null);
   const hot = hover ?? focused;
-  const front = useMemo(() => new Set([hot, selection, pinned].filter((v): v is number => v !== null)), [hot, selection, pinned]);
+  // The box raised at the last commit: a finger's press keeps it raised until its click (`raisedBox`, X-1).
+  const raisedBefore = useRef<number | null>(null);
+  const raised = raisedBox(hover, focused, touchHeld, raisedBefore.current);
+  useEffect(() => { raisedBefore.current = raised; }, [raised]);
+  const front = useMemo(() => new Set([raised, selection, pinned].filter((v): v is number => v !== null)), [raised, selection, pinned]);
   const order = useMemo(() => {
     const ids = COUNTRY_LAYOUT.map(c => c.id);
     const back = ids.filter(id => !front.has(id) && !(targets?.ids.has(id)));
@@ -493,6 +499,8 @@ export const MapView = forwardRef<MapHandle, MapViewProps>(function MapView(prop
   }, []);
 
   const onBoxClick = (e: ReactMouseEvent) => {
+    // The tap's click is through: a box its finger focused may be raised now (X-1).
+    setTouchHeld(null);
     const drag = cameraRef.current.consumeDrag();
     const id = idFrom(e.target);
     if (id === null) return;
@@ -545,11 +553,15 @@ export const MapView = forwardRef<MapHandle, MapViewProps>(function MapView(prop
     setFocused(id);
     setRoving(id);
     window.clearTimeout(hoverTimer.current);
-    // Focus from a finger is not keyboard focus: the tap itself decides about the tooltip.
-    if (!touchPress()) setTipFor(id);
+    // Focus from a finger is not keyboard focus: the tap itself decides about the tooltip, and the box is raised
+    // only after the tap's click (X-1).
+    const finger = touchPress();
+    setTouchHeld(finger ? id : null);
+    if (!finger) setTipFor(id);
     propsRef.current.onHover?.(id);
   };
   const onBoxBlur = (e: ReactFocusEvent) => {
+    setTouchHeld(null);
     const to = idFrom(e.relatedTarget);
     if (to === null) {
       setFocused(null);

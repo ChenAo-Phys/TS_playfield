@@ -14,7 +14,7 @@ import { Message, MessageArg, MessageKey, message, messageIfKnown } from "../i18
 import type { OptionKind, Prompt, PromptKind, PromptOption, Side } from "./contract";
 import type { Names } from "./describe";
 import { cardArg, sideArg } from "./log";
-import { CUBAN_MISSILE_CRISIS, EAGLE_BEAR_DISCARD, otherSide, playsLeft, scoringInHand } from "./rules";
+import { CHINA_CARD, CUBAN_MISSILE_CRISIS, EAGLE_BEAR_DISCARD, otherSide, playsLeft, scoringInHand } from "./rules";
 import { aiHeadlineFaceDown } from "./view";
 
 const CARD_SIDE = new Map(CARDS_METADATA.map(c => [c.id, c.side]));
@@ -245,11 +245,16 @@ function promptWords(kind: PromptKind, d: GameState, input: PromptInput, options
     }
     case "influence":
       return { title: message("prompt:title.influence", { count: remaining }), detail: message("prompt:detail.influence") };
-    case "coup-target":
-      return {
-        title: message("prompt:title.coup", { count: c.pending_ops_value }),
-        detail: message("prompt:detail.coup", { count: c.pending_ops_value }),
-      };
+    case "coup-target": {
+      // `pending_ops_value` holds the bonuses that count only where the coup is (the China Card's +1 in Asia, Vietnam
+      // Revolts' +1 in Southeast Asia): with one of them it is the most a coup gets, 1 or 2 less elsewhere, and it is
+      // worded as a maximum (D-202). The test is the engine's own (ops.cpp budget_if_spent_in).
+      const count = c.pending_ops_value;
+      const upTo = c.pending_op_card === CHINA_CARD || (human === "USSR" && d.flags.includes("VIETNAM_REVOLTS_ACTIVE"));
+      return upTo
+        ? { title: message("prompt:title.coupUpTo", { count }), detail: message("prompt:detail.coupUpTo", { count }) }
+        : { title: message("prompt:title.coup", { count }), detail: message("prompt:detail.coup", { count }) };
+    }
     case "realign-target":
       return { title: message("prompt:title.realign", { count: remaining }), detail: message("prompt:detail.realign") };
     case "event-target": {

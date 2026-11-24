@@ -219,6 +219,39 @@ export function chinaFocusReady(request: number | null, c: { view: ChinaView; li
 }
 
 /**
+ * Is a hand card ready for the prompt layer's focus request (Esc / Back to hand)? It is back among `cards`, not on
+ * the stage (`lifted`), and the hand is interactive and choosing again (mode "active"). Used by `Hand` and the
+ * compact `HandDrawer`.
+ */
+export function handFocusReady(request: number | null, cards: readonly number[], states: readonly HandCardState[], h: { interactive: boolean; mode: HandMode }): boolean {
+  const i = request === null ? -1 : cards.indexOf(request);
+  return i >= 0 && h.interactive && states[i] !== "lifted" && h.mode === "active";
+}
+
+/**
+ * The card the compact hand drawer focuses for the request (`PromptStore.focusCard`, D-201: Esc, close or Back to
+ * hand on the play-mode sheet): while the drawer is open, the requested card once it is ready there (a hand card as
+ * `handFocusReady`, the China Card as `chinaFocusReady`); null while it is not (the request waits, the store drops it
+ * after `FOCUS_TIMEOUT_MS`).
+ */
+export function drawerFocusCard(request: number | null, d: {
+  open: boolean;
+  cards: readonly number[];
+  states: readonly HandCardState[];
+  /** The China Card in the drawer (null: not held), lifted onto the stage or not. */
+  china: ChinaView | null;
+  chinaLifted: boolean;
+  interactive: boolean;
+  mode: HandMode;
+}): number | null {
+  if (request === null || !d.open) return null;
+  if (request === CHINA_CARD) {
+    return d.china !== null && chinaFocusReady(request, { view: d.china, lifted: d.chinaLifted, interactive: d.interactive, mode: d.mode }) ? request : null;
+  }
+  return handFocusReady(request, d.cards, d.states, d) ? request : null;
+}
+
+/**
  * Serve a focus request (`PromptStore.focusCard`): clear it and focus the card's element (no scroll jump; then
  * into view within the hand's scroller). False when the element is not there yet (the request waits).
  */

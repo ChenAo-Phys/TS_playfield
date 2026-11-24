@@ -15,6 +15,10 @@
   z-index: var(--ts-z-map-hud);
 }
 .theatres::-webkit-scrollbar { display: none; }
+/* More chips beyond an edge (TheatreBar `data-more`): that edge fades out over 18 px (R3-09). */
+.theatres[data-more="end"] { mask-image: linear-gradient(to right, black calc(100% - 18px), transparent); }
+.theatres[data-more="start"] { mask-image: linear-gradient(to left, black calc(100% - 18px), transparent); }
+.theatres[data-more="both"] { mask-image: linear-gradient(to right, transparent, black 18px, black calc(100% - 18px), transparent); }
 .theatresOverlay { background: transparent; border-bottom: 0; }
 .chip {
   flex: none;
@@ -22,7 +26,8 @@
   align-items: center;
   gap: 6px;
   height: 26px;
-  padding: 0 9px;
+  /* --chip-pad: set by TheatreBar (6–12 px) so the chip cut by the bar's right edge shows ≥ 44 px or none (R3-09). */
+  padding: 0 var(--chip-pad, 9px);
   border: 0;
   border-radius: 3px;
   background: var(--ts-room-750);
@@ -91,6 +96,9 @@
 }
 :root:lang(zh) .ticker { font-size: var(--ts-fs-s); }
 @keyframes tickerIn { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: none; } }
+/* Touch screens (R3-08): the one-line recap is a 44 px tall tap strip (the play banner is 72 px already). It grows on
+   screen rather than reaching invisibly over the map, so it never takes a tap meant for a country it does not cover. */
+@media (pointer: coarse) { .ticker { min-height: 44px; } }
 :global([data-motion="reduce"]) .ticker { animation-name: tickerFade; }
 @media (prefers-reduced-motion: reduce) { :global(:root:not([data-motion="full"])) .ticker { animation-name: tickerFade; } }
 @keyframes tickerFade { from { opacity: 0; } to { opacity: 1; } }

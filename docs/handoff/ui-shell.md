@@ -362,7 +362,7 @@ Requests from this round:
 Found, not fixed (not in this round's items): at tablet widths below about 960 px (a 800×600 desktop window, 1280×800 at
 150 % zoom, 720×520) the tablet console is wider than the screen (zh 720×520: 967 px of content in 720), so the language
 switch, ⚙ and ☰ are off-screen (the wordmark still opens the menu). The tablet variant has no squeeze steps like the
-compact one; a next round could hide the AR instrument's pips or narrow the VP gauge there.
+compact one; a next round could hide the AR instrument's pips or narrow the VP gauge there. *(Fixed in QA round 3, §14.)*
 
 ## 13. QA round 2 integration (integrator, 2026-11-23)
 
@@ -380,11 +380,80 @@ integrator"):
 * **Stage:** the game-over telex reads its round through `displayTurnAr` (R-014, the rule in one place).
 * **i18n:** zh `ui:over.fullLog` 完整电报 and `ui:shortcuts.row.log` "… · 打开电报" (R-019 follow-up; `tools/ui-keys.mjs`).
 * **Browser storage** (L-3; nothing personal): localStorage `ts-playfield.game.v1` (the save, format v2),
-  `ts-playfield.ui.v1` (settings), `tsp.lang` (the language chosen last), the load-time probe `ts-playfield.probe`
-  (written and removed); sessionStorage `ts-playfield.aiSlowHint` = "1" once the slow-device hint was shown this session.
+  `ts-playfield.ui.v1` (settings), `ts-playfield.lang` (the language chosen last; the older `tsp.lang` is read once and copied, L-6), the load-time probe `ts-playfield.probe`
+  (written and removed); sessionStorage `ts-playfield.aiSlowHint` = "1" once the slow-device hint was shown this session;
+  Cache Storage `ts-playfield-models-v1` (the model, by sha256) and `ts-playfield-runtime-v1` (onnxruntime's wasm under
+  its content-hashed URL, production only, QA r3 L-4).
 * **`play.mjs`** (R-011 follow-up): done and primary buttons are found by their key cap **or** their `aria-keyshortcuts`
   (`keyButton`; `Button` now derives `aria-keyshortcuts` from a single-key cap, ui-common.md). Since R-011 a touch run
   had no caps to find, and the phone game (390×844 zh, seed 1) needed 3 fallbacks at done prompts (Our Man in Tehran,
   the Eagle Has Landed discard, Ask Not); after the change 0.
 * Tests: `tests/ui/prompts/r2-integrate.test.ts`; the Q-014 / unreadable expectations in `tests/game/persistence.test.ts`
   and `tests/game/qa-fixes.test.ts` now include `reason`.
+
+## 14. QA round 3 (fix group F4, 2026-11-23)
+
+Items from `docs/qa/r2-REPORT.md` "Remaining issues" 1–4 and the deferred D-201 / D-203 (the console / rail part, R3-06
+and R3-07, is in `ui-console.md` "QA round 3"). Verified in Chromium (dev server, HMR off; production preview where noted);
+shots in `docs/qa/shots/r3-fix-F4/`; probes in the session scratch dir `$SP/r3-fix-F4/` (`touch.mjs`, `chips.mjs`,
+`menu43.mjs`, `backhand.mjs`, `nosave.mjs`, `prod.mjs`).
+
+| Item | Fix | Verified |
+|---|---|---|
+| R3-06 | Tablet console squeeze (and the condensed / desktop bars, same steps): `ui-console.md` | every tablet width 700–1199 px and 1200–2000 px at 600 px tall, en / zh / en-XA, touch and mouse: no overflow, ⚙ ☰ and the language on screen, 44 px areas on touch. 768 × 1024 is compact (portrait). |
+| R3-08 | The compact ticker's one-line recap is `min-height: 44px` on coarse pointers (the play banner is 72 px already). It grows on screen instead of an invisible `::after` reaching over the map, so it never takes a tap meant for a country it does not visibly cover (it is gone after 6 s or when you act) | 390 × 844, 360 × 740, 844 × 390, 640 × 360, en / zh: 344–528 × 44 (28 before) |
+| R3-09 | **Chips:** the "34 px" 南美洲 chip was the visible part of a chip cut by the bar's right edge at rest (360 zh: 32 px + 2.5 px area). `TheatreBar` now measures the bar (`chipPadding`, before paint, again on resize, fonts, a language or count change) and sets `--chip-pad` (6–12 px, base 9): the chip the edge cuts shows ≥ 44 px (pulled in, preferred, as a cut chip tells that the bar scrolls) or none (spread until it starts at the edge); an edge with more chips beyond it fades over 18 px (`data-more`, `scrollEdges`), so the bar still reads as scrolling. **☰:** 44 × 44 from the top of the 44 px landscape bar (`ui-console.md`). **Sheet grab:** request 1 below (common) | chips: 12 phone sizes (320–600 wide portrait, 640–926 landscape) × 3 scenes (no prompt, influence with counts, region) × en / zh / en-XA: every chip cut at rest shows 44–98 px, padding 6–12 px. ☰ 44 × 44 at 844 × 390 and 640 × 360 |
+| R3-10 | D-201 shell half: `GameScreen` subscribes to `PromptStore.focusCard` (`usePromptUi`) and, on compact layouts, opens the hand drawer when a request is pending (`dockForFocus`; the same `setDock("hand")` as the dock's Hand button). It moves no focus: the drawer's sheet takes focus as it opens and `HandDrawer` (F3's half) serves the request | keyboard at 390 × 844, 844 × 390 and 640 × 360 (the 1280 × 720 at 200 % case), real app, seed 3: Enter on a drawer card (Five Year Plan) → the play-mode sheet; Esc, "Back to hand" + Enter, and the sheet's grab + Enter → the drawer is open and focus is on **that card** within 50 ms and stays there (sampled to 2.5 s), with F3's `HandDrawer` half in the tree; never `<body>`, never the sheet's opener. Before F3's half landed the same runs left focus on the drawer's panel |
+| R3-11 | D-203 shell half: `App` (`Screens`) toasts `ui_shell:save.unavailable` when `vm.saveUnavailable` becomes true, once per page (`tellSaveUnavailable` + a ref: not again when it clears and comes back), tone info, 9 s (`SAVE_NOTICE_MS`). The About dialog's save line adds `ui_shell:save.aboutNow` while it holds. en "This browser isn't saving the game: it will be lost if you close or reload the page." / zh "此浏览器无法保存对局：关闭或刷新页面后对局将丢失。"; en-XA marked like every key | dev server with `Storage.prototype.setItem` throwing (blocked) in en and zh, and refusing only the save key (quota): one toast each, no page error; production preview (blocked, 800 × 600 zh / 720 × 520 en): the toast, no `__tsp` |
+
+New `ui_shell` keys: `save.unavailable`, `save.aboutNow` (en + zh). New `ui_console` key: `turn.short`. Tests:
+`tests/ui/shell/r3-fixes.test.ts` (ticker rule, `chipPadding` on the measured 360 zh bar and a spread case, its bounds,
+`scrollEdges`, the ☰ inset geometry, `dockForFocus`, the once-per-page rule, both catalogs and en-XA, the About line);
+`r2-fixes.test.ts` reads the new ☰ inset; `styles.test.ts` allows the local `--chip-pad`.
+
+Autopilot after the round (`?ai=policy`, `--until 3`, 0 fallbacks / mismatches / errors each): 800 × 600 touch zh USSR seed
+13 (60 answers), 720 × 520 en random seed 16 (66), 390 × 844 touch en US seed 1 (60), 1240 × 700 zh US seed 30 (55).
+
+Deviations from the spec: the theatre chips' side padding varies by a few px (6–12) with the width, and a scrolling edge
+of the bar fades (§3.3 "The bar scrolls horizontally"); the ticker is 44 px tall on touch screens (§3.3 "a paper strip").
+The console's deviations are in `ui-console.md`.
+
+Requests from this round:
+1. **common** (`src/ui/common/Sheet.module.css`, R3-09): a full-height sheet (`height="full"`: the compact-landscape play-mode
+   sheet) starts at the screen's top, so its grab's 44 px area (`top: -12px`) loses 11–12 px off-screen (measured at 844 × 390:
+   grab at y 1, area from −11). Inside the `@media (pointer: coarse)` block add
+   `.h_full .grab { height: 44px; }` and `.h_full .grab::after { top: 0; }`: the grab itself is 44 px tall there and its
+   area starts at the sheet's (= the screen's) top, overlapping nothing below. Other sheets keep the 12 px reach over the scrim.
+   *Applied by the round-3 integrator* (`ui-common.md`, "QA round 3 integration").
+2. **coordinator** (`docs/design/ui-spec.md`, as built): §3.2 "On a narrow tablet (below ~960 px; also a condensed desktop bar
+   in a long language) the console squeezes in measured steps: the DEFCON lamps → the word, a two-line wordmark, no AR
+   pips, a narrow VP gauge labelled VP without ends, side glyphs, the turn without its era, and last no wordmark; the
+   language switch, ⚙ and ☰ stay on screen at every width (R3-06)." §3.3 "On touch screens the ticker is 44 px tall, the log
+   filters 44 × 44; the theatre chips' padding adapts (6–12 px) so a chip cut by the bar's edge shows ≥ 44 px or none, and
+   an edge with more chips fades (R3-08, R3-09)." §6.3 "Log filters ≥ 44 px wide on touch (R3-07)." *Applied* (ui-spec §3.2, §3.3, §6.3 "As built (QA round 3)").
+
+## 15. QA round 3, live site and cross-browser (fix group r3-fixx, 2026-11-23)
+
+Findings of `docs/qa/r3-live.md` (L-*) and `docs/qa/r3-xbrowser.md` (X-*). Verified in Chromium, Firefox and WebKit.
+
+* **L-1 boot line after a game**: the start screen reads Ready from `vm.aiReady` (the controller's fact, additive contract
+  field), not a per-mount "progress seen" flag, which left a start screen mounted again after a game at "AI MODEL", 15 %,
+  with the first-visit note. Both ways back (result telex → New game; ☰ → New game → confirm): 100 % in all three engines.
+* **L-2 a game started before Ready**: the slip counts the load with `loadPercent(vm.load)` (`src/ui/common/loadBar.ts`,
+  the boot line's bar over all stages: 15 → 80 % for the model, 84 % its check, 90 → 100 % the AI's start), which only
+  rises; no "Still thinking" or slow-device hint during the load (`ui-prompts.md`, the AI's wait).
+* **L-6** the language key is `ts-playfield.lang`; the older `tsp.lang` is read when it is empty and copied over (never
+  written or removed: another site's key could have that name).
+* **L-7** About & credits on touch screens: one link a line, each ≥ 44 px tall (`dialogs.module.css`, `pointer: coarse`).
+* **X-2** the "Toss a coin" seal: `.coinWrap` is no longer `transform-style: preserve-3d` (Firefox painted the coin in the
+  page's top-left corner; the spin turns the wrap itself, whose one child is flat).
+* **X-1** (map, `MapView`): a box a finger focused is raised (drawn last) only after its tap's click (`raisedBox`): moving
+  its node between mousedown and mouseup made WebKit drop the click, so the first tap on a box did nothing.
+  *Round-3 integration follow-up:* the first tap on a box *after another box was focused* was still lost in WebKit:
+  the earlier box, raised only by its focus, was lowered at the new box's focus, and React's keyed reorder moved every
+  node after its slot, the tapped box among them (traced: tap Burma, Esc, tap Malaysia → mousedown@38, 11 boxes moved,
+  mouseup@38, no click). `raisedBox(hover, focused, touchHeld, before)` now keeps the box raised at the last commit
+  (`raisedBefore`) during a finger's press, so nothing moves until the click. After: no move between mousedown and
+  mouseup in Chromium, Firefox or WebKit; every tap stages.
+* Tests: `tests/ui/shell/r3-live.test.ts`, `tests/ui/prompts/r3-live.test.ts`, `tests/map/r3-xbrowser.test.ts`,
+  `tests/game/r3-live.test.ts`, `tests/ai/runtime-cache.test.ts` (L-4, `ai.md`), `tests/i18n/detect.test.ts`.

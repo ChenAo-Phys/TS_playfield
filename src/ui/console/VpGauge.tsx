@@ -2,7 +2,9 @@
  * VP gauge (ui-spec §5): a bar from US 20 (left) to USSR 20 (right) on the fixed political axis, ticks
  * every 5 (the centre taller), the needle at 50 % − vp × 2.5 %, the header "Victory points" + the lead
  * "USSR +2" / "US +3" / "Even" (side colour and side word, never colour alone), ends "★ US 20" /
- * "USSR 20 ☭". Mini (compact): readout above the bar, no ends, needle without its head. When a `vp`
+ * "USSR 20 ☭". Mini (compact): readout above the bar, no ends, needle without its head. `fold` (tablet): the full
+ * gauge also carries the short label "VP" and the lead's glyph, for the tablet console's squeeze (R3-06: steps 4–5
+ * show "VP", drop the ends and narrow the gauge to its readout via `--vp-w`, then the glyph). When a `vp`
  * beat moves it the needle swings with a slight overshoot and the number rolls. Tooltip: the VP at
  * the end of each turn (a sparkline).
  */
@@ -23,6 +25,8 @@ export interface VpGaugeProps {
   // ── extensions ──
   /** VP at each turn end (tooltip sparkline); see `useVpHistory`. */
   history?: readonly VpPoint[];
+  /** Full variant: also render the short label and the lead's glyph (the tablet console's squeeze shows them). */
+  fold?: boolean;
   className?: string;
 }
 
@@ -89,7 +93,7 @@ function VpTip({ vp, history }: { vp: number; history: readonly VpPoint[] }) {
   );
 }
 
-export function VpGauge({ vp, width, variant, history, className }: VpGaugeProps) {
+export function VpGauge({ vp, width, variant, history, fold = false, className }: VpGaugeProps) {
   const { t } = useI18n();
   const view = useTrackView();
   const anim = view.anim.vp;
@@ -100,6 +104,8 @@ export function VpGauge({ vp, width, variant, history, className }: VpGaugeProps
   };
   const mini = variant === "mini";
   const label = t("ui_console:vp.aria", { lead: vpLeadText(t, vp) });
+  // The width a squeeze may override (`--vp-w` on the bar); the mini gauge flexes instead.
+  const sized: CSSProperties | undefined = mini ? undefined : { width: `var(--vp-w, ${width}px)` };
   return (
     <Instrument
       label={label}
@@ -108,23 +114,30 @@ export function VpGauge({ vp, width, variant, history, className }: VpGaugeProps
       className={[s.vp, mini ? s.vpMini : "", className].filter(Boolean).join(" ")}
       data={{ vp }}
     >
-      <div className={s.vpHead} style={mini ? undefined : { width }} aria-hidden="true">
-        <span className={s.instLabel}>{mini ? t("ui:track.vp") : t("ui_console:vp.title")}</span>
+      <div className={s.vpHead} style={sized} aria-hidden="true">
+        {fold && !mini ? (
+          <span className={s.instLabel}>
+            <span className={s.vpTitle}>{t("ui_console:vp.title")}</span>
+            <span className={s.vpShort}>{t("ui:track.vp")}</span>
+          </span>
+        ) : (
+          <span className={s.instLabel}>{mini ? t("ui:track.vp") : t("ui_console:vp.title")}</span>
+        )}
         <VpLead
           key={anim?.reduced ? `f${anim.seq}` : "lead"}
           vp={vp}
-          glyph={mini}
+          glyph={mini || fold}
           rollMs={swing ? swing.ms : undefined}
           className={anim?.reduced ? s.readFlash : undefined}
         />
       </div>
-      <div className={s.vpScale} style={mini ? undefined : { width }} aria-hidden="true">
+      <div className={s.vpScale} style={sized} aria-hidden="true">
         <div className={s.vpBar} />
         {TICKS.map(v => <span key={v} className={[s.vpTick, v === 0 ? s.mid : ""].filter(Boolean).join(" ")} style={{ left: `${vpNeedle(v)}%` }} />)}
         <span className={s.vpNeedle} style={needle} />
       </div>
       {mini ? null : (
-        <div className={s.vpEnds} style={{ width }} aria-hidden="true">
+        <div className={s.vpEnds} style={sized} aria-hidden="true">
           <span className={s.sideUs}><SideGlyph side="US" /> {t("ui_console:vp.end", { side: t("ui:side.US") })}</span>
           <span className={s.zero}>0</span>
           <span className={s.sideUssr}>{t("ui_console:vp.end", { side: t("ui:side.USSR") })} <SideGlyph side="USSR" /></span>

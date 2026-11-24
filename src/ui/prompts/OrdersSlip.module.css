@@ -135,6 +135,18 @@
 .crumbTarget { max-width: 45%; overflow: hidden; text-overflow: ellipsis; }
 .crumbMode { color: var(--ts-brass-700); }
 .crumbTarget { font-weight: 700; color: var(--ts-ink-900); }
+/* Fixed slips where two title lines, the crumb and the actions don't fit (tablet, R3-03): the crumb yields its line,
+   still read out; a tap on the title block shows it (OrdersSlip `titleFit`). No margin here: `useTitleFit` measures
+   the crumb's line as line height + top margin in either state, and a yielded crumb that measured 4 px less than a
+   shown one made the fit reverse itself on every render until React gave up and unmounted the page (QA round 3
+   V-1-1 / V-2-1: tablet slips 770–798 px tall). Absolute and clipped, the 3 px margin changes nothing on screen. */
+.crumb[data-yield] {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+}
 
 .bigCount {
   grid-column: 2;
@@ -145,6 +157,11 @@
 }
 .bigCount b { font: 800 var(--ts-fs-4xl) / .8 var(--ts-font-stencil); color: var(--ts-ink-900); letter-spacing: .02em; }
 .bigCount small { font: 700 var(--ts-fs-l) / 1 var(--ts-font-ui); color: var(--ts-ink-500); margin-left: 1px; }
+/* No crumb line (setup, bid; a yielded crumb): the counter stands beside the title alone. Spanning an empty second
+   row, it made the grid split its height over both rows: an 18 px blank under the title that pushed the tablet
+   slip's actions past its edge (R3-03). */
+.desktop .top:not(:has(> .crumb:not([data-yield]))) > .bigCount,
+.tablet .top:not(:has(> .crumb:not([data-yield]))) > .bigCount { grid-row: 1; }
 .countLabel {
   display: block;
   margin-top: 4px;
@@ -383,6 +400,10 @@
 
 /* Tight heights (ui-spec §8.1: the slip is the tray height − 4 px): the actions dock to the bottom. */
 .desktop .actions, .tablet .actions { margin-top: auto; padding-top: 6px; flex-wrap: nowrap; }
+/* Tablet slips (120–126 px): a staged warning's panel, a one-line title and the actions fit, with the touch areas of
+   the actions inside the slip (R3-03; it was 6 px over at 120 px). Still one whole line at least, three at most. */
+.tablet .warn { margin-top: 3px; padding-block: 3px; min-height: calc(1.25em + 6px); max-height: calc(3.75em + 6px); }
+.tablet .warn ~ .actions { padding-top: 4px; }
 .desktop .hint, .tablet .hint, .desktop .consequence, .tablet .consequence { flex: 0 1 auto; min-height: 0; }
 .holdWide { flex: 1 1 auto; min-width: 0; }
 
@@ -397,6 +418,9 @@
 /* Tighter tracking than the caps labels: "MIDDLE EAST" stays whole in the 69 px columns beside the clip and undo. */
 .regionsDense .regionBtn { min-height: 24px; padding: 3px 4px 2px; display: inline-flex; align-items: center; justify-content: center; gap: 4px; letter-spacing: .05em; }
 .regionName { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+/* A name that is still cut (RegionChoice `useNameFit`, R3-05: en-XA's "⟦MIDDLE EAST⟧"; a staged "MIDDLE EAST" beside
+   its ↵): level 1 drops the key cap (markup), level 2 the caps tracking. Names that fit keep the look above. */
+.regionsDense .regionBtn[data-fit="2"] { letter-spacing: 0; }
 .regionPrimary, .regionBtn.regionPrimary[aria-pressed="true"] { background: var(--ts-ink-900); color: var(--ts-paper-50); box-shadow: 0 2px 0 var(--ts-line-hard); }
 .regionKbd { flex: none; font: 700 var(--ts-fs-micro) / 1 var(--ts-font-ui); padding: 1px 4px; border-radius: var(--ts-radius-xs); background: color-mix(in srgb, currentColor 16%, transparent); }
 .regionLine {
@@ -452,4 +476,13 @@
   .desktop .regionBtn:nth-child(n + 4)::after, .tablet .regionBtn:nth-child(n + 4)::after { bottom: -18px; }
   .desktop .regionRow .regionUndo, .tablet .regionRow .regionUndo { position: relative; min-width: 0; }
   .desktop .regionRow .regionUndo::after, .tablet .regionRow .regionUndo::after { content: ""; position: absolute; inset: 0 -10px 0 -2px; }
+  /* Tablet slips (120–126 px, R3-03): two 44 px rows take 88 px, all of the 120 px slip under its head. The grid
+     starts right under the one-line title (a 20 px line in both languages); the top row's areas cover the title's
+     line and stop at the row, the bottom row's take the whole gap and run to the slip's edge. */
+  .tablet .top[data-dense] .title { line-height: 20px; }
+  .tablet .regionRow { margin-top: 0; }
+  .tablet .regionBtn:nth-child(-n + 3)::after { top: -22px; bottom: 0; }
+  .tablet .regionBtn:nth-child(n + 4)::after { top: -4px; bottom: -22px; }
+  /* A cut title stays a toggle (R-012): the top row then keeps clear of it. */
+  .tablet .top[data-toggle] ~ .regionRow .regionBtn:nth-child(-n + 3)::after { top: -2px; }
 }

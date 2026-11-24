@@ -498,14 +498,19 @@
 .flyoutBody .adversary { border-bottom: 0; box-shadow: none; }
 .flyoutFill { overflow: hidden; }
 
-/* ── Touch screens: 44 px hit areas (ui-spec §12, Q-048; R-010 / R-017) ──────────────────
+/* ── Touch screens: 44 px hit areas (ui-spec §12, Q-048; R-010 / R-017; R3-07) ──────────
    The strip buttons keep their 42 px look (gap 8 px: the areas never meet). The flyout's × keeps its 28 px look
    at the corner; its area is the flyout's top-right 44 × 44 (inside the flyout, which clips), and the header's
-   controls keep clear of it. */
+   controls keep clear of it. The log filters (All / Plays / Dice; tablet flyout, compact sheet, a touch desktop)
+   are at least 44 px wide, and their areas are as tall as the log's header row, which grows to 44 px with no
+   padding above or below: nothing reaches over the tape below or the flyout's / sheet's top edge. */
 @media (pointer: coarse) {
   .stripBtn::after { content: ""; position: absolute; inset: -1px; }
   .flyoutClose::after { content: ""; position: absolute; top: -5px; right: -6px; bottom: -11px; left: -10px; }
   .flyoutBody .panelH { padding-right: 48px; }
+  .log .panelH { min-height: 44px; padding-top: 0; padding-bottom: 0; }
+  .filters button { position: relative; min-width: 44px; }
+  .filters button::after { content: ""; position: absolute; left: 0; right: 0; top: 50%; height: 44px; transform: translateY(-50%); }
 }
 
 /* ── Reduced motion: fades instead of travel; loops pause (--ts-ambient-state) ────────── */

@@ -309,6 +309,7 @@ function Footer({ prompt }: { prompt: Prompt }) {
 export function PlayModeStage({ prompt }: PlayModeStageProps) {
   const root = useUiRoot();
   const actions = usePromptActions();
+  const store = usePromptStore();
   const { t, cardName } = useI18n();
   const labelId = useId();
   if (prompt.kind !== "play-mode" && prompt.kind !== "op-mode") return null;
@@ -316,10 +317,11 @@ export function PlayModeStage({ prompt }: PlayModeStageProps) {
   const compact = root.layout === "compact" || root.layout === "compact-landscape";
   if (compact) {
     // Sideways phones (and 200 % zoom): the sheet takes the whole map column (sheets open over it, §3.4) and
-    // the card shrinks beside its name (CSS), so the options are on screen.
+    // the card shrinks beside its name (CSS), so the options are on screen. Closing it (the grab, the scrim, a
+    // swipe, Esc) is Back to hand: the card returns and the hand drawer focuses it (D-201).
     const landscape = root.layout === "compact-landscape";
     return (
-      <Sheet open height={landscape ? "full" : "80%"} label={card ? cardName(card) : t("ui:mode.howTitle")} onClose={() => { if (root.vm.canUndo) actions.undo(); }}>
+      <Sheet open height={landscape ? "full" : "80%"} label={card ? cardName(card) : t("ui:mode.howTitle")} onClose={() => { if (root.vm.canUndo) backToHand(store, actions, prompt); }}>
         <div className={s.sheet}>
           <div className={s.sheetTop}>
             {card ? <CardFace card={card} width={148} eager className={s.sheetCard} /> : null}

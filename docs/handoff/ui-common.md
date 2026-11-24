@@ -169,3 +169,12 @@ useKey("Enter", onUp, { event: "keyup" });            // opts: enabled, event, r
   done prompts: 3 fallbacks at 390×844 zh). `play.mjs` now finds them by cap or by `aria-keyshortcuts`
   (`keyButton`). Tests: `tests/ui/prompts/r2-integrate.test.ts`.
 
+
+## QA round 3 integration (integrator, 2026-11-23)
+
+* **`Sheet`** (R3-09, F4's request): on coarse pointers a full-height sheet (`height="full"`: the compact-landscape
+  play-mode sheet) starts at the screen's top, where the grab's 12 px reach above the sheet was off-screen (grab at
+  y 1, area from −11 at 844 × 390). `.h_full .grab` is 44 px tall and its `::after` area starts at the sheet's top;
+  other sheets keep the 12 px reach over the scrim. Measured at 844 × 390 and 640 × 360: grab 44 px, area 45 px from
+  y 0; Event · Operations · Space race · Back to hand still fit without scrolling at 640 × 360 … 926 × 428 (en / zh /
+  en-XA); keyboard Enter on the grab still returns the card to the hand with focus on it (D-201).

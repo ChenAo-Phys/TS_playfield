@@ -41,13 +41,18 @@ import { redactState } from "./view";
 export const DEFAULT_AI_OBS_FEATURES = 12;
 
 /**
- * The view model this controller emits (= ViewModel; these two optional contract fields were added for QA round 1):
+ * The view model this controller emits (= ViewModel; these optional contract fields were added in the QA rounds):
  * - `superseded`: another tab resumed, started or wrote the saved game; this page's copy takes no more moves (its
  *   prompt is withdrawn, the AI stopped, the save never written again). The UI blocks the game with a Reload notice.
  * - `incompatibleSave`: at boot, storage held an unfinished game of another engine build, which cannot be replayed,
  *   or a value that is not a readable save (tampered with or corrupted: a v2 save whose checksum fails, truncated
  *   data, ...; `savedAt` is 0 then, as the save's own time cannot be trusted); it has been discarded. `reason` (R-018)
  *   tells the two apart: "build" or "unreadable". Set until a game starts; the start screen says so once.
+ * - `saveUnavailable` (D-203): this game is not being autosaved -- the page has no storage (`deps.storage` null:
+ *   `browserStorage()` found it blocked, privacy mode) or storage refused the last write (quota). Set only while a game
+ *   is playing and this page is not superseded (that has its own notice); a later write that goes through clears it.
+ * - `aiReady` (QA L-1): the AI has loaded (`aiInfo`); set from then on, so a start screen mounted again after a game
+ *   reads Ready (it cannot see the load's progress again).
  */
 export type ControllerViewModel = ViewModel;
 
@@ -282,6 +287,8 @@ export class TsGameController implements GameController {
   private claimStored = false;
   /** The unfinished save that cannot be resumed found at boot (ControllerViewModel.incompatibleSave; `reason` R-018). */
   private incompatible: { savedAt: number; reason: "build" | "unreadable" } | null = null;
+  /** Storage refused this game's last autosave write (quota; ControllerViewModel.saveUnavailable, D-203). */
+  private saveRefused = false;
 
   constructor(deps: ControllerDeps) {
     this.deps = deps;
@@ -339,7 +346,14 @@ export class TsGameController implements GameController {
     const ext = vm as ControllerViewModel;
     if (this.superseded) ext.superseded = true;
     if (this.incompatible) ext.incompatibleSave = this.incompatible;
+    if (this.saveUnavailable()) ext.saveUnavailable = true;
+    if (this.aiInfo) vm.aiReady = true;
     return vm;
+  }
+
+  /** This game is not being autosaved (ControllerViewModel.saveUnavailable): no storage, or its last write refused. */
+  private saveUnavailable(): boolean {
+    return this.status === "playing" && !!this.human && !this.superseded && (!this.deps.storage || this.saveRefused);
   }
 
   /** Read-only access for tests and diagnostics: the main engine (null before boot). */
@@ -371,6 +385,11 @@ export class TsGameController implements GameController {
    * Loads the engine once (then starts loading the AI). A failure sets status "error" and forgets the attempt, so a
    * later call tries again. Once the engine is up, a call while the AI's load has failed before any game (status
    * "error" on the start screen) loads the AI again.
+   *
+   * The AI's downloads (onnxruntime and the model, ~9 MB on a first visit) start after the engine, not with it (QA
+   * L-3, measured): the first load is bandwidth-bound, so starting them alongside gained no time to Ready on Slow 4G
+   * and made the engine -- which enables the side folders, so a USSR player can start at once -- share the line with
+   * them (folders 5.0 s → 9.1 s on a 390 px phone, Slow 4G, local preview).
    */
   boot(): Promise<void> {
     if (this.booting && this.engine && this.status === "error" && !this.human && !this.aiInit) {
@@ -469,6 +488,7 @@ export class TsGameController implements GameController {
     this.gen++;
     this.superseded = false;
     this.claimStored = false;
+    this.saveRefused = false;
     this.incompatible = null;
     this.deps.ai.cancel();
     this.steps = [];
@@ -640,7 +660,8 @@ export class TsGameController implements GameController {
 
   /**
    * Autosave; `d` = the engine's display now, when the caller has it. `claim`: a game this page starts or resumes,
-   * written whatever the stored save is; otherwise nothing is written once another tab took the save over.
+   * written whatever the stored save is; otherwise nothing is written once another tab took the save over. A refused
+   * write sets `saveRefused` (ViewModel.saveUnavailable), the next one that goes through clears it.
    */
   private save(d?: GameState, claim = false): void {
     if (!this.deps.storage || !this.engine || !this.human) return;
@@ -656,6 +677,7 @@ export class TsGameController implements GameController {
     };
     const written = writeSave(this.deps.storage, save);
     if (written) this.claimStored = true;
+    this.saveRefused = !written;
     this.resumable = written && !this.ending;
     this.savedSummary = this.resumable ? saveSummary(save) : null;
   }

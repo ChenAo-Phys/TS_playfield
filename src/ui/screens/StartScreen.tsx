@@ -64,18 +64,14 @@ export function agoText(lang: string, savedAt: number, now = Date.now()): string
 }
 
 /**
- * Tracks whether the AI finished loading: progress was seen, then `vm.load` went away without an error. An
- * error forgets the progress, so a Retry that loads the AI again does not read as "Ready" before it starts.
+ * Whether the AI has loaded -- the controller's own fact (`vm.aiReady`), so a start screen mounted again after a game
+ * reads Ready (QA L-1: a per-mount "progress seen" flag left it at "AI MODEL", 15 %, with the first-visit note) -- and
+ * the load stage seen last (it names the failed stage when an error leaves none in `vm.load`).
  */
-function useAiReady(load: LoadProgress | undefined, status: string): { ready: boolean; lastStage: LoadProgress["stage"] | null } {
-  const seen = useRef(false);
+function useAiReady(load: LoadProgress | undefined, aiReady: boolean | undefined): { ready: boolean; lastStage: LoadProgress["stage"] | null } {
   const last = useRef<LoadProgress["stage"] | null>(null);
-  if (status === "error") seen.current = false;
-  if (load) {
-    last.current = load.stage;
-    if (load.stage !== "engine") seen.current = true;
-  }
-  return { ready: seen.current && !load && (status === "menu" || status === "playing" || status === "over"), lastStage: last.current };
+  if (load) last.current = load.stage;
+  return { ready: !!aiReady, lastStage: last.current };
 }
 
 export function StartScreen({ coin, confirmReplace, inGame, onPick, onResume, onSettings, onAbout, onRetry }: StartScreenProps) {
@@ -87,7 +83,7 @@ export function StartScreen({ coin, confirmReplace, inGame, onPick, onResume, on
   const engineReady = vm.status === "menu" || vm.status === "playing" || vm.status === "over";
   const busy = coin !== null;
   const [asking, setAsking] = useState<SideChoice | null>(null);
-  const ai = useAiReady(vm.load, vm.status);
+  const ai = useAiReady(vm.load, vm.aiReady);
   const folders = useRef<(HTMLButtonElement | null)[]>([]);
   // The map backdrop is its own chunk (it fades in); the game chunk downloads once the page is idle.
   const mapReady = useChunk(mapChunk);

@@ -32,9 +32,9 @@ jobs:
     timeout-minutes: 30
     steps:
       # No submodules: the engine is committed, and vendor/DeepStruggle is only its source.
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v7
         with:
           node-version: "26"   # the Node major the site is developed and tested with
           cache: npm
@@ -51,7 +51,7 @@ jobs:
       - name: Build
         run: npx vite build   # vite.config.ts: base /TS_playfield/, outDir dist
 
-      - uses: actions/upload-pages-artifact@v3
+      - uses: actions/upload-pages-artifact@v5
         with:
           path: dist
 
@@ -63,4 +63,4 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - id: deployment
-        uses: actions/deploy-pages@v4
+        uses: actions/deploy-pages@v5
