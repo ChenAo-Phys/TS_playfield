@@ -23,7 +23,7 @@ import type { Side } from "../../game/contract";
 import { useI18n } from "../../i18n/react";
 import { dur, mapDetail, TIMING, type FrameSpeed } from "../theme";
 import {
-  anchorOnMap, boardValues, EMPTY_BOX, ghostFor, popoversAfter, raisedBox, sameValues, scoreOf, targetLook, tipAfterTap, withOverrides, type BoxValues,
+  anchorOnMap, boardValues, EMPTY_BOX, plateSpent, popoversAfter, raisedBox, sameValues, scoreOf, targetLook, tipAfterTap, withOverrides, type BoxValues,
   type TipState,
 } from "./board";
 import { COMPACT_TOUCH_SCALE, FRAME_PAD, scaleOf, scaleToFit } from "./camera";
@@ -721,6 +721,7 @@ export const MapView = forwardRef<MapHandle, MapViewProps>(function MapView(prop
               key={slot}
               slot={slot}
               score={scoreOf(regionScores, slot)}
+              spent={plateSpent(state, slot)}
               lang={lang}
               big={detail === "overview"}
               offered={regionTargets?.has(slot) ?? false}
@@ -762,7 +763,7 @@ export const MapView = forwardRef<MapHandle, MapViewProps>(function MapView(prop
                 target={look}
                 dim={dim}
                 hot={isHot}
-                ghost={isHot && interactive && look !== "none" ? ghostFor(targets, id, v, humanSide) : null}
+                ghost={null /* no hover preview: influence shows only once placed (owner, 2026-11-23) */}
                 patterns={patterns}
                 touchPad={touch}
                 tabIndex={prompting ? (look !== "none" ? 0 : -1) : id === roving ? 0 : -1}

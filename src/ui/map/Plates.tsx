@@ -2,11 +2,12 @@
  * Region plates ("if scored now", ui-spec §4.5) and the two superpower plates (§4.2).
  */
 import { memo, type Ref } from "react";
-import type { DataLang } from "../../data";
+import { cardInfo, type DataLang } from "../../data";
 import type { RegionalStatus, RegionScore } from "../../engine/types";
 import type { Side } from "../../game/contract";
 import type { RegionSlot } from "./contract";
 import { glyphPath } from "./glyphs";
+import { SCORING_CARD } from "./board";
 import { MAP_H, MAP_W, PLATE, PLATES, SUPERPOWER_PLATES } from "./layout";
 
 /** Overview detail: plates grow (ui-spec §4.6). */
@@ -44,6 +45,9 @@ export interface RegionPlateProps {
   /** Highlighted (focus region / spotlight / hovered in a region prompt). */
   hot: boolean;
   dim: boolean;
+  /** Its scoring card was played since the last reshuffle ("discard") or is out of the game ("removed"): stamped
+   *  and muted, so the player sees which regions cannot be scored again before the next reshuffle. */
+  spent?: "discard" | "removed" | null;
   fontsVersion: number;
   plateRef?: Ref<SVGGElement>;
 }
@@ -57,7 +61,8 @@ function RegionPlateImpl(p: RegionPlateProps) {
   const netW = Math.max(textWidth(net.text, zh ? "net-zh" : "net-en", zh ? 13 : 15), textWidth(mapText(p.lang, "plate.ifScored"), "chip-en", 10));
   const nameRoom = w - 12 - 10 - netW;
   const nameW = textWidth(name, zh ? "plate-zh" : "plate-en", zh ? 18 : 22);
-  const label = mapText(p.lang, "map.plateLabel", { region: name, net: net.text });
+  const spentTip = p.spent ? mapText(p.lang, p.spent === "removed" ? "plate.removedTip" : "plate.spentTip", { card: cardInfo(SCORING_CARD[p.slot])?.title[p.lang] ?? name }) : null;
+  const label = mapText(p.lang, "map.plateLabel", { region: name, net: net.text }) + (spentTip ? ` · ${spentTip}` : "");
   const scale = p.big ? OVERVIEW_PLATE_SCALE : 1;
   // A grown plate stays on the chart.
   const half = { w: (w * scale) / 2, h: (h * scale) / 2 };
@@ -67,7 +72,7 @@ function RegionPlateImpl(p: RegionPlateProps) {
   return (
     <g
       ref={p.plateRef}
-      className={[s.plate, p.offered && s.loud, p.hot && s.plateHot, p.dim && s.boxDim].filter(Boolean).join(" ")}
+      className={[s.plate, p.offered && s.loud, p.hot && s.plateHot, p.dim && s.boxDim, p.spent && s.plateSpent].filter(Boolean).join(" ")}
       transform={transform}
       data-plate={p.slot}
       tabIndex={-1}
@@ -81,6 +86,7 @@ function RegionPlateImpl(p: RegionPlateProps) {
           <rect className={s.ring} x={-6} y={-6} width={w + 12} height={h + 12} rx={6} />
         </g>
       )}
+      {spentTip && <title>{spentTip}</title>}
       <rect className={s.plateBody} width={w} height={h} rx={2} />
       <rect className={INK[p.slot]} width={5} height={h} rx={1} />
       <rect className={s.plateFocus} x={-3} y={-3} width={w + 6} height={h + 6} rx={4} />
@@ -106,6 +112,21 @@ function RegionPlateImpl(p: RegionPlateProps) {
           <text className={s.plateValues} x={w - 8} y={48} textAnchor="end">{mapText(p.lang, `plate.values.${p.slot}` as MapStringKey)}</text>
         </>
       )}
+      {p.spent && <SpentStamp lang={p.lang} removed={p.spent === "removed"} w={w} />}
+    </g>
+  );
+}
+
+/** The "scored" rubber stamp across the plate's right half (its net line stays readable underneath). */
+function SpentStamp({ lang, removed, w }: { lang: DataLang; removed: boolean; w: number }) {
+  const text = mapText(lang, removed ? "plate.removed" : "plate.spent");
+  const zh = lang === "zh";
+  const tw = Math.max(48, textWidth(text, zh ? "net-zh" : "net-en", zh ? 13 : 13) + 14);
+  const cx = w - 8 - tw / 2 - 2, cy = 30;
+  return (
+    <g className={s.spentStamp} transform={`rotate(-8 ${cx} ${cy})`} aria-hidden="true">
+      <rect x={cx - tw / 2} y={cy - 11} width={tw} height={22} rx={3} />
+      <text x={cx} y={cy + 5}>{text}</text>
     </g>
   );
 }

@@ -153,6 +153,11 @@
 .netUSSR { fill: var(--ts-ussr-600); }
 .netEven { fill: var(--ts-ink-700); }
 .netHazard { stroke: var(--ts-danger); stroke-width: 3; stroke-dasharray: 4 3; }
+/* Scoring card played since the last reshuffle (or removed): muted plate with a stamp (owner request 2026-11-23). */
+.plateSpent .plateBody, .plateSpent .plateName, .plateSpent .plateNet, .plateSpent .plateNetLabel, .plateSpent .plateValues { opacity: .55; }
+.spentStamp rect { fill: color-mix(in srgb, var(--ts-paper-50) 80%, transparent); stroke: var(--ts-ussr-600); stroke-width: 2; }
+.spentStamp text { font: 800 13px var(--ts-font-ui); letter-spacing: .08em; text-transform: var(--ts-caps); fill: var(--ts-ussr-600); text-anchor: middle; }
+:global(:root:lang(zh)) .spentStamp text { letter-spacing: .12em; }
 .plateValues { font: 600 12px var(--ts-font-ui); letter-spacing: .04em; fill: var(--ts-ink-700); }
 .chipUS { fill: var(--ts-us-600); }
 .chipUSSR { fill: var(--ts-ussr-600); }

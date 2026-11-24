@@ -81,6 +81,24 @@ export function ghostFor(targets: MapTargets | null, id: number, values: BoxValu
   return null;
 }
 
+/** Each region's scoring card (RegionSlot 0..5 = engine Region EU, ASIA, ME, AF, CA, SA; 6 = Southeast Asia). */
+export const SCORING_CARD: Readonly<Record<RegionSlot, number>> = { 0: 2, 1: 1, 2: 3, 3: 79, 4: 37, 5: 81, 6: 38 };
+
+/**
+ * Has this region's scoring card already been played since the last reshuffle? "discard": it is in the discard pile
+ * and cannot come back before the next reshuffle; "removed": out of the game (Southeast Asia Scoring). Both piles
+ * are public, so this leaks nothing.
+ */
+export function plateSpent(
+  state: { readonly discard_pile?: readonly number[]; readonly removed_pile?: readonly number[] } | null | undefined,
+  slot: RegionSlot,
+): "discard" | "removed" | null {
+  const card = SCORING_CARD[slot];
+  if (state?.removed_pile?.includes(card)) return "removed";
+  if (state?.discard_pile?.includes(card)) return "discard";
+  return null;
+}
+
 /** The country tooltip's own state: `pinned` (long-press, right-click, Space) wins over `tipFor` (hover, focus, a tap). */
 export interface TipState {
   pinned: number | null;

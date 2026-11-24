@@ -106,7 +106,9 @@ sp.USSR = [1111, 242];
 const PLATE_W = 196, PLATE_H = 58, PLATE_CLEAR = 8, PLATE_REACH = 140;
 const SP_W = 112, SP_H = 48;
 // RegionSlot order: engine Region 0..5 (EU, ASIA, ME, AF, CA, SA), 6 = Southeast Asia.
-const PLATE_SPEC = { 0: [474, 112], 1: [1446, 470], 2: [1227, 645], 3: [1112, 930], 4: [102, 778], 5: [168, 910], 6: [1356, 784] };
+// Central America's plate sits to the region's upper right, over the sea north of Haiti / Dominican Rep.
+// (owner request 2026-11-23: at the lower left it read as part of South America).
+const PLATE_SPEC = { 0: [474, 112], 1: [1446, 470], 2: [1227, 645], 3: [1112, 930], 4: [430, 512], 5: [168, 910], 6: [1356, 784] };
 const rectGap = (ax, ay, aw, ah, bx, by, bw, bh) => {
   const dx = Math.abs(ax - bx) - (aw + bw) / 2, dy = Math.abs(ay - by) - (ah + bh) / 2;
   return Math.max(dx, dy); // > 0: separated by at least this along one axis

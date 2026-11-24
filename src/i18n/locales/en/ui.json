@@ -413,7 +413,11 @@
       "adjacent": "Adjacent to enemy superpower",
       "base": "Status VP",
       "total": "Total"
-    }
+    },
+    "spent": "Scored",
+    "removed": "Removed",
+    "spentTip": "{{card}} was played: it cannot come back before the next reshuffle",
+    "removedTip": "{{card}} was played and is out of the game"
   },
   "map": {
     "ariaMap": "Map",

@@ -373,7 +373,7 @@ rendering. Everything else talks to the map only through `MapViewProps` and `Map
   committed) and MAY improve the relaxation, as long as every country stays recognisably where it is on the board.
 * **Superpower plates:** 112×48 u, centres US (145, 400) and USSR (1111, 242).
 * **Region plates:** 196×58 u, centres EU (474, 112), ME (1227, 645), Asia (1446, 470), SE Asia (1356, 784), Africa
-  (1112, 930), C. America (102, 778), S. America (168, 910). They may move to keep ≥ 8 u clear of every box and ≤ 140 u from
+  (1112, 930), C. America (430, 512; upper right of the region, owner request 2026-11-23), S. America (168, 910). They may move to keep ≥ 8 u clear of every box and ≤ 140 u from
   their region.
 * **Big lettering:** "U.S.A." stencil 78 u at (26, 342) and "U.S.S.R." 92 u at (1250, 150), side ink at 20 %
   (`--ts-map-super-label-*`).

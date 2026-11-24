@@ -115,7 +115,7 @@ describe("connections", () => {
 });
 
 describe("plates", () => {
-  const SPEC: Record<number, [number, number]> = { 0: [474, 112], 1: [1446, 470], 2: [1227, 645], 3: [1112, 930], 4: [102, 778], 5: [168, 910], 6: [1356, 784] };
+  const SPEC: Record<number, [number, number]> = { 0: [474, 112], 1: [1446, 470], 2: [1227, 645], 3: [1112, 930], 4: [430, 512], 5: [168, 910], 6: [1356, 784] };
 
   it("region plates are 196 × 58, ≥ 8 u clear of every box and of each other, ≤ 140 u from the spec spot", () => {
     for (const slot of REGION_SLOTS) {

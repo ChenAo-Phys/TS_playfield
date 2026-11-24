@@ -137,6 +137,10 @@ export const UI_KEYS = {
   },
   plate: {
     ifScored: ["If scored", "若计分"],
+    spent: ["Scored", "已计分"],
+    removed: ["Removed", "已移出"],
+    spentTip: ["{{card}} was played: it cannot come back before the next reshuffle", "{{card}}已打出：下次洗牌前不会再出现"],
+    removedTip: ["{{card}} was played and is out of the game", "{{card}}已打出并移出游戏"],
     even: ["Even", "持平"],
     net: ["{{side}} +{{vp}}", "{{side}} +{{vp}}"],
     wins: ["{{side}} wins", "{{side}}获胜"],

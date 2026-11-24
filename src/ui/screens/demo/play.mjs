@@ -675,7 +675,7 @@ while (steps < MAX_STEPS) {
   if (v.status === "over") { log("game over", JSON.stringify(v.ending)); break; }
   if (v.status === "error") { errors.push("status error"); break; }
   if (v.turn > lastTurnLogged) { lastTurnLogged = v.turn; log(`turn ${v.turn} (VP ${v.vp}, DEFCON ${v.defcon}; ${steps} answers)`); }
-  if (v.turn >= UNTIL) { log(`reached turn ${v.turn}`); break; }
+  if (v.turn >= UNTIL) { log(`reached turn ${v.turn}`); await shot("until"); break; }
   if (await continueIfWaiting()) { done.add("continue"); await page.waitForTimeout(200); continue; }
   if (!v.prompt) { await page.waitForTimeout(120); continue; }
   // Optional QA moves.
