@@ -41,7 +41,7 @@ describe("model", () => {
     expect(perksReached(5)).toEqual([2, 4]);
   });
 
-  it("AR pips: US half left, USSR half right; the USSR moves first in a round", () => {
+  it("AR pips: USSR half left, US half right; the USSR moves first in a round", () => {
     const base = { turn: 2, current_phase_name: "ACTION_ROUND", flags: [], space: { US: 0, USSR: 0 } };
     const ussr = arModel({ ...base, action_round: 3, phasing_player: "USSR" } as unknown as PublicState);
     expect(ussr.pips).toHaveLength(6);

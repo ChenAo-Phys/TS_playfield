@@ -1,7 +1,7 @@
 /**
  * Action-round instrument (ui-spec §5): 6 pips (turns 1–3) or 7, plus a dashed 8th when a side has
- * AR 8 (`maxActionRound`, src/game/rules). Each pip is split US half left · USSR half right, the fixed
- * axis: who moves first is told by which half lights, not by position. Played halves in side tints,
+ * AR 8 (`maxActionRound`, src/game/rules). Each pip is split USSR half left · US half right, in play
+ * order (the USSR moves first in every action round). Played halves in side tints,
  * the current half brass and lit, the readout "AR 3 · USSR (you)" (side word in side colour, "(you)" in
  * brass). Headline / setup phases: the readout names the phase. The current half floods in when an
  * `action-round` beat moves it (scale .6 → 1).
@@ -106,7 +106,7 @@ export function ArTrack({ state, humanSide, ar, readoutOnly = false, glyph = fal
       <div className={s.arTrack} aria-hidden="true">
         {model.pips.map(p => (
           <span key={p.n} className={[s.arPip, p.optional ? s.opt : ""].filter(Boolean).join(" ")} data-n={p.n}>
-            {(["US", "USSR"] as const).map(side => {
+            {(["USSR", "US"] as const).map(side => {
               const st = p[side];
               const flood = st === "now" && anim && !anim.reduced && anim.ms > 0;
               return (
