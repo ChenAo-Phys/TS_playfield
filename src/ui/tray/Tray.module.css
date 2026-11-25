@@ -29,6 +29,8 @@
   background: var(--ts-surface-walnut);
   box-shadow: inset 0 1px 0 var(--ts-line-brass), inset 0 2px 0 color-mix(in srgb, var(--ts-room-950) 60%, transparent);
   z-index: -1;
+  /* The opaque walnut edge stops the pointer: the map hidden under it must not take clicks. */
+  pointer-events: auto;
 }
 .tray::after {
   content: "";

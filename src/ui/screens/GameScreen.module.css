@@ -44,7 +44,8 @@
   z-index: var(--ts-z-tray);
   pointer-events: none;
 }
-.trayArea > * { pointer-events: auto; }
+/* No `.trayArea > * { pointer-events: auto }`: it outranked the tray's own `pointer-events: none` (same specificity,
+   later sheet), so the tray's transparent fade swallowed clicks on the map's bottom edge (Argentina, S. Africa). */
 
 /* ── Tablet (§3.2) ── */
 .tablet {
